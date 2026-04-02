@@ -1,3 +1,5 @@
+# --- Backtest Builders -----------------------------------------------------------
+
 """
     build(type::Type{MyBacktestScenario}, data::NamedTuple) -> MyBacktestScenario
 """
@@ -40,4 +42,36 @@ function build(type::Type{MyValidationReport};
     end
 
     return report;
+end
+
+# --- Bandit Builders ------------------------------------------------------------
+
+"""
+    build(type::Type{MyBanditContext}, data::NamedTuple) -> MyBanditContext
+"""
+function build(type::Type{MyBanditContext}, data::NamedTuple)::MyBanditContext
+
+    ctx = MyBanditContext();
+    ctx.tickers = data.tickers;
+    ctx.sim_parameters = data.sim_parameters;
+    ctx.prices = data.prices;
+    ctx.B = data.B;
+    ctx.gm_t = data.gm_t;
+    ctx.lambda = data.lambda;
+    ctx.epsilon = data.epsilon;
+
+    return ctx;
+end
+
+"""
+    build(type::Type{MyEpsilonGreedyBanditModel}, data::NamedTuple) -> MyEpsilonGreedyBanditModel
+"""
+function build(type::Type{MyEpsilonGreedyBanditModel}, data::NamedTuple)::MyEpsilonGreedyBanditModel
+
+    model = MyEpsilonGreedyBanditModel();
+    model.K = data.K;
+    model.n_iterations = data.n_iterations;
+    model.alpha = data.alpha;
+
+    return model;
 end
