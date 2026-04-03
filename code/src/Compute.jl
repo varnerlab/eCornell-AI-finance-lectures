@@ -16,7 +16,8 @@ function solve_minvariance(problem::MyPortfolioAllocationProblem)::MyPortfolioPe
     N = length(μ);
 
     # setup the JuMP model -
-    model = Model();
+    model = Model(Ipopt.Optimizer);
+    set_silent(model);
 
     # decision variables: portfolio weights
     @variable(model, bounds[i,1] <= w[i=1:N] <= bounds[i,2]);
@@ -1313,8 +1314,8 @@ function compute_dashboard_metrics(results::Array{MyProductionDayResult,1},
 
     # escalation frequency -
     n_escalations = length(events);
-    n_critical = sum(e.severity == :critical for e in events);
-    n_warning = sum(e.severity == :warning for e in events);
+    n_critical = sum(e.severity == :critical for e in events; init=0);
+    n_warning = sum(e.severity == :warning for e in events; init=0);
 
     # drawdown -
     peak = accumulate(max, wealth);

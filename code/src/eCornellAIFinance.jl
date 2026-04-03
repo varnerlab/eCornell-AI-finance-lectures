@@ -6,6 +6,7 @@ using DataFrames
 using Distributions
 using FileIO
 using HypothesisTests
+using Ipopt
 using JLD2
 using JuMP
 using JumpHMM
