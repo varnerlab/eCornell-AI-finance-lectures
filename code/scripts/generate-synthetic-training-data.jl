@@ -196,66 +196,56 @@ for t ∈ 2:T_DAYS
     market_prices[t] = market_prices[t-1] * exp(G_market[t] * DT);
 end
 
-# --- Step 4: Generate per-ticker paths using SIM from market path ---
-# Estimate SIM parameters (α, β, σ_ε) from real OHLC data, then use them
-# to generate synthetic paths driven by the HMM market path.
-# This preserves volatility clustering through the β·gₘ(t) term.
+# --- Step 4: Generate per-ticker paths using copula rank-reordering ---
+# Each ticker gets its correct marginal distribution from its own HMM.
+# Cross-asset dependence comes from the Student-t copula.
+# NOTE: copula rank-reordering does NOT preserve temporal autocorrelation
+# (volatility clustering). Temporal analysis should use the MARKET index
+# which comes directly from the HMM and preserves all temporal dynamics.
 
-println("\nEstimating SIM parameters from real OHLC data...")
-ohlc_data = MyTrainingMarketDataSet();
-ohlc_dataset = ohlc_data["dataset"];
-
-# compute real SPY market returns for SIM estimation -
-spy_prices = Float64.(ohlc_dataset["SPY"][:, :close]);
-T_ohlc = length(spy_prices);
-real_market_returns = [(1.0/DT) * log(spy_prices[t]/spy_prices[t-1]) for t ∈ 2:T_ohlc];
-
-# get tickers that have full history in OHLC data -
-max_ohlc_days = maximum(nrow(ohlc_dataset[t]) for t ∈ keys(ohlc_dataset));
-tickers = sort([t for t ∈ keys(ohlc_dataset) if nrow(ohlc_dataset[t]) == max_ohlc_days]);
+println("\nLoading portfolio surrogate...")
+portfolio = MyPortfolioSurrogateModel();
+tickers = portfolio["tickers"];
+marginals = portfolio["marginals"];
+copula = portfolio["copula"];
 K = length(tickers);
-println("  $(K) tickers with full OHLC history")
 
-# estimate SIM parameters for each ticker -
-sim_params = Dict{String, NamedTuple{(:α, :β, :σ_ε), Tuple{Float64, Float64, Float64}}}();
-for ticker ∈ tickers
-    prices_t = Float64.(ohlc_dataset[ticker][:, :close]);
-    asset_returns = [(1.0/DT) * log(prices_t[t]/prices_t[t-1]) for t ∈ 2:T_ohlc];
-    est = estimate_sim(real_market_returns, asset_returns, ticker; δ=0.0, Δt=DT);
-    sim_params[ticker] = (α=est.α, β=est.β, σ_ε=est.σ_ε);
-end
-println("  SIM parameters estimated for $(length(sim_params)) tickers")
+println("Generating $(K)-ticker paths via copula rank-reordering ($(T_DAYS) days)...")
+println("  Marginal distributions: preserved (from per-ticker HMMs)")
+println("  Cross-asset dependence: Student-t copula")
+println("  Temporal structure: use MARKET index for ACF/clustering analysis")
 
-# generate per-ticker paths via SIM: gᵢ(t) = αᵢ + βᵢ·gₘ(t) + εᵢ(t)
-# where gₘ(t) is the HMM-generated market growth rate (temporal structure preserved)
-println("\nGenerating $(K)-ticker paths via SIM from HMM market path...")
-println("  Volatility clustering inherited through β·gₘ(t)")
+# sample copula uniforms -
+U = JumpHMM.sample_dependence(copula, T_DAYS);  # T_DAYS × K
 
 ticker_prices = Dict{String, Vector{Float64}}();
 ticker_returns = Dict{String, Vector{Float64}}();
 
 for (j, ticker) ∈ enumerate(tickers)
 
-    (αᵢ, βᵢ, σ_εᵢ) = sim_params[ticker];
+    model_j = marginals[ticker];
 
-    # generate returns via SIM: αᵢ + βᵢ·gₘ(t) + εᵢ(t) -
-    g_ticker = zeros(T_DAYS);
-    for t ∈ 1:T_DAYS
-        g_ticker[t] = αᵢ + βᵢ * G_market[t] + σ_εᵢ * sqrt(DT) * randn();
-    end
+    # simulate a single marginal path -
+    r_j = hmm_simulate(model_j, T_DAYS; n_paths=1);
+    obs_j = Float64.(r_j.paths[1].observations);
+
+    # rank-reorder: sort marginal obs, place by copula ranks -
+    sorted_obs = sort(obs_j);
+    copula_ranks = ordinalrank(U[:, j]);
+    reordered_obs = sorted_obs[copula_ranks];
 
     # convert to prices -
     p_j = zeros(T_DAYS);
     p_j[1] = 100.0;
     for t ∈ 2:T_DAYS
-        p_j[t] = p_j[t-1] * exp(g_ticker[t] * DT);
+        p_j[t] = p_j[t-1] * exp(reordered_obs[t] * DT);
     end
 
     ticker_prices[ticker] = p_j;
-    ticker_returns[ticker] = g_ticker;
+    ticker_returns[ticker] = reordered_obs;
 
     if j % 100 == 0 || j == K
-        println("  [$(j)/$(K)] $(ticker) — β=$(round(βᵢ, digits=2))");
+        println("  [$(j)/$(K)] $(ticker) done");
     end
 end
 
@@ -317,8 +307,7 @@ save(output_path, Dict(
     ),
     "market_prices" => market_prices,
     "market_jumps" => market_jumps,
-    "market_returns" => G_market,
-    "sim_parameters" => sim_params
+    "market_returns" => G_market
 ));
 
 println("\nDone! Saved $(K) tickers + MARKET index × $(T_DAYS) days ($(T_YEARS) years)")
