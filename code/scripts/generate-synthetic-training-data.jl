@@ -26,13 +26,13 @@ using StatsBase
 # --- Configuration ---
 const T_YEARS = 20
 const T_DAYS = T_YEARS * 252        # 5040 trading days
-const N_CANDIDATES = 1000           # candidate paths to screen
+const N_CANDIDATES = 2000           # candidate paths to screen
 const DT = 1.0 / 252.0
 const SEED_CANDIDATES = 2026        # reproducible
 
 # realism criteria for candidate selection -
-const MIN_CAGR = 0.04               # min 4% annualized return
-const MAX_CAGR = 0.14               # max 14% annualized return
+const MIN_CAGR = 0.06               # min 6% annualized return
+const MAX_CAGR = 0.09               # max 9% annualized return (target 7-8%)
 const MIN_MAJOR_DRAWDOWNS = 3       # at least 3 drawdowns > 20%
 const MAX_MAJOR_DRAWDOWNS = 8       # not too many
 const MIN_JUMP_CLUSTERS = 3         # at least 3 distinct jump episodes
