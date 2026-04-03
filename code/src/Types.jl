@@ -1,3 +1,57 @@
+# --- Session 1: Single Index Model Types ----------------------------------------
+
+"""
+    MySIMParameterEstimate
+
+Holds the estimated Single Index Model parameters for one asset.
+
+### Fields
+- `ticker::String` — asset ticker name
+- `α::Float64` — Jensen's alpha (firm-specific excess return)
+- `β::Float64` — market beta (sensitivity to market factor)
+- `σ_ε::Float64` — residual standard deviation (idiosyncratic risk)
+- `r²::Float64` — R-squared of the regression fit
+"""
+mutable struct MySIMParameterEstimate
+
+    # data -
+    ticker::String
+    α::Float64
+    β::Float64
+    σ_ε::Float64
+    r²::Float64
+
+    # constructor -
+    MySIMParameterEstimate() = new();
+end
+
+"""
+    MySharpeRatioPortfolioChoiceProblem
+
+Holds the data needed to solve the maximum Sharpe ratio portfolio problem via SOCP.
+
+### Fields
+- `Σ::Array{Float64,2}` — covariance matrix (from SIM or sample)
+- `risk_free_rate::Float64` — risk-free rate (annualized)
+- `α::Array{Float64,1}` — firm-specific alphas from SIM
+- `β::Array{Float64,1}` — market betas from SIM
+- `gₘ::Float64` — expected market growth rate
+- `bounds::Array{Float64,2}` — lower/upper weight bounds (N × 2)
+"""
+mutable struct MySharpeRatioPortfolioChoiceProblem
+
+    # data -
+    Σ::Array{Float64,2}
+    risk_free_rate::Float64
+    α::Array{Float64,1}
+    β::Array{Float64,1}
+    gₘ::Float64
+    bounds::Array{Float64,2}
+
+    # constructor -
+    MySharpeRatioPortfolioChoiceProblem() = new();
+end
+
 # --- Session 1: Portfolio Optimization Types ------------------------------------
 
 """

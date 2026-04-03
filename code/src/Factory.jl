@@ -1,3 +1,42 @@
+# --- Session 1: SIM and Sharpe Builders ------------------------------------------
+
+"""
+    build(type::Type{MySIMParameterEstimate}, data::NamedTuple) -> MySIMParameterEstimate
+
+Build a SIM parameter estimate from a named tuple.
+Expected fields: ticker, α, β, σ_ε, r².
+"""
+function build(type::Type{MySIMParameterEstimate}, data::NamedTuple)::MySIMParameterEstimate
+
+    est = MySIMParameterEstimate();
+    est.ticker = data.ticker;
+    est.α = data.α;
+    est.β = data.β;
+    est.σ_ε = data.σ_ε;
+    est.r² = data.r²;
+
+    return est;
+end
+
+"""
+    build(type::Type{MySharpeRatioPortfolioChoiceProblem}, data::NamedTuple) -> MySharpeRatioPortfolioChoiceProblem
+
+Build a Sharpe ratio optimization problem from a named tuple.
+Expected fields: Σ, risk_free_rate, α, β, gₘ, bounds.
+"""
+function build(type::Type{MySharpeRatioPortfolioChoiceProblem}, data::NamedTuple)::MySharpeRatioPortfolioChoiceProblem
+
+    problem = MySharpeRatioPortfolioChoiceProblem();
+    problem.Σ = data.Σ;
+    problem.risk_free_rate = data.risk_free_rate;
+    problem.α = data.α;
+    problem.β = data.β;
+    problem.gₘ = data.gₘ;
+    problem.bounds = data.bounds;
+
+    return problem;
+end
+
 # --- Session 1: Portfolio Builders -----------------------------------------------
 
 """

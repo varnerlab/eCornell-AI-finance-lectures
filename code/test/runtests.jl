@@ -45,6 +45,22 @@ const SIM_PARAMS = Dict(
     # ===================================================================
     @testset "Factory — build methods" begin
 
+        @testset "MySIMParameterEstimate" begin
+            e = build(MySIMParameterEstimate, (ticker="TEST", α=0.001, β=1.1, σ_ε=0.01, r²=0.85));
+            @test e isa MySIMParameterEstimate
+            @test e.ticker == "TEST"
+            @test e.β == 1.1
+        end
+
+        @testset "MySharpeRatioPortfolioChoiceProblem" begin
+            p = build(MySharpeRatioPortfolioChoiceProblem, (
+                Σ=[0.01 0.002; 0.002 0.02], risk_free_rate=0.0002,
+                α=[0.001, 0.002], β=[1.0, 0.8], gₘ=0.05,
+                bounds=hcat(zeros(2), ones(2))));
+            @test p isa MySharpeRatioPortfolioChoiceProblem
+            @test p.risk_free_rate == 0.0002
+        end
+
         @testset "MyPortfolioAllocationProblem" begin
             μ = [0.001, 0.002, 0.0005];
             Σ = [0.01 0.002 0.001; 0.002 0.02 0.003; 0.001 0.003 0.005];
@@ -171,6 +187,84 @@ const SIM_PARAMS = Dict(
             @test all(result.weights .>= -1e-6)
             @test result.variance > 0
             @test result.expected_return >= 0.0005 - 1e-6
+        end
+    end
+
+    # ===================================================================
+    @testset "Compute — Session 1 (SIM & Sharpe)" begin
+
+        # generate synthetic data for SIM tests -
+        Random.seed!(99);
+        T_sim = 504;
+        Δt_sim = 1.0 / 252.0;
+        true_α = 0.0002;
+        true_β = 1.10;
+        true_σ_ε = 0.010;
+
+        # synthetic market returns -
+        mkt_ret = randn(T_sim) .* 0.01;
+        # synthetic asset returns via SIM: gᵢ = α + β·gₘ + ε -
+        asset_ret = true_α .+ true_β .* mkt_ret .+ true_σ_ε .* sqrt(Δt_sim) .* randn(T_sim);
+
+        @testset "estimate_sim" begin
+            est = estimate_sim(mkt_ret, asset_ret, "TestAsset"; δ=0.0, Δt=Δt_sim);
+            @test est isa MySIMParameterEstimate
+            @test est.ticker == "TestAsset"
+            @test isapprox(est.β, true_β, rtol=0.15)  # within 15%
+            @test est.r² > 0.5  # should explain majority of variance
+            @test est.σ_ε > 0
+        end
+
+        @testset "estimate_sim — regularized" begin
+            est = estimate_sim(mkt_ret, asset_ret, "TestAsset"; δ=0.01, Δt=Δt_sim);
+            @test est isa MySIMParameterEstimate
+            @test est.r² > 0.0  # still positive
+        end
+
+        @testset "build_sim_covariance" begin
+            # create 3 fake SIM estimates -
+            ests = MySIMParameterEstimate[];
+            for (t, β, σ) ∈ [("A", 1.1, 0.01), ("B", 0.8, 0.012), ("C", -0.15, 0.003)]
+                e = MySIMParameterEstimate();
+                e.ticker = t; e.α = 0.0; e.β = β; e.σ_ε = σ; e.r² = 0.9;
+                push!(ests, e);
+            end
+
+            σ_m = std(mkt_ret);
+            Σ = build_sim_covariance(ests, σ_m; Δt=Δt_sim);
+
+            @test size(Σ) == (3, 3)
+            @test issymmetric(Σ)
+            @test isposdef(Σ)
+            # off-diagonal: β_A * β_B * σ_m²
+            @test isapprox(Σ[1, 2], 1.1 * 0.8 * σ_m^2, rtol=1e-10)
+        end
+
+        @testset "solve_max_sharpe" begin
+            # build a small Sharpe problem -
+            ests = MySIMParameterEstimate[];
+            for (t, α_v, β_v, σ_v) ∈ [("A", 0.0002, 1.1, 0.01), ("B", 0.0003, 0.8, 0.012), ("C", 0.0001, -0.15, 0.003)]
+                e = MySIMParameterEstimate();
+                e.ticker = t; e.α = α_v; e.β = β_v; e.σ_ε = σ_v; e.r² = 0.9;
+                push!(ests, e);
+            end
+
+            σ_m = std(mkt_ret);
+            Σ = build_sim_covariance(ests, σ_m);
+            α_vec = [e.α for e ∈ ests];
+            β_vec = [e.β for e ∈ ests];
+
+            problem = build(MySharpeRatioPortfolioChoiceProblem, (
+                Σ = Σ, risk_free_rate = 0.0002, α = α_vec, β = β_vec,
+                gₘ = 0.05, bounds = hcat(zeros(3), ones(3))
+            ));
+            result = solve_max_sharpe(problem);
+
+            @test haskey(result, "weights")
+            @test haskey(result, "sharpe_ratio")
+            @test isapprox(sum(result["weights"]), 1.0, rtol=1e-3)
+            @test all(result["weights"] .>= -1e-4)
+            @test result["sharpe_ratio"] > 0
         end
     end
 

@@ -1,6 +1,7 @@
 module eCornellAIFinance
 
 # import external packages -
+using Clarabel
 using CSV
 using DataFrames
 using Distributions
@@ -32,6 +33,7 @@ include("Compute.jl");
 include("Files.jl");
 
 # export types -
+export MySIMParameterEstimate, MySharpeRatioPortfolioChoiceProblem
 export MyPortfolioAllocationProblem, MyPortfolioPerformanceResult
 export MyCobbDouglasChoiceProblem, MyCESChoiceProblem, MyLogLinearChoiceProblem
 export MyRebalancingContextModel, MyTriggerRules, MyRebalancingResult
@@ -44,6 +46,7 @@ export build
 
 # export compute — Session 1 -
 export solve_minvariance, compute_drawdown, compute_turnover
+export estimate_sim, build_sim_covariance, solve_max_sharpe
 
 # export compute — Session 2 -
 export compute_ema, compute_lambda, compute_market_growth, compute_preference_weights

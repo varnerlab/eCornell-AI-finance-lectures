@@ -69,6 +69,176 @@ function compute_turnover(w_old::Array{Float64,1}, w_new::Array{Float64,1})::Flo
     return sum(abs.(w_new .- w_old));
 end
 
+# --- Session 1: Single Index Model Estimation -----------------------------------
+
+"""
+    estimate_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
+        ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0) -> MySIMParameterEstimate
+
+Estimate Single Index Model parameters (α, β, σ_ε) for one asset via regularized OLS regression.
+
+    gᵢ(t) = αᵢ + βᵢ · gₘ(t) + εᵢ(t)
+
+The closed-form solution is: θ̂ = (X'X + δI)⁻¹ X'y where X = [1 gₘ] and y = gᵢ.
+
+### Arguments
+- `market_returns` — market index log growth rates (T × 1)
+- `asset_returns` — asset log growth rates (T × 1), same length as market_returns
+- `ticker` — asset ticker name
+- `δ` — regularization parameter (0 = OLS, >0 = ridge regression)
+- `Δt` — time step in years (for annualizing σ_ε)
+
+### Returns
+- `MySIMParameterEstimate` with fields: ticker, α, β, σ_ε, r²
+"""
+function estimate_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
+    ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0)::MySIMParameterEstimate
+
+    # setup design matrix: X = [1 gₘ] -
+    T = length(market_returns);
+    X = hcat(ones(T), market_returns);
+    y = asset_returns;
+    p = 2; # number of parameters
+
+    # regularized OLS: θ = (X'X + δI)^(-1) X'y -
+    θ̂ = (X' * X + δ * I(p)) \ (X' * y);
+    α_hat = θ̂[1];
+    β_hat = θ̂[2];
+
+    # residuals and error variance -
+    ŷ = X * θ̂;
+    residuals = y .- ŷ;
+    σ_ε = sqrt((1.0 / (Δt * (T - p))) * dot(residuals, residuals));
+
+    # R-squared -
+    SS_res = dot(residuals, residuals);
+    SS_tot = dot(y .- mean(y), y .- mean(y));
+    r² = 1.0 - SS_res / SS_tot;
+
+    # build result -
+    est = MySIMParameterEstimate();
+    est.ticker = ticker;
+    est.α = α_hat;
+    est.β = β_hat;
+    est.σ_ε = σ_ε;
+    est.r² = r²;
+
+    return est;
+end
+
+"""
+    build_sim_covariance(sim_estimates::Array{MySIMParameterEstimate,1},
+        σ_m::Float64; Δt::Float64 = 1.0/252.0) -> Array{Float64,2}
+
+Construct the SIM-derived covariance matrix from estimated parameters.
+
+    Σᵢⱼ = βᵢ βⱼ σₘ²                      (off-diagonal)
+    Σᵢᵢ = βᵢ² σₘ² + Δt σ²_εᵢ             (diagonal)
+
+### Arguments
+- `sim_estimates` — array of SIM parameter estimates (one per asset)
+- `σ_m` — market return standard deviation
+- `Δt` — time step in years
+
+### Returns
+- `Σ` — N × N covariance matrix (symmetric, positive definite)
+"""
+function build_sim_covariance(sim_estimates::Array{MySIMParameterEstimate,1},
+    σ_m::Float64; Δt::Float64 = 1.0/252.0)::Array{Float64,2}
+
+    N = length(sim_estimates);
+    Σ = zeros(N, N);
+    σ_m² = σ_m^2;
+
+    for i ∈ 1:N
+        βᵢ = sim_estimates[i].β;
+        σ_εᵢ = sim_estimates[i].σ_ε;
+        for j ∈ 1:N
+            βⱼ = sim_estimates[j].β;
+            if i == j
+                Σ[i, j] = βᵢ^2 * σ_m² + Δt * σ_εᵢ^2;
+            else
+                Σ[i, j] = βᵢ * βⱼ * σ_m²;
+            end
+        end
+    end
+
+    return Σ;
+end
+
+"""
+    solve_max_sharpe(problem::MySharpeRatioPortfolioChoiceProblem) -> Dict{String, Any}
+
+Solve the maximum Sharpe ratio portfolio problem via Second-Order Cone Programming (COSMO).
+
+The Sharpe ratio SR = (E[gₚ] - gf) / σₚ is maximized subject to fully-invested
+and long-only constraints using the SOCP reformulation.
+
+### Returns
+Dictionary with keys:
+- `"weights"` — optimal portfolio weights
+- `"sharpe_ratio"` — maximum Sharpe ratio
+- `"expected_return"` — portfolio expected return (annualized)
+- `"volatility"` — portfolio volatility (annualized)
+- `"status"` — solver termination status
+"""
+function solve_max_sharpe(problem::MySharpeRatioPortfolioChoiceProblem)::Dict{String,Any}
+
+    # unpack -
+    Σ = problem.Σ;
+    rf = problem.risk_free_rate;
+    α = problem.α;
+    β = problem.β;
+    gₘ = problem.gₘ;
+    bounds = problem.bounds;
+    N = length(α);
+
+    # excess return vector: c = α + β·gₘ - rf -
+    c = α .+ β .* gₘ .- rf .* ones(N);
+
+    # Cholesky decomposition: Σ = U'U -
+    U = cholesky(Symmetric(Σ)).U;
+
+    # estimate a reasonable τ (lower bound on achievable Sharpe) -
+    # use equal-weight portfolio Sharpe as starting point
+    w_eq = fill(1.0/N, N);
+    τ = max(dot(c, w_eq) / norm(U * w_eq), 0.01);
+
+    # setup SOCP via JuMP + COSMO -
+    model = Model(Clarabel.Optimizer);
+    set_attribute(model, "verbose", false);
+
+    @variable(model, w[i=1:N] >= bounds[i,1]);
+    for i ∈ 1:N
+        @constraint(model, w[i] <= bounds[i,2]);
+    end
+    @constraint(model, sum(w) == 1.0);
+
+    # SOC constraint: [c'w/τ; U*w] ∈ SecondOrderCone -
+    @constraint(model, [dot(c, w) / τ; U * w] in SecondOrderCone());
+    @constraint(model, dot(c, w) >= 0.0);
+
+    # maximize excess return -
+    @objective(model, Max, dot(c, w));
+
+    optimize!(model);
+
+    # extract results -
+    w_opt = value.(w);
+    sr_num = dot(c, w_opt);
+    sr_den = norm(U * w_opt);
+    sr_opt = sr_den > 1e-10 ? sr_num / sr_den : 0.0;
+
+    results = Dict{String,Any}();
+    results["weights"] = w_opt;
+    results["sharpe_ratio"] = sr_opt;
+    results["expected_return"] = dot(α .+ β .* gₘ, w_opt);
+    results["volatility"] = sr_den;
+    results["status"] = termination_status(model);
+
+    return results;
+end
+
 # --- Session 2: Signal Computation ----------------------------------------------
 
 """
