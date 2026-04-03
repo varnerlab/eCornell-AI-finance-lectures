@@ -14,8 +14,8 @@ Pkg.activate(joinpath(@__DIR__, ".."))
 using eCornellAIFinance
 using DataFrames
 using JLD2
+using JumpHMM
 using Statistics
-using JumpHMM: PortfolioModel, StudentTCopula, GaussianCopula
 
 # --- Configuration ---
 const N_STATES = 50
@@ -23,7 +23,7 @@ const NU = 5.0
 const RF = 0.0
 const DT = 1.0 / 252.0
 const MIN_OBS_DAYS = 1000          # skip tickers with fewer days
-const COPULA_TYPE = StudentTCopula  # or GaussianCopula
+const COPULA_TYPE = JumpHMM.StudentTCopula  # or JumpHMM.GaussianCopula
 
 # tune grid — moderate for batch training
 const EPSILON_RANGE = range(1e-4, 2.5e-2, length=10)
