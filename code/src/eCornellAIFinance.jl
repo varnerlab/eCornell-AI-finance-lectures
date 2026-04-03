@@ -1,0 +1,65 @@
+module eCornellAIFinance
+
+# import external packages -
+using CSV
+using DataFrames
+using Distributions
+using FileIO
+using HypothesisTests
+using JLD2
+using JuMP
+using JumpHMM
+using LinearAlgebra
+using Random
+using Statistics
+using StatsBase
+
+# setup aliases for JumpHMM name collisions -
+const hmm_fit = JumpHMM.fit;
+const hmm_tune = JumpHMM.tune;
+const hmm_simulate = JumpHMM.simulate;
+const hmm_validate = JumpHMM.validate;
+
+# include my codes -
+include("Types.jl");
+include("Factory.jl");
+include("Compute.jl");
+include("Files.jl");
+
+# export types -
+export MyPortfolioAllocationProblem, MyPortfolioPerformanceResult
+export MyCobbDouglasChoiceProblem, MyCESChoiceProblem, MyLogLinearChoiceProblem
+export MyRebalancingContextModel, MyTriggerRules, MyRebalancingResult
+export MyBacktestScenario, MyBacktestResult, MyValidationReport
+export MyBanditContext, MyEpsilonGreedyBanditModel, MyBanditResult
+export MySentimentSignal, MyEscalationEvent, MyProductionDayResult, MyProductionContext
+
+# export factory -
+export build
+
+# export compute — Session 1 -
+export solve_minvariance, compute_drawdown, compute_turnover
+
+# export compute — Session 2 -
+export compute_ema, compute_lambda, compute_market_growth, compute_preference_weights
+export allocate_cobb_douglas, allocate_ces, allocate_log_linear
+export evaluate_cobb_douglas, evaluate_ces, evaluate_log_linear
+export allocate_shares, run_rebalancing_engine, compute_wealth_series
+
+# export compute — Session 3 -
+export generate_training_prices, generate_hmm_scenario
+export backtest_engine, backtest_buyhold
+export bandit_world, solve_bandit, compute_regret, backtest_bandit
+
+# export compute — Session 4 -
+export generate_synthetic_sentiment, check_escalation_triggers
+export run_production_simulation, compute_dashboard_metrics
+
+# export files -
+export load_price_data, save_results, load_results
+export save_production_results, load_production_results
+
+# export HMM aliases -
+export hmm_fit, hmm_tune, hmm_simulate, hmm_validate
+
+end # module eCornellAIFinance
