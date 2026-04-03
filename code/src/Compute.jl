@@ -167,6 +167,106 @@ function build_sim_covariance(sim_estimates::Array{MySIMParameterEstimate,1},
 end
 
 """
+    bootstrap_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
+        ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0,
+        n_bootstrap::Int = 1000, seed::Int = -1) -> Dict{String, Any}
+
+Bootstrap the sampling distribution of SIM parameters (α, β) for one asset.
+
+Generates `n_bootstrap` synthetic datasets by resampling residuals from the fitted
+model, re-estimates parameters on each, and returns the empirical distribution.
+
+### Bootstrap Procedure
+For each k = 1, ..., n_bootstrap:
+1. Sample errors: ε⁽ᵏ⁾ ~ N(0, Δt·σ̂²·I)
+2. Create synthetic observations: y⁽ᵏ⁾ = X̂·θ̂ + ε⁽ᵏ⁾
+3. Re-estimate: θ̂⁽ᵏ⁾ = (X̂'X̂ + δI)⁻¹ · X̂' · y⁽ᵏ⁾
+
+### Returns
+Dictionary with keys:
+- `"point_estimate"` — MySIMParameterEstimate from original data
+- `"alpha_samples"` — Vector{Float64} of bootstrap α estimates
+- `"beta_samples"` — Vector{Float64} of bootstrap β estimates
+- `"alpha_mean"`, `"alpha_std"` — bootstrap mean and std of α
+- `"beta_mean"`, `"beta_std"` — bootstrap mean and std of β
+- `"alpha_ci_95"` — (lower, upper) 95% confidence interval for α
+- `"beta_ci_95"` — (lower, upper) 95% confidence interval for β
+- `"theoretical_se"` — [SE(α), SE(β)] from analytical formula
+- `"theoretical_cov"` — 2×2 covariance matrix of (α̂, β̂)
+"""
+function bootstrap_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
+    ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0,
+    n_bootstrap::Int = 1000, seed::Int = -1)::Dict{String,Any}
+
+    if seed > 0
+        Random.seed!(seed);
+    end
+
+    # point estimate -
+    est = estimate_sim(market_returns, asset_returns, ticker; δ=δ, Δt=Δt);
+
+    # setup -
+    T = length(market_returns);
+    p = 2;
+    X = hcat(ones(T), market_returns);
+    θ̂ = [est.α, est.β];
+    ŷ = X * θ̂;
+    residuals = asset_returns .- ŷ;
+
+    # error variance -
+    σ̂² = (1.0 / (Δt * (T - p))) * dot(residuals, residuals);
+
+    # theoretical covariance of θ̂ -
+    XtX_inv = inv(X' * X + δ * I(p));
+    cov_θ = Δt * σ̂² * XtX_inv;
+    se_theoretical = sqrt.(diag(cov_θ));
+
+    # fit residual distribution -
+    residual_σ = sqrt(Δt * σ̂²);
+
+    # bootstrap loop -
+    α_samples = zeros(n_bootstrap);
+    β_samples = zeros(n_bootstrap);
+
+    for k ∈ 1:n_bootstrap
+        # generate synthetic errors -
+        ε_k = residual_σ .* randn(T);
+
+        # create synthetic observations -
+        y_k = ŷ .+ ε_k;
+
+        # re-estimate parameters -
+        θ̂_k = XtX_inv * (X' * y_k);
+        α_samples[k] = θ̂_k[1];
+        β_samples[k] = θ̂_k[2];
+    end
+
+    # compute bootstrap statistics -
+    z = 1.96;  # 95% CI
+    α_mean = mean(α_samples);
+    α_std = std(α_samples);
+    β_mean = mean(β_samples);
+    β_std = std(β_samples);
+
+    results = Dict{String,Any}();
+    results["point_estimate"] = est;
+    results["alpha_samples"] = α_samples;
+    results["beta_samples"] = β_samples;
+    results["alpha_mean"] = α_mean;
+    results["alpha_std"] = α_std;
+    results["beta_mean"] = β_mean;
+    results["beta_std"] = β_std;
+    results["alpha_ci_95"] = (α_mean - z * α_std, α_mean + z * α_std);
+    results["beta_ci_95"] = (β_mean - z * β_std, β_mean + z * β_std);
+    results["theoretical_se"] = se_theoretical;
+    results["theoretical_cov"] = cov_θ;
+    results["n_bootstrap"] = n_bootstrap;
+    results["error_variance"] = σ̂²;
+
+    return results;
+end
+
+"""
     solve_max_sharpe(problem::MySharpeRatioPortfolioChoiceProblem) -> Dict{String, Any}
 
 Solve the maximum Sharpe ratio portfolio problem via Second-Order Cone Programming (COSMO).

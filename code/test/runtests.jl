@@ -221,6 +221,27 @@ const SIM_PARAMS = Dict(
             @test est.r² > 0.0  # still positive
         end
 
+        @testset "bootstrap_sim" begin
+            bs = bootstrap_sim(mkt_ret, asset_ret, "TestAsset";
+                δ=0.0, Δt=Δt_sim, n_bootstrap=500, seed=42);
+
+            @test bs isa Dict
+            @test length(bs["alpha_samples"]) == 500
+            @test length(bs["beta_samples"]) == 500
+
+            # bootstrap mean should be close to point estimate
+            @test isapprox(bs["beta_mean"], bs["point_estimate"].β, rtol=0.05)
+
+            # bootstrap std should be close to theoretical SE
+            @test isapprox(bs["beta_std"], bs["theoretical_se"][2], rtol=0.3)
+
+            # 95% CI should contain the point estimate
+            α_ci = bs["alpha_ci_95"];
+            β_ci = bs["beta_ci_95"];
+            @test α_ci[1] < bs["point_estimate"].α < α_ci[2]
+            @test β_ci[1] < bs["point_estimate"].β < β_ci[2]
+        end
+
         @testset "build_sim_covariance" begin
             # create 3 fake SIM estimates -
             ests = MySIMParameterEstimate[];
