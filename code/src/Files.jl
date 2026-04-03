@@ -28,6 +28,20 @@ Each key is a ticker symbol; each value is a DataFrame with columns:
 """
 MyTestingMarketDataSet() = _jld2(joinpath(_PATH_TO_DATA, "SP500-Daily-OHLC-1-2-2025-to-12-31-2025.jld2"));
 
+"""
+    MyMarketSurrogateModel() -> JumpHiddenMarkovModel
+
+Load the pre-trained JumpHMM market surrogate model fitted on SPY (2014–2024).
+Use `hmm_simulate(model, T; n_paths=N)` to generate synthetic market index paths of any length.
+
+The model captures regime persistence, volatility clustering, and fat tails from 11 years
+of daily S&P 500 data. Per-ticker paths can be generated via the Single Index Model (SIM).
+"""
+function MyMarketSurrogateModel()::JumpHiddenMarkovModel
+    data = _jld2(joinpath(_PATH_TO_DATA, "pretrained-jumphmm-market-surrogate.jld2"));
+    return data["model"];
+end
+
 # --- General File I/O -----------------------------------------------------------
 
 """

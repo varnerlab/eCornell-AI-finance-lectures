@@ -578,6 +578,17 @@ const SIM_PARAMS = Dict(
             @test data isa Dict
             @test haskey(data, "dataset")
         end
+
+        @testset "MyMarketSurrogateModel" begin
+            model = MyMarketSurrogateModel();
+            @test model isa JumpHiddenMarkovModel
+            @test length(model.emissions) > 0
+
+            # generate a short path to verify it works -
+            result = hmm_simulate(model, 50; n_paths=1);
+            @test length(result.paths) == 1
+            @test length(result.paths[1].observations) == 50
+        end
     end
 
 end # top-level testset

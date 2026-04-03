@@ -66,9 +66,10 @@ export run_production_simulation, compute_dashboard_metrics
 # export files -
 export load_price_data, save_results, load_results
 export save_production_results, load_production_results
-export MyTrainingMarketDataSet, MyTestingMarketDataSet
+export MyTrainingMarketDataSet, MyTestingMarketDataSet, MyMarketSurrogateModel
 
-# export HMM aliases -
+# export HMM aliases and types -
 export hmm_fit, hmm_tune, hmm_simulate, hmm_validate
+export JumpHiddenMarkovModel
 
 end # module eCornellAIFinance
