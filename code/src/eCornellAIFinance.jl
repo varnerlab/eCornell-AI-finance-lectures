@@ -14,6 +14,10 @@ using Random
 using Statistics
 using StatsBase
 
+# setup paths -
+const _PATH_TO_SRC = dirname(@__FILE__);
+const _PATH_TO_DATA = joinpath(_PATH_TO_SRC, "data");
+
 # setup aliases for JumpHMM name collisions -
 const hmm_fit = JumpHMM.fit;
 const hmm_tune = JumpHMM.tune;
@@ -58,6 +62,7 @@ export run_production_simulation, compute_dashboard_metrics
 # export files -
 export load_price_data, save_results, load_results
 export save_production_results, load_production_results
+export MyTrainingMarketDataSet, MyTestingMarketDataSet
 
 # export HMM aliases -
 export hmm_fit, hmm_tune, hmm_simulate, hmm_validate
