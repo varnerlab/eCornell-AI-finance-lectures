@@ -67,7 +67,7 @@ export run_production_simulation, compute_dashboard_metrics
 export load_price_data, save_results, load_results
 export save_production_results, load_production_results
 export MyTrainingMarketDataSet, MyTestingMarketDataSet
-export MyMarketSurrogateModel, MyPortfolioSurrogateModel
+export MyMarketSurrogateModel, MyPortfolioSurrogateModel, MySyntheticTrainingDataSet
 
 # export HMM aliases and types -
 export hmm_fit, hmm_tune, hmm_simulate, hmm_validate

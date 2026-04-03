@@ -57,6 +57,27 @@ Dictionary with keys:
 """
 MyPortfolioSurrogateModel() = _jld2(joinpath(_PATH_TO_DATA, "pretrained-portfolio-surrogate.jld2"));
 
+"""
+    MySyntheticTrainingDataSet() -> Dict{String, Any}
+
+Load the frozen 20-year synthetic training dataset. Generated from the pre-trained
+JumpHMM portfolio surrogate with a curated market path (realistic CAGR, multiple
+drawdowns, jump clusters). Use this for SIM parameter estimation, covariance
+computation, and baseline analysis across all sessions.
+
+### Returns
+Dictionary with keys:
+- `"dataset"` — Dict{String, DataFrame} with 424 tickers + "MARKET" index, each with `timestamp` and `close` columns
+- `"tickers"` — sorted vector of ticker symbols (excludes "MARKET")
+- `"market_ticker"` — "MARKET"
+- `"market_prices"` — market index price series
+- `"market_returns"` — market excess growth rates
+- `"market_jumps"` — Bool vector of jump indicators
+- `"selected_candidate"` — Dict with CAGR, drawdown counts, kurtosis of the selected path
+- `"n_days"`, `"n_years"` — 5040 days, 20 years
+"""
+MySyntheticTrainingDataSet() = _jld2(joinpath(_PATH_TO_DATA, "synthetic-training-dataset.jld2"));
+
 # --- General File I/O -----------------------------------------------------------
 
 """
