@@ -14,6 +14,12 @@ using eCornellAIFinance
 
 # load session-specific external packages -
 using Colors
+using DataFrames
+using Distributions
+using HypothesisTests
+using LinearAlgebra
 using Plots
 using PrettyTables
+using Statistics
+using StatsBase
 using StatsPlots
