@@ -42,6 +42,21 @@ function MyMarketSurrogateModel()::JumpHiddenMarkovModel
     return data["model"];
 end
 
+"""
+    MyPortfolioSurrogateModel() -> Dict{String, Any}
+
+Load the pre-trained portfolio surrogate: marginal JumpHMM models for ~424 S&P 500 tickers
+plus a Student-t copula for cross-asset dependence. Both fitted on daily data from 2014–2024.
+
+### Returns
+Dictionary with keys:
+- `"tickers"` — sorted vector of ticker symbols
+- `"marginals"` — Dict{String, JumpHiddenMarkovModel} of per-ticker models
+- `"copula"` — StudentTCopula with fitted correlation matrix and ν
+- `"n_tickers"` — number of fitted tickers
+"""
+MyPortfolioSurrogateModel() = _jld2(joinpath(_PATH_TO_DATA, "pretrained-portfolio-surrogate.jld2"));
+
 # --- General File I/O -----------------------------------------------------------
 
 """
