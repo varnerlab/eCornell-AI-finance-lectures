@@ -12,6 +12,14 @@ makedocs(
         "Session 4: Production Operations" => "session4.md",
     ],
     format = Documenter.HTML(
-        prettyurls = false,
+        # Pretty URLs only in CI. Locally the build lands next to the source
+        # so developers can open build/session1.html directly in a browser.
+        prettyurls = get(ENV, "CI", nothing) == "true",
     ),
+)
+
+deploydocs(
+    repo = "github.com/varnerlab/eCornell-AI-finance-lectures.git",
+    devbranch = "main",
+    push_preview = false,
 )

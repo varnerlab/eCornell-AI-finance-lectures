@@ -15,3 +15,5 @@ Manifest.toml
 deps/
 docs/build/
 docs/site/
+code/docs/build/
+code/docs/site/
