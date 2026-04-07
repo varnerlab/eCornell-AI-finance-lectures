@@ -78,6 +78,28 @@ Dictionary with keys:
 """
 MySyntheticTrainingDataSet() = _jld2(joinpath(_PATH_TO_DATA, "synthetic-training-dataset.jld2"));
 
+"""
+    MySIMCalibration() -> Dict{String, Any}
+
+Load the frozen SIM calibration table produced by
+`code/scripts/calibrate-sim-from-real-data.jl`. Each ticker's α and β are
+estimated by regressing its real VWAP growth rates on SPY's VWAP growth rates
+over the full 2014-01-03 → 2024-12-31 window.
+
+### Returns
+Dictionary with keys:
+- `"tickers"` — vector of ticker symbols (full-coverage subset of the OHLC file)
+- `"alpha"` — vector of Jensen's alphas (annualized growth rate units)
+- `"beta"` — vector of market betas (dimensionless)
+- `"sigma_eps"` — vector of residual volatilities (annualized)
+- `"r_squared"` — vector of regression R² values
+- `"sigma_market"` — std of SPY growth rates over the window
+- `"n_obs"` — number of daily growth-rate observations used
+- `"window_start"`, `"window_end"` — calibration window endpoints
+- `"market_ticker"` — "SPY"
+"""
+MySIMCalibration() = _jld2(joinpath(_PATH_TO_DATA, "sim-calibration.jld2"));
+
 # --- General File I/O -----------------------------------------------------------
 
 """
