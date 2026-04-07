@@ -59,6 +59,7 @@ MyMarketSurrogateModel
 MyPortfolioSurrogateModel
 MySyntheticTrainingDataSet
 MySIMCalibration
+MyCurrentPrices
 ```
 
 ## File I/O

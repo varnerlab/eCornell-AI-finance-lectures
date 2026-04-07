@@ -100,6 +100,28 @@ Dictionary with keys:
 """
 MySIMCalibration() = _jld2(joinpath(_PATH_TO_DATA, "sim-calibration.jld2"));
 
+"""
+    MyCurrentPrices() -> Dict{String, Any}
+
+Load the cached "current prices" snapshot used by buy-and-hold simulations
+in Sessions 1, 2, and 3. Each ticker's price is the last available real
+daily close from `MyTestingMarketDataSet()`, with `MyTrainingMarketDataSet()`
+as the fallback for any tickers missing from the testing window. The snapshot
+is built by `code/scripts/fetch-current-prices.jl`; re-run that script
+whenever you want to refresh the cache.
+
+### Returns
+Dictionary with keys:
+- `"tickers"` — vector of ticker symbols (matches the SIM calibration universe)
+- `"prices"` — vector of last daily closes (USD)
+- `"sources"` — vector of `"testing"` / `"training_fallback"` / `"missing"` per ticker
+- `"last_dates"` — vector of ISO date strings for the day each price came from
+- `"fetched_at"` — datetime when the cache was built
+- `"source_label"` — human-readable description of the source
+- `"n_testing"`, `"n_fallback"`, `"n_missing"` — resolution counts
+"""
+MyCurrentPrices() = _jld2(joinpath(_PATH_TO_DATA, "current-prices.jld2"));
+
 # --- General File I/O -----------------------------------------------------------
 
 """
