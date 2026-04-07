@@ -950,6 +950,226 @@ function generate_hmm_scenario(model::JumpHiddenMarkovModel, tickers::Array{Stri
     ));
 end
 
+"""
+    generate_hybrid_scenario(market_model::JumpHiddenMarkovModel,
+        portfolio_surrogate::Dict{String,Any},
+        sim_calibration::Dict{String,Any},
+        my_tickers::Vector{String};
+        n_paths::Int = 500, n_steps::Int = 252, Δt::Float64 = 1.0/252.0,
+        P₀_market::Float64 = 100.0,
+        start_prices::Union{Nothing,Dict{String,Float64}} = nothing,
+        r2_preserve_threshold::Float64 = 0.80,
+        label::String = "Hybrid-SIM",
+        seed::Union{Nothing,Int} = nothing) -> MyBacktestScenario
+
+Generate a forward Monte Carlo scenario for a user-specified subset of tickers
+via the hybrid Single Index Model construction used throughout the course. For
+each of `n_paths` paths this function (1) simulates a market growth-rate path
+from the JumpHMM market surrogate, (2) draws each ticker's idiosyncratic path
+from its per-ticker HMM marginal, (3) scales the idiosyncratic series using
+either the R²-preserving branch (for tickers with real-data `r² ≥ r2_preserve_threshold`)
+or the marginal-preserving variance correction, (4) copula rank-reorders the
+scaled innovations using the portfolio surrogate's Student-t copula, and
+(5) composes SIM growth rates `g_i = α_i + β_i · g_m + ε_i` to build price
+series seeded at `start_prices` (default `\$100` each).
+
+All inputs and outputs are in annualized growth-rate units (1/year). The
+market variance `σ²_m_synth = sim_calibration["sigma_market"]^2` is used
+throughout, matching the variance `build_sim_covariance` assembles, so the QP
+covariance and the forward simulator share the same market volatility
+scaffolding.
+
+### Arguments
+- `market_model` — pre-trained JumpHMM on the market index (e.g. SPY)
+- `portfolio_surrogate` — Dict from `MyPortfolioSurrogateModel()` with keys
+  `"tickers"` (ordered universe for copula column indexing), `"marginals"`
+  (per-ticker HMM models), `"copula"` (Student-t copula)
+- `sim_calibration` — Dict from `MySIMCalibration()` with keys `"tickers"`,
+  `"alpha"`, `"beta"`, `"sigma_eps"`, `"r_squared"`, `"sigma_market"`
+- `my_tickers` — subset of tickers to simulate; every entry must exist in
+  both `sim_calibration["tickers"]` and `portfolio_surrogate["marginals"]`
+- `n_paths` — number of Monte Carlo paths (default 500)
+- `n_steps` — horizon in trading days (default 252 = 1 year)
+- `Δt` — time step in years (default 1/252)
+- `P₀_market` — market index starting price (default 100.0)
+- `start_prices` — per-ticker starting prices; if `nothing`, all tickers start
+  at `\$100`
+- `r2_preserve_threshold` — R² cutoff for the R²-preserving branch
+  (default 0.80 — captures SPY, QQQ, SPYG in the S&P 500 universe)
+- `label` — scenario label stored in the returned `MyBacktestScenario`
+- `seed` — if supplied, calls `Random.seed!(seed)` before the batched
+  `hmm_simulate` for reproducibility (side effect on the global RNG)
+
+### Returns
+- `MyBacktestScenario` with `price_paths` of shape `(n_paths, n_steps, K)`
+  and `market_paths` of shape `(n_paths, n_steps)`.
+
+### Notes
+- **Copula column indexing:** the Student-t copula is fitted on the full
+  surrogate universe, so samples must be indexed by each ticker's position in
+  `portfolio_surrogate["tickers"]`, not by its position in `my_tickers`.
+- **Index-ETF corner case:** tickers with `r² ≈ 1` (e.g. SPY) land in the
+  R²-preserving branch with `σ²_ε_target = 0`, which makes the composition
+  deterministic: `g = α + β·g_m`. This is the intended behavior — SPY tracks
+  itself by definition.
+- **Missing tickers** throw `ArgumentError` listing the offenders; there is
+  no silent fallback to `α = 0, β = 1`.
+"""
+function generate_hybrid_scenario(market_model::JumpHiddenMarkovModel,
+    portfolio_surrogate::Dict{String,Any},
+    sim_calibration::Dict{String,Any},
+    my_tickers::Vector{String};
+    n_paths::Int = 500, n_steps::Int = 252, Δt::Float64 = 1.0/252.0,
+    P₀_market::Float64 = 100.0,
+    start_prices::Union{Nothing,Dict{String,Float64}} = nothing,
+    r2_preserve_threshold::Float64 = 0.80,
+    label::String = "Hybrid-SIM",
+    seed::Union{Nothing,Int} = nothing)::MyBacktestScenario
+
+    # --- Preflight: unpack calibration into a lookup ---
+    calib_tickers = sim_calibration["tickers"]::Vector{String};
+    calib_alpha   = sim_calibration["alpha"]::Vector{Float64};
+    calib_beta    = sim_calibration["beta"]::Vector{Float64};
+    calib_r2      = sim_calibration["r_squared"]::Vector{Float64};
+    calib_lookup = Dict{String, NamedTuple{(:α, :β, :r²), Tuple{Float64,Float64,Float64}}}();
+    for (i, t) ∈ enumerate(calib_tickers)
+        calib_lookup[t] = (α = calib_alpha[i], β = calib_beta[i], r² = calib_r2[i]);
+    end
+
+    marginals = portfolio_surrogate["marginals"];
+    copula    = portfolio_surrogate["copula"];
+    surrogate_tickers = portfolio_surrogate["tickers"]::Vector{String};
+    col_idx = Dict{String, Int}();
+    for (i, t) ∈ enumerate(surrogate_tickers)
+        col_idx[t] = i;
+    end
+
+    # --- Validate: every user ticker must be in both lookups ---
+    missing_calib = String[];
+    missing_marg  = String[];
+    for t ∈ my_tickers
+        haskey(calib_lookup, t) || push!(missing_calib, t);
+        haskey(marginals,    t) || push!(missing_marg,  t);
+    end
+    if !isempty(missing_calib) || !isempty(missing_marg)
+        msg = "generate_hybrid_scenario: missing tickers";
+        if !isempty(missing_calib)
+            msg *= "\n  not in sim_calibration: $(missing_calib)";
+        end
+        if !isempty(missing_marg)
+            msg *= "\n  not in portfolio_surrogate[\"marginals\"]: $(missing_marg)";
+        end
+        msg *= "\n  source of truth: MySIMCalibration()[\"tickers\"]";
+        throw(ArgumentError(msg));
+    end
+
+    # --- Shared scale ---
+    σ²_m_synth = (sim_calibration["sigma_market"]::Float64)^2;
+
+    # --- Per-ticker starting prices ---
+    K = length(my_tickers);
+    p0 = Float64[
+        (start_prices === nothing) ? 100.0 : get(start_prices, t, 100.0)
+        for t ∈ my_tickers
+    ];
+
+    # --- Reproducibility: seed the RNG before the batched market simulation ---
+    if seed !== nothing
+        Random.seed!(seed);
+    end
+
+    # --- Batched market simulation ---
+    sim_result = hmm_simulate(market_model, n_steps; n_paths = n_paths);
+
+    # --- Output tensors ---
+    market_paths = zeros(n_paths, n_steps);
+    price_paths  = zeros(n_paths, n_steps, K);
+
+    for p ∈ 1:n_paths
+
+        # full observations length n_steps; drop index 1 so G_market aligns
+        # with the one-period price recursion (same convention as the hybrid
+        # generator script).
+        G_full = Float64.(sim_result.paths[p].observations);
+        G_market = G_full[2:end];                          # length n_steps - 1
+        T_eff = length(G_market);
+
+        # build market price path seeded at P₀_market
+        mkt = zeros(n_steps);
+        mkt[1] = P₀_market;
+        for t ∈ 1:T_eff
+            mkt[t+1] = mkt[t] * exp(G_market[t] * Δt);
+        end
+        market_paths[p, :] = mkt;
+
+        # copula uniforms for this path — one draw of length n_steps, columns
+        # indexed by the full surrogate universe
+        U = JumpHMM.sample_dependence(copula, n_steps);
+
+        for (k, ticker) ∈ enumerate(my_tickers)
+
+            # draw the ticker's HMM marginal path and trim
+            r_j = hmm_simulate(marginals[ticker], n_steps; n_paths = 1);
+            obs_full = Float64.(r_j.paths[1].observations);
+            obs_j = obs_full[2:end];                        # length T_eff
+            σ²_HMM = var(obs_j);
+
+            # pull α, β, R² for this ticker
+            c = calib_lookup[ticker];
+            α_i     = c.α;
+            β_i_raw = c.β;
+            r²_real = c.r²;
+
+            # choose construction branch
+            β_i = β_i_raw;
+            if r²_real >= r2_preserve_threshold
+                # R²-PRESERVING BRANCH: scale ε so synthetic R² = real R² exactly
+                if r²_real >= 1.0 - 1e-12
+                    σ²_ε_target = 0.0;
+                else
+                    σ²_ε_target = β_i_raw^2 * σ²_m_synth * (1.0 - r²_real) / r²_real;
+                end
+                ε_scaled = (σ²_HMM > 0.0 && σ²_ε_target > 0.0) ?
+                           sqrt(σ²_ε_target / σ²_HMM) .* obs_j :
+                           zeros(T_eff);
+            else
+                # MARGINAL-PRESERVING BRANCH: preserve σ²_HMM with 10% floor
+                ratio = β_i_raw^2 * σ²_m_synth / σ²_HMM;
+                if ratio > 0.90
+                    β_i = sign(β_i_raw) * sqrt(0.90 * σ²_HMM / σ²_m_synth);
+                    s² = 0.10;
+                else
+                    s² = 1.0 - ratio;
+                end
+                ε_scaled = sqrt(s²) .* obs_j;
+            end
+
+            # copula rank-reorder the scaled ε (index copula column by ticker's
+            # position in the full surrogate universe, not in my_tickers)
+            sorted_eps   = sort(ε_scaled);
+            copula_ranks = ordinalrank(U[2:end, col_idx[ticker]]);
+            ε_reordered  = sorted_eps[copula_ranks];
+
+            # compose SIM growth rates
+            g_i = α_i .+ β_i .* G_market .+ ε_reordered;    # length T_eff
+
+            # convert to prices
+            price_paths[p, 1, k] = p0[k];
+            for t ∈ 1:T_eff
+                price_paths[p, t+1, k] = price_paths[p, t, k] * exp(g_i[t] * Δt);
+            end
+        end
+    end
+
+    return build(MyBacktestScenario, (
+        label = label,
+        price_paths = price_paths,
+        market_paths = market_paths,
+        n_paths = n_paths,
+        n_steps = n_steps
+    ));
+end
+
 # --- Session 3: Backtesting Functions -------------------------------------------
 
 """
@@ -1038,17 +1258,28 @@ end
 
 """
     backtest_buyhold(scenario::MyBacktestScenario, tickers;
-        B₀, offset) -> MyBacktestResult
+        B₀, offset, weights) -> MyBacktestResult
 
-Run an equal-weight buy-and-hold strategy across all paths.
+Run a buy-and-hold strategy across all paths in the scenario. If `weights` is
+`nothing` (the default) each asset receives an equal 1/K share of the initial
+budget `B₀` — backward-compatible with earlier callers. Otherwise `weights`
+must be a vector of length `K` summing to one; each asset then receives
+`weights[k] · B₀` of the initial budget and the position is held without
+rebalancing until the end of the scenario.
 """
 function backtest_buyhold(scenario::MyBacktestScenario, tickers::Array{String,1};
-    B₀::Float64 = 10000.0, offset::Int = 84)::MyBacktestResult
+    B₀::Float64 = 10000.0, offset::Int = 84,
+    weights::Union{Nothing,Vector{Float64}} = nothing)::MyBacktestResult
 
     n_paths = scenario.n_paths;
     n_steps = scenario.n_steps;
     K = length(tickers);
     n_trading = n_steps - offset;
+
+    # resolve and validate the weight vector once, outside the path loop
+    w = weights === nothing ? fill(1.0/K, K) : weights;
+    @assert length(w) == K "weights length ($(length(w))) must equal number of tickers ($(K))"
+    @assert isapprox(sum(w), 1.0; atol=1e-6) "weights must sum to 1 (got $(sum(w)))"
 
     final_wealth = zeros(n_paths);
     max_drawdowns = zeros(n_paths);
@@ -1056,9 +1287,8 @@ function backtest_buyhold(scenario::MyBacktestScenario, tickers::Array{String,1}
 
     for p in 1:n_paths
 
-        # equal-weight buy at offset -
-        budget_per = B₀ / K;
-        shares = [budget_per / scenario.price_paths[p, offset, k] for k in 1:K];
+        # buy at offset with the (possibly custom) weight vector -
+        shares = [(B₀ * w[k]) / scenario.price_paths[p, offset, k] for k in 1:K];
 
         wealth = zeros(n_trading + 1);
         for d in 0:n_trading

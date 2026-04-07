@@ -55,7 +55,7 @@ export evaluate_cobb_douglas, evaluate_ces, evaluate_log_linear
 export allocate_shares, run_rebalancing_engine, compute_wealth_series
 
 # export compute — Session 3 -
-export generate_training_prices, generate_hmm_scenario
+export generate_training_prices, generate_hmm_scenario, generate_hybrid_scenario
 export backtest_engine, backtest_buyhold
 export bandit_world, solve_bandit, compute_regret, backtest_bandit
 

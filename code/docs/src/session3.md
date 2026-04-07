@@ -34,6 +34,7 @@ build(::Type{MyEpsilonGreedyBanditModel}, ::NamedTuple)
 ```@docs
 generate_training_prices
 generate_hmm_scenario
+generate_hybrid_scenario
 ```
 
 ## Backtesting

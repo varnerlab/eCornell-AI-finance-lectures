@@ -504,6 +504,77 @@ const SIM_PARAMS = Dict(
             @test sum(result.best_action) >= 1  # at least one asset selected
             @test length(result.reward_history) == 50
         end
+
+        @testset "generate_hybrid_scenario" begin
+            market_model = MyMarketSurrogateModel();
+            portfolio    = MyPortfolioSurrogateModel();
+            calib        = MySIMCalibration();
+
+            calib_tickers = calib["tickers"];
+            calib_r2      = calib["r_squared"];
+            high_idx      = findfirst(==(1.0), calib_r2);
+            high_ticker   = high_idx === nothing ?
+                            calib_tickers[argmax(calib_r2)] : calib_tickers[high_idx];
+            norm_ticker   = calib_tickers[findfirst(r -> 0.3 < r < 0.6, calib_r2)];
+            test_tickers  = String[high_ticker, norm_ticker];
+
+            scen = generate_hybrid_scenario(market_model, portfolio, calib, test_tickers;
+                n_paths=50, n_steps=252, seed=1234, label="test");
+
+            @test scen isa MyBacktestScenario
+            @test size(scen.price_paths) == (50, 252, 2)
+            @test size(scen.market_paths) == (50, 252)
+            @test scen.n_paths == 50 && scen.n_steps == 252
+            @test scen.label == "test"
+            @test all(scen.price_paths .> 0.0)
+
+            # β recovery on the moderate-R² ticker, averaged across paths
+            Δt = 1.0/252.0;
+            β_calib = calib["beta"][findfirst(==(norm_ticker), calib_tickers)];
+            β_hats = Float64[];
+            for p in 1:50
+                mkt = scen.market_paths[p, :];
+                tkr = scen.price_paths[p, :, 2];
+                gm  = (1.0/Δt) .* log.(mkt[2:end] ./ mkt[1:end-1]);
+                gt  = (1.0/Δt) .* log.(tkr[2:end] ./ tkr[1:end-1]);
+                X   = hcat(ones(length(gm)), gm);
+                θ̂   = (X' * X) \ (X' * gt);
+                push!(β_hats, θ̂[2]);
+            end
+            @test isapprox(mean(β_hats), β_calib; atol=0.30)
+
+            @test_throws ArgumentError generate_hybrid_scenario(
+                market_model, portfolio, calib, String["__NOT_A_TICKER__"];
+                n_paths=2, n_steps=5)
+        end
+
+        @testset "backtest_buyhold — custom weights" begin
+            market_model = MyMarketSurrogateModel();
+            portfolio    = MyPortfolioSurrogateModel();
+            calib        = MySIMCalibration();
+            calib_r2     = calib["r_squared"];
+            norm_ticker  = calib["tickers"][findfirst(r -> 0.3 < r < 0.6, calib_r2)];
+            tk           = ["SPY", norm_ticker];
+
+            scen = generate_hybrid_scenario(market_model, portfolio, calib, tk;
+                n_paths=20, n_steps=100, seed=4321);
+
+            # default equal-weight must match explicit equal-weight
+            r_default = backtest_buyhold(scen, tk; B₀=10_000.0, offset=1);
+            r_eq      = backtest_buyhold(scen, tk; B₀=10_000.0, offset=1, weights=[0.5, 0.5]);
+            @test isapprox(r_default.final_wealth, r_eq.final_wealth; atol=1e-10)
+
+            # asymmetric weights should produce a different trajectory
+            r_skew = backtest_buyhold(scen, tk; B₀=10_000.0, offset=1, weights=[0.9, 0.1]);
+            @test !isapprox(r_default.final_wealth, r_skew.final_wealth; atol=1e-4)
+
+            # non-sum-to-one rejected
+            @test_throws AssertionError backtest_buyhold(scen, tk;
+                B₀=10_000.0, offset=1, weights=[0.4, 0.4])
+            # wrong length rejected
+            @test_throws AssertionError backtest_buyhold(scen, tk;
+                B₀=10_000.0, offset=1, weights=[1.0])
+        end
     end
 
     # ===================================================================
