@@ -20,6 +20,7 @@ using HypothesisTests
 using LinearAlgebra
 using Plots
 using PrettyTables
+using Random
 using Statistics
 using StatsBase
 using StatsPlots
