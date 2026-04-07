@@ -61,7 +61,7 @@ We estimate the Single Index Model parameters $(\alpha_i, \beta_i, \sigma_{\vare
 add_code(raw"""# estimate SIM parameters for each ticker -
 sim_estimates = MySIMParameterEstimate[];
 for ticker ∈ my_tickers
-    est = estimate_sim(market_returns, ticker_returns[ticker], ticker; δ=0.0, Δt=Δt);
+    est = estimate_sim(market_returns, ticker_returns[ticker], ticker; δ=0.0);
     push!(sim_estimates, est);
 end
 
@@ -84,7 +84,7 @@ add_md(raw"""**Bootstrap Deep Dive:** Let's run the full bootstrap for one ticke
 
 add_code(raw"""# bootstrap NVDA -
 bs_nvda = bootstrap_sim(market_returns, ticker_returns["NVDA"], "NVDA";
-    δ=0.0, Δt=Δt, n_bootstrap=1000, seed=42);
+    δ=0.0, n_bootstrap=1000, seed=42);
 
 est_nvda = bs_nvda["point_estimate"];
 println("NVDA Bootstrap Results (1,000 replicates):")
@@ -121,7 +121,7 @@ add_code(raw"""# bootstrap all tickers -
 bootstrap_results = Dict{String, Dict{String,Any}}();
 for ticker ∈ my_tickers
     bootstrap_results[ticker] = bootstrap_sim(market_returns, ticker_returns[ticker], ticker;
-        δ=0.0, Δt=Δt, n_bootstrap=1000, seed=42);
+        δ=0.0, n_bootstrap=1000, seed=42);
 end
 
 # build comparison table -
@@ -175,7 +175,7 @@ add_code(raw"""# compute market volatility -
 println("Market volatility (annualized): $(round(σ_m * sqrt(252) * 100, digits=1))%")
 
 # build SIM covariance -
-Σ_sim = build_sim_covariance(sim_estimates, σ_m; Δt=Δt);
+Σ_sim = build_sim_covariance(sim_estimates, σ_m);
 
 # build sample covariance -
 R_matrix = hcat([ticker_returns[t] for t ∈ my_tickers]...);

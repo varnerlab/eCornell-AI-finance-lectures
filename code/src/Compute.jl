@@ -73,26 +73,28 @@ end
 
 """
     estimate_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
-        ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0) -> MySIMParameterEstimate
+        ticker::String; δ::Float64 = 0.0) -> MySIMParameterEstimate
 
 Estimate Single Index Model parameters (α, β, σ_ε) for one asset via regularized OLS regression.
 
     gᵢ(t) = αᵢ + βᵢ · gₘ(t) + εᵢ(t)
 
-The closed-form solution is: θ̂ = (X'X + δI)⁻¹ X'y where X = [1 gₘ] and y = gᵢ.
+Inputs are **annualized growth rates** (per year); the course convention throughout
+is `g(t) = (1/Δt)·log(p_t/p_{t-1})` with `Δt = 1/252`. The closed-form solution
+is `θ̂ = (X'X + δI)⁻¹ X'y` where `X = [1 gₘ]` and `y = gᵢ`.
 
 ### Arguments
-- `market_returns` — market index log growth rates (T × 1)
-- `asset_returns` — asset log growth rates (T × 1), same length as market_returns
+- `market_returns` — market index annualized growth rates (T × 1), units: 1/year
+- `asset_returns` — asset annualized growth rates (T × 1), same length as `market_returns`, units: 1/year
 - `ticker` — asset ticker name
-- `δ` — regularization parameter (0 = OLS, >0 = ridge regression)
-- `Δt` — time step in years (for annualizing σ_ε)
+- `δ` — ridge regularization parameter (0 = plain OLS, >0 = ridge regression)
 
 ### Returns
-- `MySIMParameterEstimate` with fields: ticker, α, β, σ_ε, r²
+- `MySIMParameterEstimate` with fields `ticker`, `α` (1/year), `β` (dimensionless),
+  `σ_ε` (sample std of annualized growth-rate residuals, 1/year), and `r²`.
 """
 function estimate_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
-    ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0)::MySIMParameterEstimate
+    ticker::String; δ::Float64 = 0.0)::MySIMParameterEstimate
 
     # setup design matrix: X = [1 gₘ] -
     T = length(market_returns);
@@ -106,9 +108,11 @@ function estimate_sim(market_returns::Array{Float64,1}, asset_returns::Array{Flo
     β_hat = θ̂[2];
 
     # residuals and error variance -
+    # σ_ε is the sample std of the residuals in annualized growth-rate units (1/year).
+    # No extra 1/Δt factor: y is already annualized, so residuals are too.
     ŷ = X * θ̂;
     residuals = y .- ŷ;
-    σ_ε = sqrt((1.0 / (Δt * (T - p))) * dot(residuals, residuals));
+    σ_ε = sqrt(dot(residuals, residuals) / (T - p));
 
     # R-squared -
     SS_res = dot(residuals, residuals);
@@ -128,23 +132,27 @@ end
 
 """
     build_sim_covariance(sim_estimates::Array{MySIMParameterEstimate,1},
-        σ_m::Float64; Δt::Float64 = 1.0/252.0) -> Array{Float64,2}
+        σ_m::Float64) -> Array{Float64,2}
 
-Construct the SIM-derived covariance matrix from estimated parameters.
+Construct the SIM-derived covariance matrix of annualized growth rates from
+estimated parameters.
 
     Σᵢⱼ = βᵢ βⱼ σₘ²                      (off-diagonal)
-    Σᵢᵢ = βᵢ² σₘ² + Δt σ²_εᵢ             (diagonal)
+    Σᵢᵢ = βᵢ² σₘ² + σ²_εᵢ                (diagonal)
+
+All variances and the resulting matrix are in units of (1/year)², matching the
+convention used by `estimate_sim` (inputs and outputs are annualized growth
+rates, per year).
 
 ### Arguments
 - `sim_estimates` — array of SIM parameter estimates (one per asset)
-- `σ_m` — market return standard deviation
-- `Δt` — time step in years
+- `σ_m` — market annualized growth-rate standard deviation (1/year)
 
 ### Returns
-- `Σ` — N × N covariance matrix (symmetric, positive definite)
+- `Σ` — N × N covariance matrix of annualized growth rates (symmetric, positive definite)
 """
 function build_sim_covariance(sim_estimates::Array{MySIMParameterEstimate,1},
-    σ_m::Float64; Δt::Float64 = 1.0/252.0)::Array{Float64,2}
+    σ_m::Float64)::Array{Float64,2}
 
     N = length(sim_estimates);
     Σ = zeros(N, N);
@@ -156,7 +164,7 @@ function build_sim_covariance(sim_estimates::Array{MySIMParameterEstimate,1},
         for j ∈ 1:N
             βⱼ = sim_estimates[j].β;
             if i == j
-                Σ[i, j] = βᵢ^2 * σ_m² + Δt * σ_εᵢ^2;
+                Σ[i, j] = βᵢ^2 * σ_m² + σ_εᵢ^2;
             else
                 Σ[i, j] = βᵢ * βⱼ * σ_m²;
             end
@@ -168,17 +176,18 @@ end
 
 """
     bootstrap_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
-        ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0,
+        ticker::String; δ::Float64 = 0.0,
         n_bootstrap::Int = 1000, seed::Int = -1) -> Dict{String, Any}
 
 Bootstrap the sampling distribution of SIM parameters (α, β) for one asset.
+Inputs are annualized growth rates (1/year), matching `estimate_sim`.
 
 Generates `n_bootstrap` synthetic datasets by resampling residuals from the fitted
 model, re-estimates parameters on each, and returns the empirical distribution.
 
 ### Bootstrap Procedure
 For each k = 1, ..., n_bootstrap:
-1. Sample errors: ε⁽ᵏ⁾ ~ N(0, Δt·σ̂²·I)
+1. Sample errors: ε⁽ᵏ⁾ ~ N(0, σ̂²·I) where σ̂² is the sample variance of the residuals
 2. Create synthetic observations: y⁽ᵏ⁾ = X̂·θ̂ + ε⁽ᵏ⁾
 3. Re-estimate: θ̂⁽ᵏ⁾ = (X̂'X̂ + δI)⁻¹ · X̂' · y⁽ᵏ⁾
 
@@ -191,11 +200,12 @@ Dictionary with keys:
 - `"beta_mean"`, `"beta_std"` — bootstrap mean and std of β
 - `"alpha_ci_95"` — (lower, upper) 95% confidence interval for α
 - `"beta_ci_95"` — (lower, upper) 95% confidence interval for β
-- `"theoretical_se"` — [SE(α), SE(β)] from analytical formula
+- `"theoretical_se"` — [SE(α), SE(β)] from analytical OLS formula
 - `"theoretical_cov"` — 2×2 covariance matrix of (α̂, β̂)
+- `"error_variance"` — sample variance of annualized growth-rate residuals (1/year²)
 """
 function bootstrap_sim(market_returns::Array{Float64,1}, asset_returns::Array{Float64,1},
-    ticker::String; δ::Float64 = 0.0, Δt::Float64 = 1.0/252.0,
+    ticker::String; δ::Float64 = 0.0,
     n_bootstrap::Int = 1000, seed::Int = -1)::Dict{String,Any}
 
     if seed > 0
@@ -203,7 +213,7 @@ function bootstrap_sim(market_returns::Array{Float64,1}, asset_returns::Array{Fl
     end
 
     # point estimate -
-    est = estimate_sim(market_returns, asset_returns, ticker; δ=δ, Δt=Δt);
+    est = estimate_sim(market_returns, asset_returns, ticker; δ=δ);
 
     # setup -
     T = length(market_returns);
@@ -213,16 +223,16 @@ function bootstrap_sim(market_returns::Array{Float64,1}, asset_returns::Array{Fl
     ŷ = X * θ̂;
     residuals = asset_returns .- ŷ;
 
-    # error variance -
-    σ̂² = (1.0 / (Δt * (T - p))) * dot(residuals, residuals);
+    # error variance (sample variance of the residuals in annualized units) -
+    σ̂² = dot(residuals, residuals) / (T - p);
 
-    # theoretical covariance of θ̂ -
+    # theoretical OLS covariance of θ̂ -
     XtX_inv = inv(X' * X + δ * I(p));
-    cov_θ = Δt * σ̂² * XtX_inv;
+    cov_θ = σ̂² * XtX_inv;
     se_theoretical = sqrt.(diag(cov_θ));
 
-    # fit residual distribution -
-    residual_σ = sqrt(Δt * σ̂²);
+    # residual std used to draw bootstrap innovations -
+    residual_σ = sqrt(σ̂²);
 
     # bootstrap loop -
     α_samples = zeros(n_bootstrap);

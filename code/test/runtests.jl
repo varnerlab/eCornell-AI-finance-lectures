@@ -194,36 +194,36 @@ const SIM_PARAMS = Dict(
     @testset "Compute — Session 1 (SIM & Sharpe)" begin
 
         # generate synthetic data for SIM tests -
+        # Inputs are annualized growth rates (per the course's growth-rate convention).
         Random.seed!(99);
         T_sim = 504;
-        Δt_sim = 1.0 / 252.0;
-        true_α = 0.0002;
-        true_β = 1.10;
-        true_σ_ε = 0.010;
+        true_α = 0.05;      # 5% per year (annualized growth rate units)
+        true_β = 1.10;      # dimensionless
+        true_σ_ε = 2.5;     # annualized growth rate std (per year)
 
-        # synthetic market returns -
-        mkt_ret = randn(T_sim) .* 0.01;
-        # synthetic asset returns via SIM: gᵢ = α + β·gₘ + ε -
-        asset_ret = true_α .+ true_β .* mkt_ret .+ true_σ_ε .* sqrt(Δt_sim) .* randn(T_sim);
+        # synthetic market annualized growth rates (std ≈ 3.0 per year) -
+        mkt_ret = randn(T_sim) .* 3.0;
+        # synthetic asset annualized growth rates via SIM: gᵢ = α + β·gₘ + ε -
+        asset_ret = true_α .+ true_β .* mkt_ret .+ true_σ_ε .* randn(T_sim);
 
         @testset "estimate_sim" begin
-            est = estimate_sim(mkt_ret, asset_ret, "TestAsset"; δ=0.0, Δt=Δt_sim);
+            est = estimate_sim(mkt_ret, asset_ret, "TestAsset"; δ=0.0);
             @test est isa MySIMParameterEstimate
             @test est.ticker == "TestAsset"
-            @test isapprox(est.β, true_β, rtol=0.15)  # within 15%
-            @test est.r² > 0.5  # should explain majority of variance
-            @test est.σ_ε > 0
+            @test isapprox(est.β, true_β, rtol=0.15)               # within 15%
+            @test isapprox(est.σ_ε, true_σ_ε, rtol=0.15)           # within 15%
+            @test est.r² > 0.5                                      # market explains majority of variance
         end
 
         @testset "estimate_sim — regularized" begin
-            est = estimate_sim(mkt_ret, asset_ret, "TestAsset"; δ=0.01, Δt=Δt_sim);
+            est = estimate_sim(mkt_ret, asset_ret, "TestAsset"; δ=0.01);
             @test est isa MySIMParameterEstimate
             @test est.r² > 0.0  # still positive
         end
 
         @testset "bootstrap_sim" begin
             bs = bootstrap_sim(mkt_ret, asset_ret, "TestAsset";
-                δ=0.0, Δt=Δt_sim, n_bootstrap=500, seed=42);
+                δ=0.0, n_bootstrap=500, seed=42);
 
             @test bs isa Dict
             @test length(bs["alpha_samples"]) == 500
@@ -243,28 +243,30 @@ const SIM_PARAMS = Dict(
         end
 
         @testset "build_sim_covariance" begin
-            # create 3 fake SIM estimates -
+            # create 3 fake SIM estimates (σ_ε in annualized growth-rate units) -
             ests = MySIMParameterEstimate[];
-            for (t, β, σ) ∈ [("A", 1.1, 0.01), ("B", 0.8, 0.012), ("C", -0.15, 0.003)]
+            for (t, β, σ) ∈ [("A", 1.1, 2.5), ("B", 0.8, 3.0), ("C", -0.15, 0.8)]
                 e = MySIMParameterEstimate();
                 e.ticker = t; e.α = 0.0; e.β = β; e.σ_ε = σ; e.r² = 0.9;
                 push!(ests, e);
             end
 
             σ_m = std(mkt_ret);
-            Σ = build_sim_covariance(ests, σ_m; Δt=Δt_sim);
+            Σ = build_sim_covariance(ests, σ_m);
 
             @test size(Σ) == (3, 3)
             @test issymmetric(Σ)
             @test isposdef(Σ)
             # off-diagonal: β_A * β_B * σ_m²
             @test isapprox(Σ[1, 2], 1.1 * 0.8 * σ_m^2, rtol=1e-10)
+            # diagonal: β_A² * σ_m² + σ_ε_A²
+            @test isapprox(Σ[1, 1], 1.1^2 * σ_m^2 + 2.5^2, rtol=1e-10)
         end
 
         @testset "solve_max_sharpe" begin
-            # build a small Sharpe problem -
+            # build a small Sharpe problem (all quantities in annualized growth-rate units) -
             ests = MySIMParameterEstimate[];
-            for (t, α_v, β_v, σ_v) ∈ [("A", 0.0002, 1.1, 0.01), ("B", 0.0003, 0.8, 0.012), ("C", 0.0001, -0.15, 0.003)]
+            for (t, α_v, β_v, σ_v) ∈ [("A", 0.05, 1.1, 2.5), ("B", 0.08, 0.8, 3.0), ("C", 0.03, -0.15, 0.8)]
                 e = MySIMParameterEstimate();
                 e.ticker = t; e.α = α_v; e.β = β_v; e.σ_ε = σ_v; e.r² = 0.9;
                 push!(ests, e);
@@ -276,8 +278,8 @@ const SIM_PARAMS = Dict(
             β_vec = [e.β for e ∈ ests];
 
             problem = build(MySharpeRatioPortfolioChoiceProblem, (
-                Σ = Σ, risk_free_rate = 0.0002, α = α_vec, β = β_vec,
-                gₘ = 0.05, bounds = hcat(zeros(3), ones(3))
+                Σ = Σ, risk_free_rate = 0.04, α = α_vec, β = β_vec,
+                gₘ = 0.08, bounds = hcat(zeros(3), ones(3))
             ));
             result = solve_max_sharpe(problem);
 

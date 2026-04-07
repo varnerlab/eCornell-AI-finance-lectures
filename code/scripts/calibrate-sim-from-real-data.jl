@@ -90,7 +90,7 @@ for (i, ticker) ∈ enumerate(full_tickers)
         continue
     end
 
-    est = estimate_sim(spy_g, g, ticker; δ=0.0, Δt=DT);
+    est = estimate_sim(spy_g, g, ticker; δ=0.0);
 
     push!(tickers_out, est.ticker);
     push!(alpha_out, est.α);
