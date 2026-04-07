@@ -3,8 +3,14 @@
 # Generates a frozen 20-year synthetic training dataset for all 424 tickers.
 # Step 1: Generate candidate market index paths from the SPY surrogate
 # Step 2: Score each candidate for realism (CAGR, drawdowns, jump clusters, kurtosis)
-# Step 3: Select the best candidate
-# Step 4: Generate correlated per-ticker paths using marginal surrogates + copula
+# Step 3: Select the best candidate (drops the unused first observation so that
+#         G_market is aligned with prices: prices[t+1] = prices[t]·exp(G_market[t]·DT))
+# Step 4: Generate per-ticker paths via the hybrid SIM construction:
+#           g_i(t) = α_i + β_i · g_m(t) + ε_i(t)
+#         where (α_i, β_i) come from real-data calibration (sim-calibration.jld2),
+#         ε_i is a variance-corrected, copula-reordered HMM marginal draw, and the
+#         variance correction preserves the per-ticker HMM marginal variance up to
+#         a 10%-of-σ²_HMM idiosyncratic floor (β is clipped if it would breach it).
 # Step 5: Save as the canonical training dataset
 #
 # Usage: julia --project=.. generate-synthetic-training-data.jl
@@ -185,23 +191,44 @@ println("  Excess kurtosis: $(round(best.kurtosis, digits=1))")
 println("  Final return: $(round(best.final_return, digits=2))x")
 
 # extract the selected market path -
+# NOTE: drop the unused first observation. The HMM returns T_DAYS observations,
+# but the very first one is never consumed by the price recursion (the price
+# series seeds at $100 on day 1 and only steps forward starting on day 2).
+# We trim it here so that prices[t+1] = prices[t] · exp(G_market[t]·DT) and
+# the saved `market_returns` aligns one-for-one with growth rates that any
+# downstream notebook computes from the saved prices.
 selected_path = sim_result.paths[best.idx];
-G_market = Float64.(selected_path.observations);
-market_jumps = selected_path.jumps;
+G_full = Float64.(selected_path.observations);
+jumps_full = selected_path.jumps;
+
+G_market = G_full[2:end];           # length T_DAYS - 1
+market_jumps = jumps_full[2:end];    # length T_DAYS - 1
+T_eff = length(G_market);            # = T_DAYS - 1
+σ²_market_synth = var(G_market);
 
 # convert to prices -
 market_prices = zeros(T_DAYS);
 market_prices[1] = 100.0;
-for t ∈ 2:T_DAYS
-    market_prices[t] = market_prices[t-1] * exp(G_market[t] * DT);
+for t ∈ 1:T_eff
+    market_prices[t+1] = market_prices[t] * exp(G_market[t] * DT);
 end
 
-# --- Step 4: Generate per-ticker paths using copula rank-reordering ---
-# Each ticker gets its correct marginal distribution from its own HMM.
-# Cross-asset dependence comes from the Student-t copula.
-# NOTE: copula rank-reordering does NOT preserve temporal autocorrelation
-# (volatility clustering). Temporal analysis should use the MARKET index
-# which comes directly from the HMM and preserves all temporal dynamics.
+# --- Step 4: Generate per-ticker paths via the hybrid SIM construction ---
+# For each ticker we compose
+#     g_i(t) = α_i + β_i · g_m(t) + ε_i(t)
+# where:
+#   • (α_i, β_i) come from real-data calibration (sim-calibration.jld2)
+#   • ε_i is the ticker's HMM marginal draw, scaled so the resulting g_i variance
+#     matches the original HMM marginal variance up to a 10%-of-σ²_HMM floor on
+#     the idiosyncratic share. If the loading β_i² · σ²_m would consume more
+#     than 90% of σ²_HMM, β_i is clipped downward (sign preserved) to keep the
+#     floor.
+#   • the scaled ε_i is then copula rank-reordered to inject the cross-sectional
+#     Student-t dependence structure.
+#
+# Properties: SIM β is recoverable by OLS, heavy tails / regime structure of the
+# HMM marginal are preserved on the ε side, cross-sectional dependence preserved
+# via the copula, marginal variance held close to the original HMM marginal.
 
 println("\nLoading portfolio surrogate...")
 portfolio = MyPortfolioSurrogateModel();
@@ -210,44 +237,95 @@ marginals = portfolio["marginals"];
 copula = portfolio["copula"];
 K = length(tickers);
 
-println("Generating $(K)-ticker paths via copula rank-reordering ($(T_DAYS) days)...")
-println("  Marginal distributions: preserved (from per-ticker HMMs)")
-println("  Cross-asset dependence: Student-t copula")
-println("  Temporal structure: use MARKET index for ACF/clustering analysis")
+println("Loading SIM calibration table...")
+calib = MySIMCalibration();
+calib_tickers = calib["tickers"];
+calib_alpha   = calib["alpha"];
+calib_beta    = calib["beta"];
+calib_lookup = Dict{String, Tuple{Float64,Float64}}();
+for (i, t) ∈ enumerate(calib_tickers)
+    calib_lookup[t] = (calib_alpha[i], calib_beta[i]);
+end
+println("  $(length(calib_tickers)) calibrated tickers available")
+
+println("Generating $(K)-ticker paths via hybrid SIM ($(T_eff) growth-rate steps)...")
+println("  α, β source: real S&P 500 VWAP regression on SPY (sim-calibration.jld2)")
+println("  ε source: per-ticker HMM marginal draw (preserves tails, regimes)")
+println("  Cross-sectional dependence: Student-t copula on ε")
 
 # sample copula uniforms -
+# We sample T_DAYS uniforms and drop the first row to align with the trimmed
+# growth-rate vectors (length T_eff = T_DAYS - 1).
 U = JumpHMM.sample_dependence(copula, T_DAYS);  # T_DAYS × K
 
 ticker_prices = Dict{String, Vector{Float64}}();
 ticker_returns = Dict{String, Vector{Float64}}();
 
+n_clipped = 0;
+n_fallback = 0;
+
 for (j, ticker) ∈ enumerate(tickers)
 
     model_j = marginals[ticker];
 
-    # simulate a single marginal path -
+    # --- 4a: simulate the ticker's HMM marginal path and trim ---
     r_j = hmm_simulate(model_j, T_DAYS; n_paths=1);
-    obs_j = Float64.(r_j.paths[1].observations);
+    obs_full = Float64.(r_j.paths[1].observations);
+    obs_j = obs_full[2:end];                # length T_eff
+    σ²_HMM = var(obs_j);
 
-    # rank-reorder: sort marginal obs, place by copula ranks -
-    sorted_obs = sort(obs_j);
-    copula_ranks = ordinalrank(U[:, j]);
-    reordered_obs = sorted_obs[copula_ranks];
+    # --- 4b: pull α, β from real-data calibration (fallback if missing) ---
+    if haskey(calib_lookup, ticker)
+        α_i, β_i_raw = calib_lookup[ticker];
+    else
+        α_i, β_i_raw = (0.0, 1.0);
+        global n_fallback += 1;
+        println("  [fallback] $(ticker): no calibration, using α=0, β=1");
+    end
 
-    # convert to prices -
+    # --- 4c: variance correction with β clipping ---
+    # idiosyncratic share s² of σ²_HMM, floored at 0.10
+    ratio = β_i_raw^2 * σ²_market_synth / σ²_HMM;
+    β_i = β_i_raw;
+    if ratio > 0.90
+        β_i = sign(β_i_raw) * sqrt(0.90 * σ²_HMM / σ²_market_synth);
+        global n_clipped += 1;
+        if n_clipped <= 10
+            println("  [clip] $(ticker): β $(round(β_i_raw, digits=3)) → $(round(β_i, digits=3)) (would consume $(round(ratio*100, digits=1))% of σ²_HMM)");
+        end
+        s² = 0.10;
+    else
+        s² = 1.0 - ratio;
+    end
+    ε_scaled = sqrt(s²) .* obs_j;
+
+    # --- 4d: copula rank-reorder the scaled ε ---
+    sorted_eps = sort(ε_scaled);
+    copula_ranks = ordinalrank(U[2:end, j]);   # length T_eff
+    ε_reordered = sorted_eps[copula_ranks];
+
+    # --- 4e: compose the SIM growth rates ---
+    g_i = α_i .+ β_i .* G_market .+ ε_reordered;   # length T_eff
+
+    # --- 4f: convert to prices (length T_DAYS, seeded at $100) ---
     p_j = zeros(T_DAYS);
     p_j[1] = 100.0;
-    for t ∈ 2:T_DAYS
-        p_j[t] = p_j[t-1] * exp(reordered_obs[t] * DT);
+    for t ∈ 1:T_eff
+        p_j[t+1] = p_j[t] * exp(g_i[t] * DT);
     end
 
     ticker_prices[ticker] = p_j;
-    ticker_returns[ticker] = reordered_obs;
+    ticker_returns[ticker] = g_i;
 
     if j % 100 == 0 || j == K
         println("  [$(j)/$(K)] $(ticker) done");
     end
 end
+
+println("\nHybrid generation summary:")
+println("  Tickers using real-data α,β: $(K - n_fallback)")
+println("  Tickers using fallback (α=0, β=1): $(n_fallback)")
+println("  Tickers with β clipped to floor: $(n_clipped)")
 
 # --- Step 5: Build and save the dataset ---
 println("\nBuilding dataset...")
