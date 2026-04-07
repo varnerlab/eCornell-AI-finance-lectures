@@ -159,47 +159,82 @@ The resulting $g_i$ has:
   *contemporaneous* market dependence only. Lagged market dependence (lead-lag,
   market-driven volatility clustering) requires a richer construction.
 
-## The index-ETF special case
+## The R²-preserving branch (high-R² tickers)
 
-Some assets are *defined* as deterministic (or near-deterministic) transforms
-of the market. SPY against itself has $\beta = 1, R^2 = 1, \sigma_\varepsilon = 0$
-exactly. QQQ on SPY has $R^2 \gtrsim 0.95$. SPYG (S&P 500 Growth ETF) is in the
-same boat. For these tickers the variance correction is fighting reality: the
-"natural" variance of the asset *is* $\beta^2 \sigma_m^2$ — there is no
-idiosyncratic component to make room for, so $\sigma_{\text{gen},i}^2$ is itself
-small and $\rho_i$ blows past 1, forcing a clip on a $\beta$ that practitioners
-expect to take a specific value.
+The marginal-preserving construction targets $\mathrm{Var}[g_i] = \sigma_{\text{gen},i}^2$.
+That is the right target when the generator's marginal carries information you
+want to keep — heavy tails, regime structure, jumps. But for some assets the
+generator's marginal isn't really the thing you care about; the SIM relationship
+to the market *is*.
+
+Index ETFs are the canonical example. SPY against itself has $\beta = 1$,
+$R^2 = 1$, $\sigma_\varepsilon = 0$ exactly. QQQ against SPY has
+$R^2 \approx 0.84$, SPYG against SPY has $R^2 \approx 0.86$. For these tickers
+practitioners care that:
+
+1. β recovers to its calibrated value (β=1 for SPY, by definition).
+2. R² recovers to its calibrated value — *not* inflated to 1.0 by dropping ε,
+   and *not* implied by some unrelated marginal-variance bookkeeping.
 
 The fix is a branch on the **real-data calibration $R^2$**. Pick a threshold
-$R^2_{\text{ETF}}$ that separates index trackers from real single stocks. In
-practice the universe sorts itself cleanly: index ETFs cluster near $R^2 = 1$
-(SPY is exactly 1.0 by construction) and broad-basket ETFs sit in the 0.80–0.90
-range against SPY (e.g. QQQ ≈ 0.84, SPYG ≈ 0.86), while the most market-like
-real single stocks rarely exceed $R^2 \approx 0.65$. A threshold of 0.80
-captures the ETFs without sweeping in any genuinely idiosyncratic name. For any
-asset $i$ with $R^2_{i,\text{real}} \ge R^2_{\text{ETF}}$:
+$R^2_{\text{preserve}}$ that separates "tracks the market" assets from real
+single stocks. In practice the universe sorts itself cleanly: SPY at 1.00,
+QQQ at 0.84, SPYG at 0.86, then a gap down to the 0.6 range where the most
+market-like single stocks live. A threshold of 0.80 captures the trackers
+without sweeping in any genuinely idiosyncratic name.
+
+For any asset $i$ with $R^2_{i,\text{real}} \ge R^2_{\text{preserve}}$, target
+the residual variance directly from the SIM identity. The population $R^2$ for
+$g_i = \alpha_i + \beta_i g_m + \varepsilon_i$ is
 
 $$
-g_i(t) \;=\; \alpha_i \;+\; \beta_i\, g_m(t) \quad\text{(no }\varepsilon_i\text{, no clipping)}
+R^2 \;=\; \frac{\beta_i^2\, \sigma_m^2}{\beta_i^2\, \sigma_m^2 + \sigma_{\varepsilon,i}^2}.
 $$
 
-with the calibrated $\beta_i$ used unchanged. Properties:
+Solving for $\sigma_\varepsilon^2$ at the target $R^2_{\text{real}}$ gives
 
-- $\hat{\beta}_i = \beta_i$ exactly, $R^2 = 1$ exactly. SPY recovers as 1.0,
-  QQQ as its calibrated value.
-- The marginal of $g_i$ is a deterministic affine transform of $g_m$, so it
-  inherits the market path's tail behavior — which is correct for an index ETF.
-- Cross-sectional dependence with the rest of the universe is whatever the
-  copula on the *other* tickers' $\varepsilon$ already implies via the market
-  channel. Two ETFs in this branch are perfectly rank-correlated through $g_m$
-  — also correct, since they track overlapping baskets.
+$$
+\boxed{\;\sigma_{\varepsilon,\text{target}}^2 \;=\; \beta_i^2\, \sigma_m^2 \cdot \frac{1 - R^2_{i,\text{real}}}{R^2_{i,\text{real}}}\;}
+$$
 
-For assets with $R^2_{i,\text{real}} < R^2_{\text{ETF}}$, run the variance-
-correction + clipping construction from the previous sections. The branch
-selection should be persisted alongside the output (e.g. a per-ticker
-`construction ∈ {"etf", "hybrid", "hybrid-clipped", "fallback"}` flag) so
-downstream consumers can audit which path each asset took.
+Then draw $\tilde{\varepsilon}_i$ from the ticker's generator and rescale:
 
-The $R^2$ branch is preferable to a hard-coded ticker list because (a) it
-generalizes to any new ETF added to the universe, and (b) it derives entirely
-from the calibration step, requiring no external metadata.
+$$
+\varepsilon_i \;=\; \sqrt{\frac{\sigma_{\varepsilon,\text{target}}^2}{\sigma_{\text{gen},i}^2}} \cdot \tilde{\varepsilon}_i.
+$$
+
+(If $\sigma_{\text{gen},i}^2$ or $\sigma_{\varepsilon,\text{target}}^2$ is zero,
+$\varepsilon_i \equiv 0$ — see the SPY limit below.) Then copula-reorder and
+compose as in the standard recipe.
+
+The construction recovers both calibrated quantities exactly: $\hat{\beta} = \beta_i$
+in the large-$T$ limit because $\varepsilon$ is uncorrelated with $g_m$ after
+the rank reorder, and $R^2 \to R^2_{i,\text{real}}$ by construction.
+
+### SPY as a degenerate limit
+
+When $R^2_{i,\text{real}} = 1$ exactly (SPY against itself), the formula gives
+$\sigma_{\varepsilon,\text{target}}^2 = 0$, so $\varepsilon_i \equiv 0$ and
+$g_i = \alpha_i + \beta_i g_m$ deterministically. No special-casing needed —
+it falls out of the same expression. SPY recovers as $\beta = 1$, $\alpha = 0$,
+$R^2 = 1$.
+
+### Caveat: ε inflation
+
+If $\sigma_{\varepsilon,\text{target}}^2 > \sigma_{\text{gen},i}^2$, the rescale
+factor exceeds 1 and you are stretching the generator's tails to fit a target
+that's larger than the original draw. This happens when the synthetic market
+$g_m$ has *lower* variance than the real market the calibration was done on,
+or when $R^2_{i,\text{real}}$ is small (which shouldn't happen for tickers
+above the $R^2_{\text{preserve}}$ threshold). Worth detecting and warning so
+you know when the marginal of $g_i$ is no longer faithful to the original
+generator.
+
+### Bookkeeping
+
+The branch selection should be persisted alongside the output (e.g. a per-ticker
+`construction ∈ {"r2-preserve", "hybrid", "hybrid-clipped", "fallback"}` flag)
+so downstream consumers can audit which path each asset took. The $R^2$ branch
+is preferable to a hard-coded ticker list because (a) it generalizes to any
+new ETF added to the universe, and (b) it derives entirely from the calibration
+step, requiring no external metadata.

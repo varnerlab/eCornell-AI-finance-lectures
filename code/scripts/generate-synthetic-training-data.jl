@@ -249,17 +249,18 @@ for (i, t) ∈ enumerate(calib_tickers)
 end
 println("  $(length(calib_tickers)) calibrated tickers available")
 
-# Tickers whose real-data SIM regression has R² above this threshold are
-# treated as index/ETF transforms of the market (g = α + β·g_m, no ε). This
-# prevents the variance correction from clipping β on tickers like SPY/QQQ
-# that practitioners expect to have β ≈ 1 by definition.
-const R2_ETF_THRESHOLD = 0.80
+# Tickers whose real-data SIM regression has R² above this threshold use the
+# R²-preserving construction: ε is scaled so that the synthetic R² matches the
+# real-data R² exactly. This recovers β AND R² for index ETFs (SPY, QQQ, SPYG)
+# that practitioners expect to track the market by definition. SPY (R²=1.0)
+# falls out as the limiting case σ²_ε = 0.
+const R2_PRESERVE_THRESHOLD = 0.80
 
 println("Generating $(K)-ticker paths via hybrid SIM ($(T_eff) growth-rate steps)...")
 println("  α, β source: real S&P 500 VWAP regression on SPY (sim-calibration.jld2)")
 println("  ε source: per-ticker HMM marginal draw (preserves tails, regimes)")
 println("  Cross-sectional dependence: Student-t copula on ε")
-println("  Index-ETF branch: tickers with real-data R² > $(R2_ETF_THRESHOLD) use g = α + β·g_m (no ε)")
+println("  R²-preserving branch: tickers with real-data R² > $(R2_PRESERVE_THRESHOLD) target σ²_ε from real R²")
 
 # sample copula uniforms -
 # We sample T_DAYS uniforms and drop the first row to align with the trimmed
@@ -268,11 +269,12 @@ U = JumpHMM.sample_dependence(copula, T_DAYS);  # T_DAYS × K
 
 ticker_prices = Dict{String, Vector{Float64}}();
 ticker_returns = Dict{String, Vector{Float64}}();
-construction = Dict{String, String}();   # one of "etf", "hybrid", "hybrid-clipped", "fallback"
+construction = Dict{String, String}();   # "r2-preserve", "hybrid", "hybrid-clipped", "fallback"
 
 n_clipped = 0;
 n_fallback = 0;
-n_etf = 0;
+n_r2 = 0;
+n_r2_inflate = 0;
 
 for (j, ticker) ∈ enumerate(tickers)
 
@@ -288,35 +290,51 @@ for (j, ticker) ∈ enumerate(tickers)
         println("  [fallback] $(ticker): no calibration, using α=0, β=1");
     end
 
-    # --- 4b: index-ETF branch ---
-    # If the real-data regression on SPY explains essentially all of this
-    # ticker's variance, treat it as a deterministic SIM transform of the
-    # market (no ε, no clipping). This is the right model for index ETFs
-    # like SPY (β=1 by definition) and QQQ (NASDAQ-100 tracker).
-    if !is_fallback && r²_real >= R2_ETF_THRESHOLD
+    # --- 4b: simulate the ticker's HMM marginal path and trim ---
+    model_j = marginals[ticker];
+    r_j = hmm_simulate(model_j, T_DAYS; n_paths=1);
+    obs_full = Float64.(r_j.paths[1].observations);
+    obs_j = obs_full[2:end];                # length T_eff
+    σ²_HMM = var(obs_j);
 
-        β_i = β_i_raw;
-        g_i = α_i .+ β_i .* G_market;   # length T_eff, deterministic
+    # --- 4c: choose construction branch based on real-data R² ---
+    β_i = β_i_raw;
+    local was_clipped = false;
+    local branch = "hybrid";
 
-        global n_etf += 1;
-        construction[ticker] = "etf";
-        println("  [etf] $(ticker): R²=$(round(r²_real, digits=3)), β=$(round(β_i, digits=3)) (no idiosyncratic component)");
+    if !is_fallback && r²_real >= R2_PRESERVE_THRESHOLD
+
+        # R²-PRESERVING BRANCH
+        # Target σ²_ε so that synthetic R² = real-data R² exactly:
+        #     R² = β² σ²_m / (β² σ²_m + σ²_ε)
+        #   ⇒ σ²_ε = β² σ²_m · (1 - R²) / R²
+        # SPY (R²=1.0) degenerates to σ²_ε = 0 automatically.
+        if r²_real >= 1.0 - 1e-12
+            σ²_ε_target = 0.0;
+        else
+            σ²_ε_target = β_i_raw^2 * σ²_market_synth * (1.0 - r²_real) / r²_real;
+        end
+
+        if σ²_ε_target > σ²_HMM
+            global n_r2_inflate += 1;
+            println("  [r2-inflate] $(ticker): target σ²_ε ($(round(σ²_ε_target, digits=2))) exceeds σ²_HMM ($(round(σ²_HMM, digits=2))); ε tails will inflate above HMM marginal");
+        end
+
+        # scale ε so that var(ε_scaled) = σ²_ε_target exactly
+        ε_scaled = σ²_HMM > 0 && σ²_ε_target > 0 ?
+                   sqrt(σ²_ε_target / σ²_HMM) .* obs_j :
+                   zeros(T_eff);
+
+        global n_r2 += 1;
+        branch = "r2-preserve";
+        println("  [r2-preserve] $(ticker): R²_real=$(round(r²_real, digits=3)), β=$(round(β_i, digits=3)), σ²_ε_target=$(round(σ²_ε_target, digits=3))");
 
     else
 
-        model_j = marginals[ticker];
-
-        # --- 4c: simulate the ticker's HMM marginal path and trim ---
-        r_j = hmm_simulate(model_j, T_DAYS; n_paths=1);
-        obs_full = Float64.(r_j.paths[1].observations);
-        obs_j = obs_full[2:end];                # length T_eff
-        σ²_HMM = var(obs_j);
-
-        # --- 4d: variance correction with β clipping ---
-        # idiosyncratic share s² of σ²_HMM, floored at 0.10
+        # MARGINAL-PRESERVING (HYBRID) BRANCH
+        # Target σ²_total = σ²_HMM via the variance correction with 10% floor
+        # and β clipping fallback (see hybrid.md for the derivation).
         ratio = β_i_raw^2 * σ²_market_synth / σ²_HMM;
-        β_i = β_i_raw;
-        local was_clipped = false;
         if ratio > 0.90
             β_i = sign(β_i_raw) * sqrt(0.90 * σ²_HMM / σ²_market_synth);
             global n_clipped += 1;
@@ -329,20 +347,20 @@ for (j, ticker) ∈ enumerate(tickers)
             s² = 1.0 - ratio;
         end
         ε_scaled = sqrt(s²) .* obs_j;
-
-        # --- 4e: copula rank-reorder the scaled ε ---
-        sorted_eps = sort(ε_scaled);
-        copula_ranks = ordinalrank(U[2:end, j]);   # length T_eff
-        ε_reordered = sorted_eps[copula_ranks];
-
-        # --- 4f: compose the SIM growth rates ---
-        g_i = α_i .+ β_i .* G_market .+ ε_reordered;   # length T_eff
-
-        construction[ticker] = is_fallback ? "fallback" :
-                               (was_clipped ? "hybrid-clipped" : "hybrid");
+        branch = is_fallback ? "fallback" : (was_clipped ? "hybrid-clipped" : "hybrid");
     end
 
-    # --- 4g: convert to prices (length T_DAYS, seeded at $100) ---
+    # --- 4d: copula rank-reorder the scaled ε ---
+    sorted_eps = sort(ε_scaled);
+    copula_ranks = ordinalrank(U[2:end, j]);   # length T_eff
+    ε_reordered = sorted_eps[copula_ranks];
+
+    # --- 4e: compose the SIM growth rates ---
+    g_i = α_i .+ β_i .* G_market .+ ε_reordered;   # length T_eff
+
+    construction[ticker] = branch;
+
+    # --- 4f: convert to prices (length T_DAYS, seeded at $100) ---
     p_j = zeros(T_DAYS);
     p_j[1] = 100.0;
     for t ∈ 1:T_eff
@@ -359,8 +377,9 @@ end
 
 println("\nGeneration summary:")
 println("  Tickers using real-data α,β: $(K - n_fallback)")
-println("  Tickers via index-ETF branch (R² > $(R2_ETF_THRESHOLD)): $(n_etf)")
-println("  Tickers via hybrid (HMM ε + variance correction): $(K - n_etf - n_fallback)")
+println("  Tickers via R²-preserving branch (R² > $(R2_PRESERVE_THRESHOLD)): $(n_r2)")
+println("    of which target σ²_ε exceeded σ²_HMM (ε inflated): $(n_r2_inflate)")
+println("  Tickers via marginal-preserving hybrid: $(K - n_r2 - n_fallback)")
 println("    of which β clipped to floor: $(n_clipped)")
 println("  Tickers using fallback (α=0, β=1, no calibration): $(n_fallback)")
 
