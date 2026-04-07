@@ -158,3 +158,48 @@ The resulting $g_i$ has:
 - **Time-series dependence on the market is not free.** This recipe injects
   *contemporaneous* market dependence only. Lagged market dependence (lead-lag,
   market-driven volatility clustering) requires a richer construction.
+
+## The index-ETF special case
+
+Some assets are *defined* as deterministic (or near-deterministic) transforms
+of the market. SPY against itself has $\beta = 1, R^2 = 1, \sigma_\varepsilon = 0$
+exactly. QQQ on SPY has $R^2 \gtrsim 0.95$. SPYG (S&P 500 Growth ETF) is in the
+same boat. For these tickers the variance correction is fighting reality: the
+"natural" variance of the asset *is* $\beta^2 \sigma_m^2$ — there is no
+idiosyncratic component to make room for, so $\sigma_{\text{gen},i}^2$ is itself
+small and $\rho_i$ blows past 1, forcing a clip on a $\beta$ that practitioners
+expect to take a specific value.
+
+The fix is a branch on the **real-data calibration $R^2$**. Pick a threshold
+$R^2_{\text{ETF}}$ that separates index trackers from real single stocks. In
+practice the universe sorts itself cleanly: index ETFs cluster near $R^2 = 1$
+(SPY is exactly 1.0 by construction) and broad-basket ETFs sit in the 0.80–0.90
+range against SPY (e.g. QQQ ≈ 0.84, SPYG ≈ 0.86), while the most market-like
+real single stocks rarely exceed $R^2 \approx 0.65$. A threshold of 0.80
+captures the ETFs without sweeping in any genuinely idiosyncratic name. For any
+asset $i$ with $R^2_{i,\text{real}} \ge R^2_{\text{ETF}}$:
+
+$$
+g_i(t) \;=\; \alpha_i \;+\; \beta_i\, g_m(t) \quad\text{(no }\varepsilon_i\text{, no clipping)}
+$$
+
+with the calibrated $\beta_i$ used unchanged. Properties:
+
+- $\hat{\beta}_i = \beta_i$ exactly, $R^2 = 1$ exactly. SPY recovers as 1.0,
+  QQQ as its calibrated value.
+- The marginal of $g_i$ is a deterministic affine transform of $g_m$, so it
+  inherits the market path's tail behavior — which is correct for an index ETF.
+- Cross-sectional dependence with the rest of the universe is whatever the
+  copula on the *other* tickers' $\varepsilon$ already implies via the market
+  channel. Two ETFs in this branch are perfectly rank-correlated through $g_m$
+  — also correct, since they track overlapping baskets.
+
+For assets with $R^2_{i,\text{real}} < R^2_{\text{ETF}}$, run the variance-
+correction + clipping construction from the previous sections. The branch
+selection should be persisted alongside the output (e.g. a per-ticker
+`construction ∈ {"etf", "hybrid", "hybrid-clipped", "fallback"}` flag) so
+downstream consumers can audit which path each asset took.
+
+The $R^2$ branch is preferable to a hard-coded ticker list because (a) it
+generalizes to any new ETF added to the universe, and (b) it derives entirely
+from the calibration step, requiring no external metadata.
