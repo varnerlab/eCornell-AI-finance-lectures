@@ -42,7 +42,9 @@ generate_hybrid_scenario
 ```@docs
 backtest_engine
 backtest_buyhold
+backtest_buyhold_market
 backtest_bandit
+compute_cvar
 ```
 
 ## Bandit Functions

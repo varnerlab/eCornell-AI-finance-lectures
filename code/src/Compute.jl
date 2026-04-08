@@ -1316,6 +1316,103 @@ function backtest_buyhold(scenario::MyBacktestScenario, tickers::Array{String,1}
     return result;
 end
 
+"""
+    backtest_buyhold_market(scenario::MyBacktestScenario;
+        B₀::Float64 = 10000.0, offset::Int = 1) -> MyBacktestResult
+
+Run a buy-and-hold strategy on the **market index** time series stored in
+`scenario.market_paths`, treating it as a single risky asset. For each path
+the entire initial budget `B₀` is allocated to the market on day `offset`,
+and the wealth trajectory is held to the end of the scenario without
+rebalancing. The result has the same `MyBacktestResult` shape as
+`backtest_buyhold` so that downstream scorecard code can compare a tickers
+portfolio against a market benchmark uniformly.
+
+This is the standard "did my optimization beat just buying the market"
+benchmark. The market path itself is whatever the scenario's underlying
+market HMM produced (in the eCornell course this is the SPY surrogate
+fitted on real 2014–2024 OHLC data via `MyMarketSurrogateModel`).
+
+### Returns
+- `MyBacktestResult` with `strategy_label = "Market Buy-and-Hold"`,
+  `final_wealth`, `max_drawdowns`, `sharpe_ratios` arrays of length `n_paths`.
+"""
+function backtest_buyhold_market(scenario::MyBacktestScenario;
+    B₀::Float64 = 10000.0, offset::Int = 1)::MyBacktestResult
+
+    n_paths = scenario.n_paths;
+    n_steps = scenario.n_steps;
+    n_trading = n_steps - offset;
+
+    final_wealth  = zeros(n_paths);
+    max_drawdowns = zeros(n_paths);
+    sharpe_ratios = zeros(n_paths);
+
+    for p in 1:n_paths
+
+        # Buy the market at day `offset` with the entire budget
+        shares = B₀ / scenario.market_paths[p, offset];
+
+        wealth = zeros(n_trading + 1);
+        for d in 0:n_trading
+            day = offset + d;
+            wealth[d+1] = shares * scenario.market_paths[p, day];
+        end
+
+        final_wealth[p] = wealth[end];
+        returns = diff(wealth) ./ wealth[1:end-1];
+        peak = accumulate(max, wealth);
+        max_drawdowns[p] = maximum((peak .- wealth) ./ peak);
+
+        vol = std(returns) * sqrt(252);
+        mean_ret = (wealth[end] / wealth[1] - 1.0);
+        sharpe_ratios[p] = vol > 0 ? mean_ret / vol : 0.0;
+    end
+
+    result = MyBacktestResult();
+    result.scenario_label = scenario.label;
+    result.strategy_label = "Market Buy-and-Hold";
+    result.final_wealth = final_wealth;
+    result.max_drawdowns = max_drawdowns;
+    result.sharpe_ratios = sharpe_ratios;
+
+    return result;
+end
+
+"""
+    compute_cvar(wealth::AbstractVector{<:Real}; α::Float64 = 0.05) -> Float64
+
+Conditional Value-at-Risk (Expected Shortfall) of a wealth distribution at
+confidence level `α`. Returns the **mean of the bottom α-fraction** of the
+input — i.e. the average outcome across the worst `α·n` paths. With
+`α = 0.05` and 5000 paths this is the average wealth across the worst 250.
+
+The convention is **wealth-based**, not loss-based: lower values are worse,
+so the function averages the smallest values. To use it on a loss vector
+(where larger is worse), pass `-losses` and negate the result, or use
+`mean(sort(losses, rev=true)[1:floor(Int, α*n)])` directly.
+
+For small tails the estimate has a non-trivial standard error
+(`std(tail) / sqrt(n_tail)`); the caller should report or display that SE
+alongside the point estimate when `α·n` is in the low hundreds.
+
+### Arguments
+- `wealth` — vector of outcomes; lower is worse
+- `α` — tail fraction in `(0, 1)` (default `0.05`)
+
+### Returns
+- `Float64` — mean of the worst `floor(α·n)` outcomes (at least 1).
+"""
+function compute_cvar(wealth::AbstractVector{<:Real}; α::Float64 = 0.05)::Float64
+    n = length(wealth);
+    n > 0 || throw(ArgumentError("wealth must be non-empty"));
+    (0.0 < α < 1.0) || throw(ArgumentError("α must be in (0, 1), got $(α)"));
+
+    n_tail = max(1, floor(Int, α * n));
+    sorted = sort(collect(wealth));
+    return mean(sorted[1:n_tail]);
+end
+
 # --- Session 3: Bandit Functions ------------------------------------------------
 
 """

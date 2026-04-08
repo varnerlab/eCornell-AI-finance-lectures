@@ -56,7 +56,8 @@ export allocate_shares, run_rebalancing_engine, compute_wealth_series
 
 # export compute — Session 3 -
 export generate_training_prices, generate_hmm_scenario, generate_hybrid_scenario
-export backtest_engine, backtest_buyhold
+export backtest_engine, backtest_buyhold, backtest_buyhold_market
+export compute_cvar
 export bandit_world, solve_bandit, compute_regret, backtest_bandit
 
 # export compute — Session 4 -

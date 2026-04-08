@@ -575,6 +575,52 @@ const SIM_PARAMS = Dict(
             @test_throws AssertionError backtest_buyhold(scen, tk;
                 B₀=10_000.0, offset=1, weights=[1.0])
         end
+
+        @testset "backtest_buyhold_market" begin
+            market_model = MyMarketSurrogateModel();
+            portfolio    = MyPortfolioSurrogateModel();
+            calib        = MySIMCalibration();
+            calib_r2     = calib["r_squared"];
+            norm_ticker  = calib["tickers"][findfirst(r -> 0.3 < r < 0.6, calib_r2)];
+            tk           = ["SPY", norm_ticker];
+
+            scen = generate_hybrid_scenario(market_model, portfolio, calib, tk;
+                n_paths=30, n_steps=120, seed=7777);
+
+            r_mkt = backtest_buyhold_market(scen; B₀=10_000.0, offset=1);
+
+            @test r_mkt isa MyBacktestResult
+            @test r_mkt.strategy_label == "Market Buy-and-Hold"
+            @test length(r_mkt.final_wealth) == 30
+            @test length(r_mkt.max_drawdowns) == 30
+            @test length(r_mkt.sharpe_ratios) == 30
+            @test all(r_mkt.final_wealth .> 0.0)
+            # The market buy-and-hold wealth at day 1 of any path equals B₀
+            # by construction (we buy with the entire budget on day `offset`).
+            @test all(r_mkt.max_drawdowns .>= 0.0)
+            @test all(r_mkt.max_drawdowns .<= 1.0 + 1e-9)
+        end
+
+        @testset "compute_cvar" begin
+            # Known case: 5 values, α = 0.4 → bottom 2 → mean(1, 2) = 1.5
+            @test isapprox(compute_cvar([1.0, 2.0, 3.0, 4.0, 5.0]; α=0.4), 1.5; atol=1e-10)
+
+            # 1..1000 with α=0.05 → bottom 50 → mean(1..50) = 25.5
+            @test isapprox(compute_cvar(collect(1.0:1000.0); α=0.05), 25.5; atol=1e-10)
+
+            # Permutation invariance
+            v = randn(500) .+ 100.0;
+            @test isapprox(compute_cvar(v; α=0.10), compute_cvar(reverse(v); α=0.10); atol=1e-10)
+
+            # Floor at 1: very small α with small array still picks at least 1 element
+            @test compute_cvar([10.0, 20.0]; α=0.01) == 10.0
+
+            # Validation
+            @test_throws ArgumentError compute_cvar(Float64[]; α=0.05)
+            @test_throws ArgumentError compute_cvar([1.0, 2.0]; α=0.0)
+            @test_throws ArgumentError compute_cvar([1.0, 2.0]; α=1.0)
+            @test_throws ArgumentError compute_cvar([1.0, 2.0]; α=-0.1)
+        end
     end
 
     # ===================================================================
