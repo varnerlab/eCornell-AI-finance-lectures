@@ -294,7 +294,7 @@ for (j, ticker) ∈ enumerate(tickers)
     model_j = marginals[ticker];
     r_j = hmm_simulate(model_j, T_DAYS; n_paths=1);
     obs_full = Float64.(r_j.paths[1].observations);
-    obs_j = obs_full[2:end];                # length T_eff
+    obs_j = obs_full[2:end] .- mean(obs_full[2:end]);  # zero-mean residuals
     σ²_HMM = var(obs_j);
 
     # --- 4c: choose construction branch based on real-data R² ---

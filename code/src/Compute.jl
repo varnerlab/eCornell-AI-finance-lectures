@@ -1108,10 +1108,13 @@ function generate_hybrid_scenario(market_model::JumpHiddenMarkovModel,
 
         for (k, ticker) ∈ enumerate(my_tickers)
 
-            # draw the ticker's HMM marginal path and trim
+            # draw the ticker's HMM marginal path, trim, and demean.
+            # The HMM marginal carries the ticker's full mean growth rate;
+            # demeaning ensures ε has E[ε]=0 so the SIM intercept α_i is
+            # the sole source of the level — no double-counting.
             r_j = hmm_simulate(marginals[ticker], n_steps; n_paths = 1);
             obs_full = Float64.(r_j.paths[1].observations);
-            obs_j = obs_full[2:end];                        # length T_eff
+            obs_j = obs_full[2:end] .- mean(obs_full[2:end]); # zero-mean residuals
             σ²_HMM = var(obs_j);
 
             # pull α, β, R² for this ticker
