@@ -757,7 +757,8 @@ Daily loop:
 function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTriggerRules,
     lambda_series::Array{Float64,1}; offset::Int = 84,
     allocator::Symbol = :cobb_douglas,
-    sigma::Float64 = 2.0)::Dict{Int,MyRebalancingResult}
+    sigma::Float64 = 2.0,
+    cost_bps::Float64 = 0.0)::Dict{Int,MyRebalancingResult}
 
     # setup -
     tickers = context.tickers;
@@ -765,12 +766,20 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
     K = length(tickers);
     schedule = rules.rebalance_schedule;
     T = length(schedule);
+    cost_rate = cost_bps / 10_000.0;
 
     # results storage -
     results = Dict{Int,MyRebalancingResult}();
 
     # initial allocation at offset -
     results[0] = allocate_shares(offset, context; allocator = allocator, sigma = sigma);
+
+    # initial trade cost: all of B₀ is "traded" from cash into shares -
+    if cost_rate > 0.0
+        init_trade_value = sum(results[0].shares[i] * marketdata[offset, i + 1] for i in 1:K);
+        init_cost = cost_rate * init_trade_value;
+        results[0].cash -= init_cost;
+    end
 
     # track peak wealth for drawdown -
     peak_wealth = context.B;
@@ -795,10 +804,17 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
             drawdown = (peak_wealth - liquidation_value) / peak_wealth;
 
             if drawdown > rules.max_drawdown
-                # de-risk: move to cash -
+                # de-risk: move to cash. The liquidation itself is a trade
+                # (sell all shares), so apply the bps cost to the full
+                # liquidation_value before stashing in cash.
                 derisk_result = MyRebalancingResult();
                 derisk_result.shares = zeros(K);
-                derisk_result.cash = liquidation_value;
+                prev_shares_value = liquidation_value - prev.cash;
+                derisk_cash = liquidation_value;
+                if cost_rate > 0.0
+                    derisk_cash -= cost_rate * prev_shares_value;
+                end
+                derisk_result.cash = derisk_cash;
                 derisk_result.gamma = zeros(K);
                 results[day] = derisk_result;
             else
@@ -834,6 +850,13 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
                             new_result.shares[i] = old_shares[i] + scale * (new_shares[i] - old_shares[i]);
                         end
                         new_result.cash = old_cash + scale * (new_cash - old_cash);
+                    end
+
+                    # apply per-trade bps cost on the realized (possibly capped)
+                    # trade value, debiting from the new cash balance.
+                    if cost_rate > 0.0
+                        realized_trade = sum(abs(new_result.shares[i] - old_shares[i]) * marketdata[actual_day, i + 1] for i in 1:K);
+                        new_result.cash -= cost_rate * realized_trade;
                     end
                 end
 
