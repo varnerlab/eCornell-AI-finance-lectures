@@ -684,7 +684,8 @@ This is the bridge between the utility-based allocators and the rebalancing engi
 - `:log_linear` — Log-linear utility
 """
 function allocate_shares(t::Int, context::MyRebalancingContextModel;
-    allocator::Symbol = :cobb_douglas)::MyRebalancingResult
+    allocator::Symbol = :cobb_douglas,
+    sigma::Float64 = 2.0)::MyRebalancingResult
 
     # unpack -
     B = context.B;
@@ -717,7 +718,7 @@ function allocate_shares(t::Int, context::MyRebalancingContextModel;
         problem.prices = prices;
         problem.B = B;
         problem.epsilon = ε;
-        problem.sigma = 2.0;
+        problem.sigma = sigma;
         (shares, cash) = allocate_ces(problem);
     elseif allocator == :log_linear
         problem = MyLogLinearChoiceProblem();
@@ -755,7 +756,8 @@ Daily loop:
 """
 function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTriggerRules,
     lambda_series::Array{Float64,1}; offset::Int = 84,
-    allocator::Symbol = :cobb_douglas)::Dict{Int,MyRebalancingResult}
+    allocator::Symbol = :cobb_douglas,
+    sigma::Float64 = 2.0)::Dict{Int,MyRebalancingResult}
 
     # setup -
     tickers = context.tickers;
@@ -768,7 +770,7 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
     results = Dict{Int,MyRebalancingResult}();
 
     # initial allocation at offset -
-    results[0] = allocate_shares(offset, context; allocator = allocator);
+    results[0] = allocate_shares(offset, context; allocator = allocator, sigma = sigma);
 
     # track peak wealth for drawdown -
     peak_wealth = context.B;
@@ -805,7 +807,7 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
                 ctx.B = liquidation_value;
                 ctx.lambda = lambda_series[min(actual_day, length(lambda_series))];
 
-                new_result = allocate_shares(actual_day, ctx; allocator = allocator);
+                new_result = allocate_shares(actual_day, ctx; allocator = allocator, sigma = sigma);
 
                 # check turnover cap -
                 if day > 0 && haskey(results, day - 1)
