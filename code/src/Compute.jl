@@ -810,19 +810,28 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
                 # check turnover cap -
                 if day > 0 && haskey(results, day - 1)
                     old_shares = results[day - 1].shares;
-                    new_shares = new_result.shares;
+                    old_cash   = results[day - 1].cash;
+                    new_shares = copy(new_result.shares);
+                    new_cash   = new_result.cash;
 
-                    # compute turnover as fraction of portfolio -
-                    old_value = sum(old_shares[i] * marketdata[actual_day, i + 1] for i in 1:K);
+                    # compute turnover as fraction of total portfolio value
+                    # (shares + cash). Using only shares value as the denominator
+                    # explodes when the portfolio is sitting in cash after an
+                    # all-non-preferred day, silently capping the next allocation
+                    # to near zero.
                     trade_value = sum(abs(new_shares[i] - old_shares[i]) * marketdata[actual_day, i + 1] for i in 1:K);
-                    turnover_frac = old_value > 0 ? trade_value / old_value : 0.0;
+                    turnover_frac = liquidation_value > 0 ? trade_value / liquidation_value : 0.0;
 
                     if turnover_frac > rules.max_turnover
-                        # cap: scale trades down -
+                        # cap: blend the full portfolio (shares AND cash) toward
+                        # the new allocation by the same scale factor. Blending
+                        # shares alone without updating cash breaks the budget
+                        # invariant (total value no longer equals liquidation_value).
                         scale = rules.max_turnover / turnover_frac;
                         for i in 1:K
                             new_result.shares[i] = old_shares[i] + scale * (new_shares[i] - old_shares[i]);
                         end
+                        new_result.cash = old_cash + scale * (new_cash - old_cash);
                     end
                 end
 
