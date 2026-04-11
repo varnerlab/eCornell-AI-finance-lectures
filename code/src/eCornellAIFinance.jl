@@ -25,6 +25,8 @@ const hmm_fit = JumpHMM.fit;
 const hmm_tune = JumpHMM.tune;
 const hmm_simulate = JumpHMM.simulate;
 const hmm_validate = JumpHMM.validate;
+const hmm_forward_filter = JumpHMM.forward_filter;
+const hmm_decode = JumpHMM.decode;
 
 # include my codes -
 include("Types.jl");
@@ -72,6 +74,7 @@ export MyMarketSurrogateModel, MyPortfolioSurrogateModel, MySyntheticTrainingDat
 
 # export HMM aliases and types -
 export hmm_fit, hmm_tune, hmm_simulate, hmm_validate
+export hmm_forward_filter, hmm_decode
 export JumpHiddenMarkovModel
 
 end # module eCornellAIFinance
