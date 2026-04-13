@@ -1,0 +1,5 @@
+2026-04-13 11:08:09 [MONITOR] No state file — run production mode first.
+2026-04-13 11:08:23 [INIT] Fetching bars 2025-04-13 to 2026-04-13 for 5 tickers + SPY...
+2026-04-13 11:08:26 [INIT] State initialized: 250 bars, 5 tickers, peak=$10018.34
+2026-04-13 11:08:32 [PRODUCTION] equity=$10019.0 sentiment=0.309 lambda=0.096 bandit=5/5 rebalanced=true orders=4 escalated=false
+2026-04-13 11:08:46 [MONITOR] equity=$10017.87 drawdown=0.0% sentiment=0.301 triggers=OK
