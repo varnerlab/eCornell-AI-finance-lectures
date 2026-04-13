@@ -3,7 +3,10 @@
 # Credentials are in credentials.toml (gitignored).
 
 [Tickers]
-universe = ["AAPL", "MSFT", "GOOG", "AMZN", "NVDA"]
+# source = "session-1" (default): loads tickers from your S1 min-variance portfolio
+# source = "manual": uses the universe list below instead
+source = "session-1"
+universe = ["AAPL", "MSFT", "GOOG", "AMZN", "NVDA"]  # fallback / manual override
 
 [Engine]
 B0 = 10000.0
