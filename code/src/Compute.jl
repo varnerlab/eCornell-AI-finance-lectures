@@ -1686,6 +1686,303 @@ function backtest_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
     return result;
 end
 
+# --- Session 3: EWLS Functions --------------------------------------------------
+
+"""
+    ewls_init(α₀::Float64, β₀::Float64, σ_ε₀::Float64;
+        half_life::Float64 = 63.0, prior_weight::Float64 = 63.0) -> MyEWLSState
+
+Initialize an EWLS state from pre-calibrated SIM parameters. The decay factor
+is η = 2^(−1/half_life) so data from `half_life` days ago receives half the
+weight of today's observation. `prior_weight` seeds the sufficient statistics
+as if `prior_weight` observations consistent with (α₀, β₀) had already been
+seen — this anchors the estimates to the calibrated values until enough new
+data accumulates.
+"""
+function ewls_init(α₀::Float64, β₀::Float64, σ_ε₀::Float64;
+    half_life::Float64 = 63.0, prior_weight::Float64 = 63.0)::MyEWLSState
+
+    η = 2.0^(-1.0 / half_life);
+
+    # seed sufficient statistics from the prior. We assume the prior
+    # was estimated from data with zero-mean market growth (centered),
+    # so Swx ≈ 0 and Swxx ≈ prior_weight · σ_m² with a small σ_m.
+    # A simpler and more robust initialization: set the sums so that
+    # the WLS formulas recover (α₀, β₀) exactly.
+    #   β = (Sw·Swxy − Swx·Swy) / (Sw·Swxx − Swx²)
+    #   α = (Swy − β·Swx) / Sw
+    # With Swx = 0 this simplifies to β = Swxy/Swxx and α = Swy/Sw.
+    Sw   = prior_weight;
+    Swx  = 0.0;
+    Swy  = prior_weight * α₀;      # so α = Swy/Sw = α₀
+    Swxx = prior_weight * 1.0;      # unit variance placeholder
+    Swxy = prior_weight * β₀;       # so β = Swxy/Swxx = β₀
+    Swyy = prior_weight * (α₀^2 + β₀^2 + σ_ε₀^2); # consistent with Var(y)
+
+    state = MyEWLSState();
+    state.Sw   = Sw;
+    state.Swx  = Swx;
+    state.Swy  = Swy;
+    state.Swxx = Swxx;
+    state.Swxy = Swxy;
+    state.Swyy = Swyy;
+    state.η    = η;
+    state.α    = α₀;
+    state.β    = β₀;
+    state.σ_ε  = σ_ε₀;
+
+    return state;
+end
+
+"""
+    ewls_update!(state::MyEWLSState, g_i::Float64, g_m::Float64) -> Tuple{Float64,Float64,Float64}
+
+Update the EWLS state with a new observation (g_i, g_m) where g_i is the asset's
+CCGR and g_m is the market's CCGR. Decays all running sums by η, adds the new
+observation with unit weight, and recomputes (α̂, β̂, σ̂_ε). Returns the updated
+estimates as a tuple (α, β, σ_ε).
+"""
+function ewls_update!(state::MyEWLSState, g_i::Float64, g_m::Float64)::Tuple{Float64,Float64,Float64}
+
+    η = state.η;
+
+    # decay and accumulate -
+    state.Sw   = η * state.Sw   + 1.0;
+    state.Swx  = η * state.Swx  + g_m;
+    state.Swy  = η * state.Swy  + g_i;
+    state.Swxx = η * state.Swxx + g_m * g_m;
+    state.Swxy = η * state.Swxy + g_i * g_m;
+    state.Swyy = η * state.Swyy + g_i * g_i;
+
+    # solve weighted least squares: g_i = α + β��g_m + ε -
+    denom = state.Sw * state.Swxx - state.Swx^2;
+    if abs(denom) > 1e-12
+        state.β = (state.Sw * state.Swxy - state.Swx * state.Swy) / denom;
+        state.α = (state.Swy - state.β * state.Swx) / state.Sw;
+
+        # weighted residual variance: E[ε²] = E[y²] - 2β·E[xy] - 2α·E[y] + β²·E[x²] + 2αβ·E[x] + α²
+        mse = (state.Swyy - 2.0 * state.β * state.Swxy - 2.0 * state.α * state.Swy +
+               state.β^2 * state.Swxx + 2.0 * state.α * state.β * state.Swx +
+               state.α^2 * state.Sw) / state.Sw;
+        state.σ_ε = sqrt(max(mse, 0.0));
+    end
+
+    return (state.α, state.β, state.σ_ε);
+end
+
+"""
+    replay_engine_ewls(price_matrix::Array{Float64,2}, market_prices::Array{Float64,1},
+        tickers::Array{String,1}, sim_params_init::Dict{String,Tuple{Float64,Float64,Float64}},
+        rules_params::NamedTuple;
+        B₀::Float64 = 10000.0, offset::Int = 63,
+        half_life::Float64 = 63.0, prior_weight::Float64 = 63.0,
+        N_short::Int = 21, N_long::Int = 63, GAIN::Float64 = 10.0,
+        N_growth::Int = 10, cost_bps::Float64 = 0.0,
+        epsilon::Float64 = 0.1) -> NamedTuple
+
+Run the Cobb-Douglas rebalancing engine day-by-day over a single path of real
+market data, interleaving EWLS updates of SIM parameters with allocation
+decisions. The first `offset` days are warm-up (EWLS accumulates data, no
+trading). Trading runs from day `offset+1` to the end of the price matrix.
+
+### Arguments
+- `price_matrix` — (n_days, K+1) matrix: col 1 = day index, cols 2:K+1 = close prices per ticker
+- `market_prices` — (n_days,) vector of market (SPY) close prices
+- `tickers` — ticker symbols matching cols 2:K+1
+- `sim_params_init` — pre-calibrated SIM parameters Dict(ticker => (α, β, σ_ε))
+- `rules_params` — NamedTuple with `max_drawdown`, `max_turnover`
+
+### Returns
+Named tuple with fields:
+- `results::Dict{Int,MyRebalancingResult}` — per-day allocation results (keyed 0:n_trading)
+- `param_history::Dict{String,Vector{Tuple{Float64,Float64,Float64}}}` — (α,β,σ_ε) snapshots per ticker per trading day
+- `wealth::Array{Float64,1}` — wealth series over the trading period
+"""
+function replay_engine_ewls(price_matrix::Array{Float64,2}, market_prices::Array{Float64,1},
+    tickers::Array{String,1}, sim_params_init::Dict{String,Tuple{Float64,Float64,Float64}},
+    rules_params::NamedTuple;
+    B₀::Float64 = 10000.0, offset::Int = 63,
+    half_life::Float64 = 63.0, prior_weight::Float64 = 63.0,
+    N_short::Int = 21, N_long::Int = 63, GAIN::Float64 = 10.0,
+    N_growth::Int = 10, cost_bps::Float64 = 0.0,
+    epsilon::Float64 = 0.1)
+
+    Δt = 1.0 / 252.0;
+    K = length(tickers);
+    n_days = size(price_matrix, 1);
+    n_trading = n_days - offset;
+    cost_rate = cost_bps / 10_000.0;
+
+    # initialize EWLS states from pre-calibrated parameters -
+    ewls_states = Dict{String,MyEWLSState}();
+    for ticker in tickers
+        (α₀, β₀, σ₀) = sim_params_init[ticker];
+        ewls_states[ticker] = ewls_init(α₀, β₀, σ₀; half_life = half_life, prior_weight = prior_weight);
+    end
+
+    # compute market growth rates (CCGR) -
+    gm_raw = compute_market_growth(market_prices; Δt = Δt);
+
+    # compute per-ticker growth rates -
+    ticker_growth = Dict{String,Array{Float64,1}}();
+    for (k, ticker) in enumerate(tickers)
+        prices_k = price_matrix[:, k + 1];
+        gi = zeros(n_days - 1);
+        for t in 2:n_days
+            gi[t - 1] = (1.0 / Δt) * log(prices_k[t] / prices_k[t - 1]);
+        end
+        ticker_growth[ticker] = gi;
+    end
+
+    # warm-up: feed first offset days into EWLS without trading -
+    for t in 1:min(offset - 1, length(gm_raw))
+        gm_t = gm_raw[t];
+        for ticker in tickers
+            gi_t = ticker_growth[ticker][t];
+            ewls_update!(ewls_states[ticker], gi_t, gm_t);
+        end
+    end
+
+    # compute EMAs and lambda over full series -
+    ema_s = compute_ema(market_prices; window = N_short);
+    ema_l = compute_ema(market_prices; window = N_long);
+    λ_series = compute_lambda(ema_s, ema_l; G = GAIN);
+    λ_series[1:offset] .= 0.0;
+
+    # compute market growth EMA -
+    gm_ema = compute_ema(gm_raw; window = N_growth);
+
+    # build the rebalancing context template -
+    context = build(MyRebalancingContextModel, (
+        B = B₀, tickers = tickers, marketdata = price_matrix,
+        marketfactor = gm_ema, sim_parameters = sim_params_init,
+        lambda = 0.0, Δt = Δt, epsilon = epsilon
+    ));
+
+    # build trigger rules -
+    rules = build(MyTriggerRules, (
+        max_drawdown = rules_params.max_drawdown,
+        max_turnover = rules_params.max_turnover,
+        rebalance_schedule = ones(Int, n_trading)
+    ));
+
+    # storage -
+    results = Dict{Int,MyRebalancingResult}();
+    param_history = Dict{String,Vector{Tuple{Float64,Float64,Float64}}}();
+    for ticker in tickers
+        param_history[ticker] = Tuple{Float64,Float64,Float64}[];
+    end
+
+    # --- initial allocation at offset ---
+    sim_params_current = Dict{String,Tuple{Float64,Float64,Float64}}(
+        ticker => (ewls_states[ticker].α, ewls_states[ticker].β, ewls_states[ticker].σ_ε)
+        for ticker in tickers
+    );
+    context.sim_parameters = sim_params_current;
+    results[0] = allocate_shares(offset, context; allocator = :cobb_douglas);
+
+    if cost_rate > 0.0
+        init_trade_value = sum(results[0].shares[i] * price_matrix[offset, i + 1] for i in 1:K);
+        results[0].cash -= cost_rate * init_trade_value;
+    end
+
+    # record initial params -
+    for ticker in tickers
+        push!(param_history[ticker], sim_params_current[ticker]);
+    end
+
+    # track peak wealth for drawdown -
+    peak_wealth = B₀;
+
+    # --- daily trading loop ---
+    for day in 1:n_trading
+
+        actual_day = offset + day;
+
+        # step 1: update EWLS with today's data -
+        if actual_day - 1 <= length(gm_raw)
+            gm_t = gm_raw[actual_day - 1];
+            for ticker in tickers
+                gi_t = ticker_growth[ticker][actual_day - 1];
+                ewls_update!(ewls_states[ticker], gi_t, gm_t);
+            end
+        end
+
+        # step 2: extract updated SIM params -
+        for ticker in tickers
+            sim_params_current[ticker] = (ewls_states[ticker].α, ewls_states[ticker].β, ewls_states[ticker].σ_ε);
+        end
+
+        # record params -
+        for ticker in tickers
+            push!(param_history[ticker], sim_params_current[ticker]);
+        end
+
+        # step 3: liquidate and check drawdown -
+        prev = results[day - 1];
+        liquidation_value = prev.cash;
+        for i in 1:K
+            liquidation_value += prev.shares[i] * price_matrix[actual_day, i + 1];
+        end
+
+        peak_wealth = max(peak_wealth, liquidation_value);
+        drawdown = peak_wealth > 0.0 ? (peak_wealth - liquidation_value) / peak_wealth : 0.0;
+
+        if drawdown > rules.max_drawdown
+            # de-risk to cash -
+            derisk_result = MyRebalancingResult();
+            derisk_result.shares = zeros(K);
+            prev_shares_value = liquidation_value - prev.cash;
+            derisk_cash = liquidation_value;
+            if cost_rate > 0.0
+                derisk_cash -= cost_rate * prev_shares_value;
+            end
+            derisk_result.cash = derisk_cash;
+            derisk_result.gamma = zeros(K);
+            results[day] = derisk_result;
+        else
+            # step 4: rebalance with updated params -
+            ctx = deepcopy(context);
+            ctx.B = liquidation_value;
+            ctx.lambda = λ_series[min(actual_day, length(λ_series))];
+            ctx.sim_parameters = sim_params_current;
+
+            new_result = allocate_shares(actual_day, ctx; allocator = :cobb_douglas);
+
+            # turnover cap -
+            if day > 0 && haskey(results, day - 1)
+                old_shares = results[day - 1].shares;
+                old_cash = results[day - 1].cash;
+                new_shares = copy(new_result.shares);
+                new_cash = new_result.cash;
+
+                trade_value = sum(abs(new_shares[i] - old_shares[i]) * price_matrix[actual_day, i + 1] for i in 1:K);
+                turnover_frac = liquidation_value > 0 ? trade_value / liquidation_value : 0.0;
+
+                if turnover_frac > rules.max_turnover
+                    scale = rules.max_turnover / turnover_frac;
+                    for i in 1:K
+                        new_result.shares[i] = old_shares[i] + scale * (new_shares[i] - old_shares[i]);
+                    end
+                    new_result.cash = old_cash + scale * (new_cash - old_cash);
+                end
+
+                if cost_rate > 0.0
+                    realized_trade = sum(abs(new_result.shares[i] - old_shares[i]) * price_matrix[actual_day, i + 1] for i in 1:K);
+                    new_result.cash -= cost_rate * realized_trade;
+                end
+            end
+
+            results[day] = new_result;
+        end
+    end
+
+    # compute wealth series -
+    wealth = compute_wealth_series(results, price_matrix, tickers; offset = offset);
+
+    return (results = results, param_history = param_history, wealth = wealth);
+end
+
 # --- Session 4: Sentiment Generation -------------------------------------------
 
 """
@@ -1978,4 +2275,278 @@ function compute_dashboard_metrics(results::Array{MyProductionDayResult,1},
         "avg_sentiment" => mean(r.sentiment for r in results),
         "wealth_series" => wealth
     );
+end
+
+# --- Session 4: Live Production Functions ---------------------------------------
+
+"""
+    compute_live_sentiment(prices::Array{Float64,1}; lookback::Int = 5) -> Float64
+
+Compute a single sentiment score from the tail of a real price series. Uses the
+same formula as `generate_synthetic_sentiment` (5-day return mapped through tanh)
+but returns a scalar from the most recent data, not a full series.
+
+Returns 0.0 if insufficient data (fewer than `lookback + 1` prices).
+"""
+function compute_live_sentiment(prices::Array{Float64,1}; lookback::Int = 5)::Float64
+
+    T = length(prices);
+    if T < lookback + 1
+        return 0.0;
+    end
+
+    ret = prices[end] / prices[end - lookback] - 1.0;
+    return tanh(10.0 * ret);
+end
+
+"""
+    compute_position_drawdown(equity_history::Array{Float64,1}) -> Float64
+
+Compute the current drawdown from peak of an equity time series. Returns 0.0
+if the series is at or above its all-time high.
+"""
+function compute_position_drawdown(equity_history::Array{Float64,1})::Float64
+
+    length(equity_history) == 0 && return 0.0;
+    peak = maximum(equity_history);
+    peak <= 0.0 && return 0.0;
+    return (peak - equity_history[end]) / peak;
+end
+
+"""
+    run_production_step(ctx::MyProductionContext, ewls_states::Dict{String,MyEWLSState},
+        price_matrix::Array{Float64,2}, market_prices::Array{Float64,1},
+        tickers::Array{String,1}, day_idx::Int;
+        n_bandit_iters::Int = 100, prev_action::Union{Nothing,Array{Int,1}} = nothing,
+        peak_wealth::Float64 = 0.0, current_shares::Array{Float64,1} = Float64[],
+        current_cash::Float64 = 0.0,
+        N_short::Int = 21, N_long::Int = 63, GAIN::Float64 = 10.0,
+        N_growth::Int = 10) -> Tuple{MyLiveProductionDayResult,Array{MyEscalationEvent,1}}
+
+Execute a single production step: read sentiment, run bandit, check escalation
+triggers, allocate via Cobb-Douglas. This is the single-day version of
+`run_production_simulation`, designed for live execution where each day is
+processed independently.
+
+### Arguments
+- `ctx` — production context (tickers, SIM params, risk limits)
+- `ewls_states` — current EWLS states per ticker (mutated in place)
+- `price_matrix` — historical price matrix (n_days, K+1)
+- `market_prices` — historical market (SPY) prices
+- `tickers` — ticker symbols
+- `day_idx` — index into price_matrix for "today"
+- `n_bandit_iters` — number of bandit iterations
+- `prev_action` — previous day's bandit action (for churn detection)
+- `peak_wealth` — peak portfolio value seen so far
+- `current_shares` — current share holdings
+- `current_cash` — current cash balance
+"""
+function run_production_step(ctx::MyProductionContext, ewls_states::Dict{String,MyEWLSState},
+    price_matrix::Array{Float64,2}, market_prices::Array{Float64,1},
+    tickers::Array{String,1}, day_idx::Int;
+    n_bandit_iters::Int = 100, prev_action::Union{Nothing,Array{Int,1}} = nothing,
+    peak_wealth::Float64 = 0.0, current_shares::Array{Float64,1} = Float64[],
+    current_cash::Float64 = 0.0,
+    N_short::Int = 21, N_long::Int = 63, GAIN::Float64 = 10.0,
+    N_growth::Int = 10)::Tuple{MyLiveProductionDayResult,Array{MyEscalationEvent,1}}
+
+    Δt = 1.0 / 252.0;
+    K = length(tickers);
+
+    if isempty(current_shares)
+        current_shares = zeros(K);
+    end
+    if prev_action === nothing
+        prev_action = ones(Int, K);
+    end
+
+    # --- Step 1: Update EWLS with today's data ---
+    if day_idx >= 2 && day_idx <= length(market_prices)
+        gm_t = (1.0 / Δt) * log(market_prices[day_idx] / market_prices[day_idx - 1]);
+        for (k, ticker) in enumerate(tickers)
+            gi_t = (1.0 / Δt) * log(price_matrix[day_idx, k + 1] / price_matrix[day_idx - 1, k + 1]);
+            ewls_update!(ewls_states[ticker], gi_t, gm_t);
+        end
+    end
+
+    # extract current EWLS params -
+    sim_params_current = Dict{String,Tuple{Float64,Float64,Float64}}(
+        ticker => (ewls_states[ticker].α, ewls_states[ticker].β, ewls_states[ticker].σ_ε)
+        for ticker in tickers
+    );
+
+    # --- Step 2: Compute sentiment from real prices ---
+    sentiment = compute_live_sentiment(market_prices[1:min(day_idx, length(market_prices))]);
+
+    # --- Step 3: Compute effective lambda ---
+    ema_s = compute_ema(market_prices[1:min(day_idx, length(market_prices))]; window = N_short);
+    ema_l = compute_ema(market_prices[1:min(day_idx, length(market_prices))]; window = N_long);
+    λ_series = compute_lambda(ema_s, ema_l; G = GAIN);
+    λ_base = λ_series[end];
+
+    λ_eff = sentiment < ctx.sentiment_threshold ? ctx.sentiment_override_lambda : λ_base;
+
+    # --- Step 4: Compute current wealth ---
+    wealth = current_cash;
+    for i in 1:K
+        wealth += current_shares[i] * price_matrix[day_idx, i + 1];
+    end
+    peak_wealth = max(peak_wealth, wealth);
+
+    # --- Step 5: Run bandit to select assets ---
+    gm_raw = compute_market_growth(market_prices[1:min(day_idx, length(market_prices))]; Δt = Δt);
+    gm_ema = compute_ema(gm_raw; window = N_growth);
+    gm_current = gm_ema[end];
+
+    prices_now = [price_matrix[day_idx, k + 1] for k in 1:K];
+    bandit_ctx = MyBanditContext();
+    bandit_ctx.tickers = tickers;
+    bandit_ctx.sim_parameters = sim_params_current;
+    bandit_ctx.prices = prices_now;
+    bandit_ctx.B = wealth;
+    bandit_ctx.lambda = λ_eff;
+    bandit_ctx.gm_t = gm_current;
+    bandit_ctx.epsilon = ctx.epsilon;
+
+    bandit_model = MyEpsilonGreedyBanditModel();
+    bandit_model.K = K;
+    bandit_model.n_iterations = n_bandit_iters;
+    bandit_model.alpha = 0.1;
+
+    bandit_result = solve_bandit(bandit_model, bandit_ctx);
+    bandit_action = bandit_result.best_action;
+
+    # --- Step 6: Check escalation triggers ---
+    events = check_escalation_triggers(day_idx, ctx, wealth, peak_wealth,
+        sentiment, bandit_action, prev_action);
+
+    has_critical = any(e.severity == :critical for e in events);
+    has_churn = any(e.trigger_type == "bandit_churn" for e in events);
+    escalated = !isempty(events);
+
+    # --- Step 7: Allocate ---
+    rebalanced = true;
+    if has_critical
+        # de-risk to cash -
+        target_shares = zeros(K);
+        target_cash = wealth;
+        gamma = zeros(K);
+    elseif has_churn
+        # hold previous allocation -
+        target_shares = copy(current_shares);
+        target_cash = current_cash;
+        gamma = zeros(K);
+        rebalanced = false;
+    else
+        # apply bandit: excluded assets get penalized SIM params -
+        modified_params = copy(sim_params_current);
+        for (k, ticker) in enumerate(tickers)
+            if bandit_action[k] == 0
+                (_, β_k, σ_k) = modified_params[ticker];
+                modified_params[ticker] = (-10.0, β_k, σ_k);
+            end
+        end
+
+        gamma = compute_preference_weights(modified_params, tickers, gm_current, λ_eff);
+
+        problem = MyCobbDouglasChoiceProblem();
+        problem.gamma = gamma;
+        problem.prices = prices_now;
+        problem.B = wealth;
+        problem.epsilon = ctx.epsilon;
+        (target_shares, target_cash) = allocate_cobb_douglas(problem);
+
+        # apply turnover cap -
+        trade_value = sum(abs(target_shares[i] - current_shares[i]) * prices_now[i] for i in 1:K);
+        turnover_frac = wealth > 0 ? trade_value / wealth : 0.0;
+        if turnover_frac > ctx.max_turnover
+            scale = ctx.max_turnover / turnover_frac;
+            for i in 1:K
+                target_shares[i] = current_shares[i] + scale * (target_shares[i] - current_shares[i]);
+            end
+            target_cash = current_cash + scale * (target_cash - current_cash);
+        end
+    end
+
+    # --- Step 8: Package result ---
+    result = MyLiveProductionDayResult();
+    result.day = day_idx;
+    result.timestamp = "";
+    result.shares = target_shares;
+    result.cash = target_cash;
+    result.wealth = wealth;
+    result.gamma = gamma;
+    result.bandit_action = bandit_action;
+    result.sentiment = sentiment;
+    result.lambda = λ_eff;
+    result.rebalanced = rebalanced;
+    result.escalated = escalated;
+    result.ewls_params = sim_params_current;
+    result.order_ids = String[];
+
+    return (result, events);
+end
+
+"""
+    apply_stress_scenario(scenario::MyStressScenario, current_prices::Array{Float64,1},
+        current_shares::Array{Float64,1}, cash::Float64, ctx::MyProductionContext,
+        peak_wealth::Float64, prev_action::Array{Int,1},
+        tickers::Array{String,1}) -> MyStressResult
+
+Apply a hypothetical shock to the current portfolio and evaluate whether the
+escalation system would respond correctly. Computes stressed portfolio value,
+drawdown, and which triggers would fire.
+
+For tickers without explicit per-ticker shocks in `scenario.ticker_shocks`, the
+market-level shock `scenario.market_shock` is applied directly to the price.
+"""
+function apply_stress_scenario(scenario::MyStressScenario, current_prices::Array{Float64,1},
+    current_shares::Array{Float64,1}, cash::Float64, ctx::MyProductionContext,
+    peak_wealth::Float64, prev_action::Array{Int,1},
+    tickers::Array{String,1})::MyStressResult
+
+    K = length(tickers);
+
+    # apply shocks to prices -
+    stressed_prices = copy(current_prices);
+    for k in 1:K
+        ticker = tickers[k];
+        if haskey(scenario.ticker_shocks, ticker)
+            stressed_prices[k] *= (1.0 + scenario.ticker_shocks[ticker]);
+        else
+            stressed_prices[k] *= (1.0 + scenario.market_shock);
+        end
+    end
+
+    # compute stressed wealth -
+    stressed_wealth = cash;
+    for k in 1:K
+        stressed_wealth += current_shares[k] * stressed_prices[k];
+    end
+
+    # compute drawdown from peak -
+    drawdown = peak_wealth > 0.0 ? (peak_wealth - stressed_wealth) / peak_wealth : 0.0;
+
+    # compute stressed sentiment (assume market shock affects returns) -
+    stressed_sentiment = tanh(10.0 * scenario.market_shock);
+
+    # check escalation triggers -
+    triggers = check_escalation_triggers(0, ctx, stressed_wealth, peak_wealth,
+        stressed_sentiment, prev_action, prev_action);
+
+    has_critical = any(e.severity == :critical for e in triggers);
+    would_derisk = has_critical;
+
+    # capital preserved: if de-risk, we liquidate at stressed prices -
+    capital_preserved = would_derisk ? stressed_wealth : stressed_wealth;
+
+    result = MyStressResult();
+    result.scenario_label = scenario.label;
+    result.stressed_wealth = stressed_wealth;
+    result.drawdown = drawdown;
+    result.triggers_fired = triggers;
+    result.would_derisk = would_derisk;
+    result.capital_preserved = capital_preserved;
+
+    return result;
 end

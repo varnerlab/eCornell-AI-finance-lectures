@@ -11,6 +11,9 @@ Manifest.toml
 # IDE
 .vscode/
 
+# Credentials (API keys, secrets)
+**/config/credentials.toml
+
 # Build artifacts
 deps/
 docs/build/

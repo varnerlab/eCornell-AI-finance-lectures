@@ -13,7 +13,9 @@ end
 using eCornellAIFinance
 
 # load session-specific external packages -
+using Alpaca
 using Colors
+using Dates
 using HypothesisTests
 using Plots
 using PrettyTables

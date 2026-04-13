@@ -1,5 +1,7 @@
 [deps]
+Alpaca = "c1a5797d-a1e1-4ff9-a0c8-9ae1b3a2bac1"
 Colors = "5ae59095-9a9b-59fe-a467-6f913c188581"
+Dates = "ade2ca70-3891-5945-98fb-dc099432e06a"
 eCornellAIFinance = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 HypothesisTests = "09f84164-cd44-5f33-b23f-e6b0d136a0d5"
 Plots = "91a5bcdd-55d7-5caf-9e0b-520d859cae80"
@@ -7,4 +9,5 @@ PrettyTables = "08abe8d2-0d0c-5749-adfa-8a2ac140af0d"
 StatsPlots = "f3b207a7-027a-5e70-b257-86293d7955fd"
 
 [sources]
+Alpaca = {url = "https://github.com/varnerlab/alpaca-markets-sdk.git"}
 eCornellAIFinance = {path = "../../code"}

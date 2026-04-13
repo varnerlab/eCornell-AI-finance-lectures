@@ -624,6 +624,112 @@ const SIM_PARAMS = Dict(
     end
 
     # ===================================================================
+    @testset "Compute — Session 3 (EWLS)" begin
+
+        @testset "MyEWLSState construction" begin
+            state = MyEWLSState();
+            @test state isa MyEWLSState
+        end
+
+        @testset "ewls_init returns correct initial estimates" begin
+            state = ewls_init(0.01, 1.2, 0.05; half_life=63.0, prior_weight=63.0);
+            @test isapprox(state.α, 0.01; atol=1e-10)
+            @test isapprox(state.β, 1.2; atol=1e-10)
+            @test isapprox(state.σ_ε, 0.05; atol=1e-10)
+            @test isapprox(state.η, 2.0^(-1.0/63.0); atol=1e-10)
+            @test state.Sw > 0.0
+        end
+
+        @testset "ewls_update! converges on known linear data" begin
+            # generate data from g_i = 0.01 + 1.2 * g_m + ε with small noise
+            Random.seed!(42);
+            α_true = 0.01;
+            β_true = 1.2;
+            σ_true = 0.005;
+            n = 1000;
+            gm = randn(n) * 0.05;  # market growth rates
+            gi = α_true .+ β_true .* gm .+ σ_true .* randn(n);
+
+            # start from a wrong initial guess with very small prior weight
+            state = ewls_init(0.0, 1.0, 0.01; half_life=500.0, prior_weight=5.0);
+            for t in 1:n
+                ewls_update!(state, gi[t], gm[t]);
+            end
+
+            # after 1000 observations, should be close to true values
+            @test isapprox(state.α, α_true; atol=0.01)
+            @test isapprox(state.β, β_true; atol=0.15)
+            @test state.σ_ε > 0.0
+        end
+
+        @testset "ewls_update! with η=1 recovers OLS" begin
+            # with no decay, EWLS is exactly OLS
+            Random.seed!(123);
+            α_true = 0.02;
+            β_true = 0.8;
+            n = 500;
+            gm = randn(n) * 0.04;
+            gi = α_true .+ β_true .* gm .+ 0.003 .* randn(n);
+
+            # EWLS with η = 1.0 (infinite half-life), zero prior
+            state = ewls_init(0.0, 0.0, 0.0; half_life=Inf, prior_weight=0.0);
+            for t in 1:n
+                ewls_update!(state, gi[t], gm[t]);
+            end
+
+            # compare to direct OLS
+            X = hcat(ones(n), gm);
+            coeffs = X \ gi;
+            @test isapprox(state.α, coeffs[1]; atol=1e-8)
+            @test isapprox(state.β, coeffs[2]; atol=1e-8)
+        end
+
+        @testset "replay_engine_ewls produces valid results" begin
+            Random.seed!(42);
+
+            # generate synthetic price data: 300 days, 5 tickers + market
+            n_days = 300;
+            K = length(TICKERS);
+            Δt = 1.0 / 252.0;
+
+            # market prices (GBM)
+            market_prices = zeros(n_days);
+            market_prices[1] = 100.0;
+            for t in 2:n_days
+                market_prices[t] = market_prices[t-1] * exp((0.05 * Δt) + 0.15 * sqrt(Δt) * randn());
+            end
+
+            # ticker prices (SIM-based)
+            price_matrix = zeros(n_days, K + 1);
+            price_matrix[:, 1] = 1:n_days;
+            for (k, ticker) in enumerate(TICKERS)
+                (α, β, σ_ε) = SIM_PARAMS[ticker];
+                price_matrix[1, k + 1] = 50.0;
+                for t in 2:n_days
+                    gm_t = (1.0 / Δt) * log(market_prices[t] / market_prices[t - 1]);
+                    gi_t = α + β * gm_t + σ_ε * randn() / sqrt(Δt);
+                    price_matrix[t, k + 1] = price_matrix[t - 1, k + 1] * exp(gi_t * Δt);
+                end
+            end
+
+            rules_params = (max_drawdown = 0.25, max_turnover = 0.50);
+            result = replay_engine_ewls(price_matrix, market_prices, TICKERS, SIM_PARAMS, rules_params;
+                B₀ = 10000.0, offset = 63, half_life = 63.0);
+
+            # basic sanity checks
+            @test length(result.wealth) > 0
+            @test all(result.wealth .> 0.0)
+            @test haskey(result.results, 0)
+            @test all(result.results[0].shares .>= 0.0)
+
+            # param history should have entries for each ticker
+            for ticker in TICKERS
+                @test length(result.param_history[ticker]) > 0
+            end
+        end
+    end
+
+    # ===================================================================
     @testset "Compute — Session 4 (Production)" begin
 
         @testset "generate_synthetic_sentiment" begin
@@ -728,6 +834,134 @@ const SIM_PARAMS = Dict(
             result = hmm_simulate(model, 50; n_paths=1);
             @test length(result.paths) == 1
             @test length(result.paths[1].observations) == 50
+        end
+    end
+
+    # ===================================================================
+    @testset "Compute — Session 4 (Live Production)" begin
+
+        @testset "compute_live_sentiment" begin
+            # rising prices → positive sentiment
+            rising = collect(100.0:1.0:110.0);
+            s = compute_live_sentiment(rising; lookback=5);
+            @test -1.0 <= s <= 1.0
+            @test s > 0.0
+
+            # falling prices → negative sentiment
+            falling = collect(110.0:-1.0:100.0);
+            s = compute_live_sentiment(falling; lookback=5);
+            @test s < 0.0
+
+            # insufficient data → 0.0
+            @test compute_live_sentiment([100.0, 101.0]; lookback=5) == 0.0
+        end
+
+        @testset "compute_position_drawdown" begin
+            # at peak → 0
+            @test compute_position_drawdown([100.0, 105.0, 110.0]) == 0.0
+
+            # 10% off peak
+            dd = compute_position_drawdown([100.0, 110.0, 99.0]);
+            @test isapprox(dd, (110.0 - 99.0) / 110.0; atol=1e-10)
+
+            # empty → 0
+            @test compute_position_drawdown(Float64[]) == 0.0
+        end
+
+        @testset "run_production_step" begin
+            Random.seed!(42);
+
+            # build synthetic price data
+            n_days = 200;
+            K = length(TICKERS);
+            Δt = 1.0 / 252.0;
+
+            market_prices = zeros(n_days);
+            market_prices[1] = 100.0;
+            for t in 2:n_days
+                market_prices[t] = market_prices[t-1] * exp(0.05 * Δt + 0.15 * sqrt(Δt) * randn());
+            end
+
+            price_matrix = zeros(n_days, K + 1);
+            price_matrix[:, 1] = 1:n_days;
+            for (k, ticker) in enumerate(TICKERS)
+                (α, β, σ_ε) = SIM_PARAMS[ticker];
+                price_matrix[1, k + 1] = 50.0;
+                for t in 2:n_days
+                    gm_t = (1.0 / Δt) * log(market_prices[t] / market_prices[t - 1]);
+                    gi_t = α + β * gm_t + σ_ε * randn() / sqrt(Δt);
+                    price_matrix[t, k + 1] = price_matrix[t - 1, k + 1] * exp(gi_t * Δt);
+                end
+            end
+
+            # build context
+            ctx = build(MyProductionContext, (
+                tickers = TICKERS,
+                sim_parameters = SIM_PARAMS,
+                B₀ = 10000.0,
+                epsilon = 0.1,
+                max_drawdown = 0.25,
+                max_turnover = 0.50,
+                sentiment_threshold = -0.5,
+                sentiment_override_lambda = 2.0,
+                max_bandit_churn = 2
+            ));
+
+            # init EWLS states
+            ewls_states = Dict{String,MyEWLSState}(
+                t => ewls_init(SIM_PARAMS[t]...; half_life=63.0) for t in TICKERS
+            );
+
+            # run one step
+            (result, events) = run_production_step(ctx, ewls_states, price_matrix, market_prices,
+                TICKERS, 150;
+                current_shares = fill(20.0, K), current_cash = 1000.0,
+                peak_wealth = 12000.0);
+
+            @test result isa MyLiveProductionDayResult
+            @test result.day == 150
+            @test length(result.shares) == K
+            @test all(result.shares .>= 0.0)
+            @test -1.0 <= result.sentiment <= 1.0
+            @test length(result.bandit_action) == K
+            @test all(a -> a in [0, 1], result.bandit_action)
+            @test events isa Array{MyEscalationEvent,1}
+        end
+
+        @testset "apply_stress_scenario" begin
+            ctx = build(MyProductionContext, (
+                tickers = TICKERS,
+                sim_parameters = SIM_PARAMS,
+                B₀ = 10000.0,
+                epsilon = 0.1,
+                max_drawdown = 0.15,
+                max_turnover = 0.50,
+                sentiment_threshold = -0.5,
+                sentiment_override_lambda = 2.0,
+                max_bandit_churn = 2
+            ));
+
+            prices = [150.0, 45.0, 80.0, 100.0, 60.0];
+            shares = [10.0, 20.0, 15.0, 50.0, 25.0];
+            cash = 500.0;
+            peak_wealth = sum(shares .* prices) + cash;
+            prev_action = ones(Int, 5);
+
+            # -30% market crash should trigger critical drawdown
+            scenario = MyStressScenario();
+            scenario.label = "Market -30%";
+            scenario.market_shock = -0.30;
+            scenario.ticker_shocks = Dict{String,Float64}();
+
+            result = apply_stress_scenario(scenario, prices, shares, cash, ctx,
+                peak_wealth, prev_action, TICKERS);
+
+            @test result isa MyStressResult
+            @test result.scenario_label == "Market -30%"
+            @test result.stressed_wealth < peak_wealth
+            @test result.drawdown > 0.15  # exceeds max_drawdown
+            @test result.would_derisk == true
+            @test length(result.triggers_fired) > 0
         end
     end
 

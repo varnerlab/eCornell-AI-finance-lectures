@@ -418,6 +418,50 @@ mutable struct MyBanditResult
     MyBanditResult() = new();
 end
 
+# --- Session 3: EWLS Types -----------------------------------------------------
+
+"""
+    MyEWLSState
+
+Running state for Exponentially Weighted Least Squares (EWLS) estimation of the
+Single Index Model parameters (α, β, σ_ε). Each observation is weighted by
+η^(T−t) where η = 2^(−1/half_life), so data from `half_life` days ago receives
+half the weight of today's observation.
+
+### Fields
+- `Sw::Float64` — sum of weights
+- `Swx::Float64` — weighted sum of market growth rates
+- `Swy::Float64` — weighted sum of asset growth rates
+- `Swxx::Float64` — weighted sum of squared market growth rates
+- `Swxy::Float64` — weighted cross-product of asset and market growth rates
+- `Swyy::Float64` — weighted sum of squared asset growth rates
+- `η::Float64` — per-step decay factor, 2^(−1/half_life)
+- `α::Float64` — current Jensen's alpha estimate
+- `β::Float64` — current market beta estimate
+- `σ_ε::Float64` — current idiosyncratic volatility estimate
+"""
+mutable struct MyEWLSState
+
+    # sufficient statistics -
+    Sw::Float64
+    Swx::Float64
+    Swy::Float64
+    Swxx::Float64
+    Swxy::Float64
+    Swyy::Float64
+
+    # decay factor -
+    η::Float64
+
+    # current estimates -
+    α::Float64
+    β::Float64
+    σ_ε::Float64
+
+    # constructor -
+    MyEWLSState() = new();
+end
+
 # --- Session 4: Production Types ------------------------------------------------
 
 """
@@ -532,4 +576,99 @@ mutable struct MyProductionContext
 
     # constructor -
     MyProductionContext() = new();
+end
+
+# --- Session 4: Live Production Types -------------------------------------------
+
+"""
+    MyLiveProductionDayResult
+
+The state of the live production portfolio system at a single trading day. Extends
+`MyProductionDayResult` with real-execution metadata: wall-clock timestamp, EWLS
+parameter snapshots, and Alpaca order IDs for audit trail.
+
+### Fields
+- `day::Int` — production day index (1, 2, ...)
+- `timestamp::String` — wall-clock time of execution (ISO 8601)
+- `shares::Array{Float64,1}` — shares held per asset after execution
+- `cash::Float64` — unallocated cash
+- `wealth::Float64` — total portfolio value (shares + cash)
+- `gamma::Array{Float64,1}` — Cobb-Douglas preference weights
+- `bandit_action::Array{Int,1}` — bandit's selected asset subset (binary)
+- `sentiment::Float64` — sentiment score for this day
+- `lambda::Float64` — effective lambda after sentiment override
+- `rebalanced::Bool` — did we execute trades today?
+- `escalated::Bool` — did an escalation trigger fire?
+- `ewls_params::Dict{String,Tuple{Float64,Float64,Float64}}` — EWLS (α, β, σ_ε) snapshot
+- `order_ids::Array{String,1}` — Alpaca order IDs for audit trail
+"""
+mutable struct MyLiveProductionDayResult
+
+    # core state (same as MyProductionDayResult) -
+    day::Int
+    timestamp::String
+    shares::Array{Float64,1}
+    cash::Float64
+    wealth::Float64
+    gamma::Array{Float64,1}
+    bandit_action::Array{Int,1}
+    sentiment::Float64
+    lambda::Float64
+    rebalanced::Bool
+    escalated::Bool
+
+    # live-execution metadata -
+    ewls_params::Dict{String,Tuple{Float64,Float64,Float64}}
+    order_ids::Array{String,1}
+
+    # constructor -
+    MyLiveProductionDayResult() = new();
+end
+
+"""
+    MyStressScenario
+
+A hypothetical shock scenario for what-if analysis on a live portfolio.
+
+### Fields
+- `label::String` — human-readable scenario name (e.g., "Market -20%")
+- `market_shock::Float64` — proportional shock to market prices (e.g., -0.20 for -20%)
+- `ticker_shocks::Dict{String,Float64}` — per-ticker overrides (empty = use market_shock × β)
+"""
+mutable struct MyStressScenario
+
+    # data -
+    label::String
+    market_shock::Float64
+    ticker_shocks::Dict{String,Float64}
+
+    # constructor -
+    MyStressScenario() = new();
+end
+
+"""
+    MyStressResult
+
+The result of applying a stress scenario to a live portfolio.
+
+### Fields
+- `scenario_label::String` — which scenario was applied
+- `stressed_wealth::Float64` — portfolio value after shock
+- `drawdown::Float64` — drawdown from peak after shock
+- `triggers_fired::Array{MyEscalationEvent,1}` — escalation events from the shock
+- `would_derisk::Bool` — would the system de-risk to cash?
+- `capital_preserved::Float64` — estimated capital after de-risking (or stressed wealth if no de-risk)
+"""
+mutable struct MyStressResult
+
+    # data -
+    scenario_label::String
+    stressed_wealth::Float64
+    drawdown::Float64
+    triggers_fired::Array{MyEscalationEvent,1}
+    would_derisk::Bool
+    capital_preserved::Float64
+
+    # constructor -
+    MyStressResult() = new();
 end

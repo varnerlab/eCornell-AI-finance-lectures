@@ -41,7 +41,9 @@ export MyCobbDouglasChoiceProblem, MyCESChoiceProblem, MyLogLinearChoiceProblem
 export MyRebalancingContextModel, MyTriggerRules, MyRebalancingResult
 export MyBacktestScenario, MyBacktestResult, MyValidationReport
 export MyBanditContext, MyEpsilonGreedyBanditModel, MyBanditResult
+export MyEWLSState
 export MySentimentSignal, MyEscalationEvent, MyProductionDayResult, MyProductionContext
+export MyLiveProductionDayResult, MyStressScenario, MyStressResult
 
 # export factory -
 export build
@@ -61,10 +63,13 @@ export generate_training_prices, generate_hmm_scenario, generate_hybrid_scenario
 export backtest_engine, backtest_buyhold, backtest_buyhold_market
 export compute_cvar
 export bandit_world, solve_bandit, compute_regret, backtest_bandit
+export ewls_init, ewls_update!, replay_engine_ewls
 
 # export compute — Session 4 -
 export generate_synthetic_sentiment, check_escalation_triggers
 export run_production_simulation, compute_dashboard_metrics
+export compute_live_sentiment, compute_position_drawdown
+export run_production_step, apply_stress_scenario
 
 # export files -
 export load_price_data, save_results, load_results
