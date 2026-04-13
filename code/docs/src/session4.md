@@ -9,6 +9,9 @@ MySentimentSignal
 MyEscalationEvent
 MyProductionDayResult
 MyProductionContext
+MyLiveProductionDayResult
+MyStressScenario
+MyStressResult
 ```
 
 ## Factory Methods
@@ -25,6 +28,10 @@ generate_synthetic_sentiment
 check_escalation_triggers
 run_production_simulation
 compute_dashboard_metrics
+compute_live_sentiment
+compute_position_drawdown
+run_production_step
+apply_stress_scenario
 ```
 
 ## File I/O

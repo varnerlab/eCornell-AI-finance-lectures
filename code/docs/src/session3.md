@@ -54,3 +54,19 @@ bandit_world
 solve_bandit
 compute_regret
 ```
+
+## EWLS (Exponentially Weighted Least Squares)
+
+### Types
+
+```@docs
+MyEWLSState
+```
+
+### Functions
+
+```@docs
+ewls_init
+ewls_update!
+replay_engine_ewls
+```
