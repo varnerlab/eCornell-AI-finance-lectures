@@ -1,0 +1,25 @@
+# Production Runner Configuration
+# Update tickers and risk parameters here. This file is tracked in git (no secrets).
+# Credentials are in credentials.toml (gitignored).
+
+[Tickers]
+universe = ["AAPL", "MSFT", "GOOG", "AMZN", "NVDA"]
+
+[Engine]
+B0 = 10000.0
+half_life = 63.0
+offset = 63
+N_short = 21
+N_long = 63
+GAIN = 10.0
+N_growth = 10
+cost_bps = 5.0
+epsilon = 0.1
+
+[Risk]
+max_drawdown = 0.15
+max_turnover = 0.50
+sentiment_threshold = -0.5
+sentiment_override_lambda = 2.0
+max_bandit_churn = 2
+n_bandit_iters = 100
