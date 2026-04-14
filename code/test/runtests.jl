@@ -390,6 +390,24 @@ const SIM_PARAMS = Dict(
             u = evaluate_log_linear(shares, gamma);
             @test u > 0
         end
+
+        @testset "compute_adaptive_sigma" begin
+            # neutral → σ_max
+            @test compute_adaptive_sigma(0.0; σ_min=0.5, σ_max=5.0) ≈ 5.0
+
+            # large |λ| → approaches σ_min
+            σ_extreme = compute_adaptive_sigma(10.0; σ_min=0.5, σ_max=5.0);
+            @test σ_extreme > 0.5
+            @test σ_extreme < 1.0
+
+            # monotonically decreasing in |λ|
+            λ_vals = [0.0, 0.5, 1.0, 2.0, 5.0, 10.0];
+            σ_vals = [compute_adaptive_sigma(λ) for λ in λ_vals];
+            @test all(diff(σ_vals) .< 0)
+
+            # negative λ gives same result as positive (symmetric)
+            @test compute_adaptive_sigma(-2.0) ≈ compute_adaptive_sigma(2.0)
+        end
     end
 
     # ===================================================================

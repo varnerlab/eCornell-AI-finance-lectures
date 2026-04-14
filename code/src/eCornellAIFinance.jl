@@ -57,6 +57,7 @@ export compute_ema, compute_lambda, compute_market_growth, compute_preference_we
 export allocate_cobb_douglas, allocate_ces, allocate_log_linear
 export evaluate_cobb_douglas, evaluate_ces, evaluate_log_linear
 export allocate_shares, run_rebalancing_engine, compute_wealth_series
+export compute_adaptive_sigma
 
 # export compute — Session 3 -
 export generate_training_prices, generate_hmm_scenario, generate_hybrid_scenario

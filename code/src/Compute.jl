@@ -672,6 +672,21 @@ end
 # --- Session 2: Rebalancing Engine ----------------------------------------------
 
 """
+    compute_adaptive_sigma(λ::Float64; σ_min::Float64 = 0.5, σ_max::Float64 = 5.0) -> Float64
+
+Compute sentiment-adaptive CES elasticity of substitution. Maps the current
+sentiment signal λ to an elasticity σ ∈ [σ_min, σ_max]:
+
+    σ(λ) = σ_min + (σ_max - σ_min) / (1 + |λ|)
+
+When neutral (λ ≈ 0), σ → σ_max (concentrate on best asset). When sentiment
+is extreme (|λ| large), σ → σ_min (diversify, hedge bets).
+"""
+function compute_adaptive_sigma(λ::Float64; σ_min::Float64 = 0.5, σ_max::Float64 = 5.0)::Float64
+    return σ_min + (σ_max - σ_min) / (1.0 + abs(λ));
+end
+
+"""
     allocate_shares(t::Int, context::MyRebalancingContextModel;
         allocator::Symbol = :cobb_douglas) -> MyRebalancingResult
 
@@ -736,6 +751,7 @@ function allocate_shares(t::Int, context::MyRebalancingContextModel;
     result.shares = shares;
     result.cash = cash;
     result.gamma = gamma;
+    result.sigma = (allocator == :ces) ? sigma : 0.0;
 
     # return -
     return result;
@@ -753,11 +769,16 @@ Daily loop:
 2. If rebalance: liquidate, update budget and lambda, re-allocate via utility maximization
 3. If hold: propagate prior positions
 4. If drawdown exceeded: de-risk to cash
+
+When `adaptive_sigma = true` and `allocator = :ces`, the elasticity of substitution
+is recomputed each rebalance day via `compute_adaptive_sigma(λ_t)` using `sigma_bounds`.
 """
 function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTriggerRules,
     lambda_series::Array{Float64,1}; offset::Int = 84,
     allocator::Symbol = :cobb_douglas,
     sigma::Float64 = 2.0,
+    adaptive_sigma::Bool = false,
+    sigma_bounds::Tuple{Float64,Float64} = (0.5, 5.0),
     cost_bps::Float64 = 0.0)::Dict{Int,MyRebalancingResult}
 
     # setup -
@@ -772,7 +793,9 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
     results = Dict{Int,MyRebalancingResult}();
 
     # initial allocation at offset -
-    results[0] = allocate_shares(offset, context; allocator = allocator, sigma = sigma);
+    σ_init = (adaptive_sigma && allocator == :ces) ?
+        compute_adaptive_sigma(context.lambda; σ_min = sigma_bounds[1], σ_max = sigma_bounds[2]) : sigma;
+    results[0] = allocate_shares(offset, context; allocator = allocator, sigma = σ_init);
 
     # initial trade cost: all of B₀ is "traded" from cash into shares -
     if cost_rate > 0.0
@@ -816,6 +839,7 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
                 end
                 derisk_result.cash = derisk_cash;
                 derisk_result.gamma = zeros(K);
+                derisk_result.sigma = 0.0;
                 results[day] = derisk_result;
             else
                 # rebalance via utility maximization -
@@ -823,7 +847,9 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
                 ctx.B = liquidation_value;
                 ctx.lambda = lambda_series[min(actual_day, length(lambda_series))];
 
-                new_result = allocate_shares(actual_day, ctx; allocator = allocator, sigma = sigma);
+                σ_t = (adaptive_sigma && allocator == :ces) ?
+                    compute_adaptive_sigma(ctx.lambda; σ_min = sigma_bounds[1], σ_max = sigma_bounds[2]) : sigma;
+                new_result = allocate_shares(actual_day, ctx; allocator = allocator, sigma = σ_t);
 
                 # check turnover cap -
                 if day > 0 && haskey(results, day - 1)

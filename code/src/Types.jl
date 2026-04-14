@@ -253,6 +253,7 @@ Holds the state of the portfolio at a single time step.
 - `shares::Array{Float64,1}` — number of shares held per asset
 - `cash::Float64` — unallocated cash
 - `gamma::Array{Float64,1}` — preference weights at this step
+- `sigma::Float64` — CES elasticity of substitution used at this step (0.0 if not CES)
 """
 mutable struct MyRebalancingResult
 
@@ -260,6 +261,7 @@ mutable struct MyRebalancingResult
     shares::Array{Float64,1}
     cash::Float64
     gamma::Array{Float64,1}
+    sigma::Float64
 
     # constructor -
     MyRebalancingResult() = new();
