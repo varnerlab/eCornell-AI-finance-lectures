@@ -14,6 +14,7 @@ using eCornellAIFinance
 
 # load session-specific external packages -
 using Colors
+using CSV
 using DataFrames
 using Distributions
 using HypothesisTests
@@ -24,3 +25,4 @@ using Random
 using Statistics
 using StatsBase
 using StatsPlots
+using TOML

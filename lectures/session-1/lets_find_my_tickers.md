@@ -1,134 +1,344 @@
 # Let's Find Your Tickers
 
-This procedure walks through how to build a ticker universe for the course. The output is a list of 20-25 S&P 500 tickers that you will carry through all four sessions: Session 1 minimum-variance portfolio, Session 2 rebalancing engine, Session 3 online learning and validation, and Session 4 production deployment.
+This is an **interactive questionnaire** that helps you build a ticker universe tailored to your investment profile. Answer the five questions below, match your answers to one of five archetypes, then copy the archetype's ticker list and budget into two configuration files that every notebook in the course reads from.
 
-## Step 1: Define Your Investor Profile
+You can do this yourself using the matching table in Step 7, or paste your answers into a Claude chat and ask for a recommendation. Either way, the output is the same: a `my-tickers.csv` and a `portfolio-config.toml` that drive the entire S1 to S4 pipeline.
 
-Before picking names, write down three things:
+## Step 1: What is your risk tolerance?
 
-1. **Risk tolerance.** Risk-averse (prefer staples, utilities, healthcare), risk-neutral (balanced), or risk-seeking (prefer tech, discretionary, small caps).
-2. **Time horizon.** Short (under 3 years), medium (3-10 years), or long (10+ years). Longer horizons tolerate more volatility.
-3. **Exclusions.** Any tickers or subsectors you want to avoid for ethical, regulatory, or personal reasons (e.g., tobacco, fossil fuels, specific companies).
+Pick the statement that sounds most like you:
 
-The combination of profile and exclusions drives the selection. A risk-averse long-horizon investor leans toward quality compounders with durable moats; a risk-seeking short-horizon investor leans toward beta and momentum names.
+- **(a) Risk-averse.** "I want to protect my capital. I would rather give up some upside than experience a 30% drawdown."
+- **(b) Balanced.** "I can tolerate moderate swings if the long-term return justifies it. A 15-20% drawdown is uncomfortable but not a deal-breaker."
+- **(c) Risk-tolerant.** "I understand markets move. I can sit through large drawdowns without selling, because I believe in the long-term trend."
 
-## Step 2: Cover the 11 GICS Sectors
+## Step 2: What is your time horizon?
 
-A diversified equity portfolio has at least one name from each GICS sector. Here are the 11 sectors with 2-4 recognizable large-cap candidates each. Pick 1-3 per sector based on your profile.
+How long can this money stay invested before you need it?
 
-| Sector | Candidate Tickers | Profile Note |
-|--------|------------------|--------------|
-| Communication Services | DIS, VZ, T, NFLX, META, GOOGL | VZ/T defensive, rest higher beta |
-| Consumer Discretionary | AMZN, HD, MCD, NKE, SBUX, TJX | MCD most defensive |
-| Consumer Staples | PG, COST, WMT, KO, PEP, CL | All defensive, dividend aristocrats |
-| Energy | XOM, CVX, COP, SLB | Cyclical, commodity-sensitive |
-| Financials | JPM, BRK.B, V, MA, BAC, GS | BRK.B lowest beta, BAC/GS higher |
-| Health Care | JNJ, UNH, LLY, PFE, ABBV, MRK | JNJ/UNH defensive, LLY growth |
-| Industrials | HON, UPS, CAT, GE, BA, LMT | HON/LMT most stable |
-| Information Technology | AAPL, MSFT, NVDA, AVGO, CRM, ADBE | NVDA highest beta |
-| Materials | SHW, APD, ECL, FCX, NUE, PPG | SHW/APD/ECL defensive |
-| Real Estate | AMT, PLD, CCI, EQIX, SPG, O | AMT/EQIX infrastructure |
-| Utilities | NEE, DUK, SO, AEP | All low beta |
+- **(a) Short: under 3 years.** "I may need this money soon, for a house, tuition, or other near-term expense."
+- **(b) Medium: 3 to 10 years.** "This is for a goal that is somewhat distant but has a specific date, such as a planned purchase or a child's education."
+- **(c) Long: 10+ years.** "This is retirement or generational wealth. I do not expect to withdraw for at least a decade."
 
-**Target count:** 20-25 tickers total. With 11 sectors, that averages 2 per sector, with extras in sectors you want to emphasize.
+## Step 3: What is the primary objective?
 
-## Step 3: Balance Beta Across the Portfolio
+What does this portfolio need to do?
 
-A well-constructed portfolio has a spread of market betas so the Single Index Model (SIM) covariance matrix is well-conditioned and the optimizer has real choices to make.
+- **(a) Capital preservation.** "Do not lose money. Return of capital matters more than return on capital."
+- **(b) Income.** "Generate steady cash flow through dividends, preferably growing over time."
+- **(c) Growth.** "Maximize long-term total return. Reinvest everything."
+- **(d) Balanced.** "A mix of growth and income, with moderate volatility."
 
-**Rough target mix for a risk-averse long-horizon portfolio:**
-- ~40% low beta (β < 1): staples, healthcare, utilities, REITs
-- ~40% market beta (β ≈ 1): financials, industrials, energy
-- ~20% high beta (β > 1): tech, consumer discretionary
+## Step 4: Are there any exclusions?
 
-**Rough target mix for a risk-seeking portfolio:** shift toward 20/40/40.
+Sectors, industries, or specific companies you want to avoid for ethical, regulatory, or personal reasons.
 
-## Step 4: Verify Tickers Are in the Calibration File
+Common examples:
+- Tobacco (MO, PM)
+- Fossil fuels (XOM, CVX, COP)
+- Weapons and defense (LMT, RTX, NOC)
+- Specific companies (often for governance or reputational concerns)
 
-The course uses `sim-calibration.jld2`, which contains pre-computed SIM parameters (α, β, σ_ε) for 424 S&P 500 stocks calibrated from 2014-2024 data. Every ticker you pick must be in this file.
+List your exclusions below. If none, write "none."
 
-Run the following Julia script from the `code/` directory to check your candidate list:
+```
+Exclusions: _____________________________________
+```
+
+## Step 5: What is your initial budget?
+
+The dollar amount you want to invest. This loads into the notebooks as `B_0` (initial wealth).
+
+```
+Initial budget (USD): ____________
+```
+
+A few notes:
+- The course uses the same relative math regardless of budget, so results scale linearly. A $10,000 portfolio and a $10,000,000 portfolio produce the same percentage returns and drawdowns.
+- Position sizing and transaction costs are what differ at scale. With $10,000, you can own fractional shares of all 22 names. With $1,000, you may need fewer names.
+
+## Step 6: Match Your Profile to an Archetype
+
+Use the table below. Find the row that most closely matches your answers to Steps 1-3.
+
+| Archetype | Risk | Horizon | Objective | Character |
+|-----------|------|---------|-----------|-----------|
+| **Conservative Income** | risk-averse | short or medium | income or preservation | Retirees, capital preservation with yield |
+| **Conservative Growth** | risk-averse | long | growth or balanced | Long-horizon defensive investor who still wants compounding |
+| **Balanced** | balanced | any | balanced | The middle-of-the-road 60/40 type allocation in equity form |
+| **Growth-Oriented** | balanced or risk-tolerant | medium or long | growth | Quality growth with some defensive ballast |
+| **Aggressive Growth** | risk-tolerant | long | growth | High-beta tech-heavy, volatility is the price of admission |
+
+If your answers span rows, pick the closest. The archetype is a starting point, not a prescription.
+
+## Step 7: Copy Your Archetype's Ticker List
+
+Each archetype below lists ~20-25 tickers spanning the 11 GICS sectors. All tickers are pre-verified against `sim-calibration.jld2` (424 S&P 500 names, 2014-2024). Apply your Step 4 exclusions after copying.
+
+### Conservative Income (20 tickers)
+Heavy on dividend aristocrats, utilities, REITs, and staples. Low beta throughout.
+
+```csv
+ticker,sector
+VZ,Communication Services
+T,Communication Services
+MCD,Consumer Discretionary
+PG,Consumer Staples
+KO,Consumer Staples
+PEP,Consumer Staples
+WMT,Consumer Staples
+XOM,Energy
+CVX,Energy
+JPM,Financials
+BRK.B,Financials
+JNJ,Health Care
+MRK,Health Care
+HON,Industrials
+UPS,Industrials
+AAPL,Information Technology
+MSFT,Information Technology
+APD,Materials
+AMT,Real Estate
+NEE,Utilities
+```
+
+### Conservative Growth (24 tickers)
+Quality compounders with a defensive tilt. Some growth exposure via large-cap tech and healthcare.
+
+```csv
+ticker,sector
+DIS,Communication Services
+VZ,Communication Services
+AMZN,Consumer Discretionary
+HD,Consumer Discretionary
+MCD,Consumer Discretionary
+PG,Consumer Staples
+COST,Consumer Staples
+WMT,Consumer Staples
+XOM,Energy
+CVX,Energy
+JPM,Financials
+BRK.B,Financials
+V,Financials
+JNJ,Health Care
+UNH,Health Care
+LLY,Health Care
+HON,Industrials
+UPS,Industrials
+AAPL,Information Technology
+MSFT,Information Technology
+AVGO,Information Technology
+SHW,Materials
+AMT,Real Estate
+NEE,Utilities
+```
+
+### Balanced (22 tickers)
+Even distribution across sectors and beta buckets. No heavy tilts.
+
+```csv
+ticker,sector
+DIS,Communication Services
+VZ,Communication Services
+AMZN,Consumer Discretionary
+HD,Consumer Discretionary
+PG,Consumer Staples
+COST,Consumer Staples
+XOM,Energy
+CVX,Energy
+JPM,Financials
+V,Financials
+BAC,Financials
+JNJ,Health Care
+UNH,Health Care
+LLY,Health Care
+HON,Industrials
+CAT,Industrials
+AAPL,Information Technology
+MSFT,Information Technology
+NVDA,Information Technology
+SHW,Materials
+AMT,Real Estate
+NEE,Utilities
+```
+
+### Growth-Oriented (22 tickers)
+Tilts toward tech and consumer discretionary, lighter on defensives.
+
+```csv
+ticker,sector
+DIS,Communication Services
+NFLX,Communication Services
+AMZN,Consumer Discretionary
+HD,Consumer Discretionary
+TJX,Consumer Discretionary
+COST,Consumer Staples
+CVX,Energy
+JPM,Financials
+V,Financials
+MA,Financials
+UNH,Health Care
+LLY,Health Care
+ABBV,Health Care
+HON,Industrials
+CAT,Industrials
+AAPL,Information Technology
+MSFT,Information Technology
+NVDA,Information Technology
+AVGO,Information Technology
+CRM,Information Technology
+SHW,Materials
+AMT,Real Estate
+```
+
+### Aggressive Growth (20 tickers)
+High-beta tech-heavy. Minimal defensive exposure. Prepare for volatility.
+
+```csv
+ticker,sector
+NFLX,Communication Services
+AMZN,Consumer Discretionary
+NKE,Consumer Discretionary
+TSLA,Consumer Discretionary
+COST,Consumer Staples
+SLB,Energy
+JPM,Financials
+V,Financials
+MA,Financials
+LLY,Health Care
+ABBV,Health Care
+CAT,Industrials
+AAPL,Information Technology
+MSFT,Information Technology
+NVDA,Information Technology
+AVGO,Information Technology
+CRM,Information Technology
+ADBE,Information Technology
+FCX,Materials
+AMT,Real Estate
+```
+
+## Step 8: Save Your Configuration
+
+The S1 notebooks read from two files in `lectures/session-1/data/`:
+
+**File 1: `my-tickers.csv`** — the ticker list from Step 7 (minus your Step 4 exclusions).
+
+**File 2: `portfolio-config.toml`** — the budget from Step 5 plus your risk-free rate and target growth rate.
+
+You can write both files with any text editor. Alternatively, use Julia:
 
 ```julia
-using eCornellAIFinance
+using CSV, DataFrames, TOML
 
-# Load the calibration file
+# --- Write tickers ---
+# Replace with your chosen archetype's list from Step 7
+tickers_df = DataFrame(
+    ticker = ["DIS", "VZ", "AMZN", "HD", "MCD", "PG", "COST", "WMT",
+              "XOM", "CVX", "JPM", "BRK.B", "V", "JNJ", "UNH", "LLY",
+              "HON", "UPS", "AAPL", "MSFT", "AVGO", "SHW", "AMT", "NEE"],
+    sector = ["Communication Services", "Communication Services",
+              "Consumer Discretionary", "Consumer Discretionary", "Consumer Discretionary",
+              "Consumer Staples", "Consumer Staples", "Consumer Staples",
+              "Energy", "Energy",
+              "Financials", "Financials", "Financials",
+              "Health Care", "Health Care", "Health Care",
+              "Industrials", "Industrials",
+              "Information Technology", "Information Technology", "Information Technology",
+              "Materials", "Real Estate", "Utilities"]
+)
+CSV.write(joinpath(_PATH_TO_DATA, "my-tickers.csv"), tickers_df)
+
+# --- Write portfolio config ---
+config = Dict(
+    "portfolio" => Dict(
+        "initial_budget" => 10_000.0,           # from Step 5
+        "risk_free_rate" => 0.045,              # 4.5%/yr
+        "target_growth" => 0.10,                # 10%/yr
+    ),
+    "profile" => Dict(
+        "risk_tolerance" => "risk-averse",      # from Step 1
+        "time_horizon" => "long",                # from Step 2
+        "primary_objective" => "growth",         # from Step 3
+        "archetype" => "Conservative Growth",    # from Step 6
+    ),
+)
+open(joinpath(_PATH_TO_DATA, "portfolio-config.toml"), "w") do io
+    TOML.print(io, config)
+end
+
+println("Wrote my-tickers.csv and portfolio-config.toml")
+```
+
+## Step 9: Verify Tickers Exist in the Calibration File
+
+After writing the files, run this check to confirm all tickers are in `sim-calibration.jld2`:
+
+```julia
+using eCornellAIFinance, CSV, DataFrames
+
 calib = MySIMCalibration()
 tickers_available = calib["tickers"]
 
+tickers_df = CSV.read(joinpath(_PATH_TO_DATA, "my-tickers.csv"), DataFrame)
+my_tickers = String.(tickers_df.ticker)
+
 println("Total tickers in calibration: ", length(tickers_available))
-
-# Your candidate list
-candidates = [
-    "DIS", "VZ",                      # Communication Services
-    "AMZN", "HD", "MCD",              # Consumer Discretionary
-    "PG", "COST", "WMT",              # Consumer Staples
-    "XOM", "CVX",                     # Energy
-    "JPM", "BRK.B", "V",              # Financials
-    "JNJ", "UNH", "LLY",              # Health Care
-    "HON", "UPS",                     # Industrials
-    "AAPL", "MSFT", "AVGO",           # Information Technology
-    "SHW",                            # Materials
-    "AMT",                            # Real Estate
-    "NEE",                            # Utilities
-]
-
 println("\n--- Availability check ---")
-for t in candidates
+missing_tickers = String[]
+for t in my_tickers
     found = t in tickers_available
     status = found ? "✓" : "✗"
     println("  $status $t")
+    found || push!(missing_tickers, t)
+end
+
+if !isempty(missing_tickers)
+    println("\nMissing: $(missing_tickers)")
+    println("Edit my-tickers.csv to substitute these with available names.")
+else
+    println("\nAll $(length(my_tickers)) tickers available.")
 end
 ```
 
-## Step 5: Substitute Missing Tickers
+If any ticker is missing, substitute it with another from the same sector (see the archetype list above for alternatives). Common substitution reasons:
 
-If any candidate prints `✗`, the ticker is not in the calibration file. This usually happens because:
-
-- The ticker was not in the S&P 500 during the 2014-2024 calibration window.
-- The company had a corporate action (spinoff, merger) that disqualified it.
+- The ticker was not in the S&P 500 during 2014-2024.
 - The symbol format differs (e.g., `BRK.B` vs `BRK-B`).
 
-To find substitutes in the same sector, check a broader candidate list:
+## Step 10: Choose Your Construction Notebook
+
+Session 1 has two portfolio construction notebooks. Which one you run depends on your archetype:
+
+| Archetype | Notebook | Construction Method | cash_fraction |
+|-----------|----------|---------------------|---------------|
+| Conservative Income | **RRFA** (`MinVariancePortfolio-RRFA`) | Tangent portfolio with cash position | 0.30 |
+| Conservative Growth | **RRFA** (`MinVariancePortfolio-RRFA`) | Tangent portfolio with cash position | 0.10 |
+| Balanced | **RA** (`BuildMinVariancePortfolio-RA`) | Minimum-variance, fully invested | 0.00 |
+| Growth-Oriented | **RA** (`BuildMinVariancePortfolio-RA`) | Minimum-variance, fully invested | 0.00 |
+| Aggressive Growth | **RA** (`BuildMinVariancePortfolio-RA`) | Minimum-variance, fully invested | 0.00 |
+
+**Why the split:**
+- **RA** (risky assets only) solves the minimum-variance QP with all capital invested in the risky portfolio. Use this when you want every dollar working in the market.
+- **RRFA** (risky + risk-free asset) solves the Sharpe-maximizing tangent portfolio and combines it with a cash position along the Capital Market Line. Use this when you want some dry powder.
+
+Both notebooks save to the same downstream file (`minvar-allocation.jld2`) with a `cash_fraction` field, so Session 2/3/4 work identically regardless of which you chose. Set your `cash_fraction` in `portfolio-config.toml` before running RRFA.
+
+## How the Notebooks Use These Files
+
+The S1 notebooks read both files at startup:
 
 ```julia
-# Example: find materials alternatives
-for t in ["SHW", "APD", "ECL", "FCX", "NEM", "NUE", "PPG", "PKG", "MLM", "VMC"]
-    println("  ", t in tickers_available ? "✓" : "✗", " ", t)
-end
+# Tickers
+tickers_df = CSV.read(joinpath(_PATH_TO_DATA, "my-tickers.csv"), DataFrame)
+my_tickers = String.(tickers_df.ticker)
+N = length(my_tickers)
+
+# Portfolio configuration
+cfg = TOML.parsefile(joinpath(_PATH_TO_DATA, "portfolio-config.toml"))
+B₀       = cfg["portfolio"]["initial_budget"]
+g_f      = cfg["portfolio"]["risk_free_rate"]
+R_target = cfg["portfolio"]["target_growth"]
 ```
 
-Pick the substitute that best fits your risk profile for that sector.
-
-## Step 6: Save Your Final Universe
-
-Once all tickers pass the availability check, save them to a variable you will reuse across notebooks. The Session 1 example notebooks expect a `my_tickers::Vector{String}` global.
-
-```julia
-my_tickers = [
-    "DIS", "VZ",
-    "AMZN", "HD", "MCD",
-    "PG", "COST", "WMT",
-    "XOM", "CVX",
-    "JPM", "BRK.B", "V",
-    "JNJ", "UNH", "LLY",
-    "HON", "UPS",
-    "AAPL", "MSFT", "AVGO",
-    "SHW",
-    "AMT",
-    "NEE",
-]
-
-println("Universe: $(length(my_tickers)) tickers across 11 sectors")
-```
-
-## Worked Example
-
-Starting profile:
-- Risk-averse
-- Long time horizon
-- Exclude META and GOOGL
-
-Result: 22 tickers, all in the calibration file after substituting **LIN → SHW** in Materials. Sector coverage: 11/11. Beta mix: roughly 40% low, 40% market, 20% high.
-
-This universe carries through S1 (minimum-variance allocation), S2 (adaptive rebalancing), S3 (EWLS online learning, sigma-bandit per regime), and S4 (production deployment with compliance gates).
+Every downstream session (S2 rebalancing, S3 online learning, S4 production) inherits these values via the saved `minvar-allocation.jld2` artifact. A single edit propagates through the entire pipeline.

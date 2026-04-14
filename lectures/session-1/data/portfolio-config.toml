@@ -1,0 +1,26 @@
+# Portfolio configuration for the AI Finance course.
+# Edit these values to match your answers from lets_find_my_tickers.md.
+# Every S1/S2/S3 example notebook reads parameters from this file.
+
+[portfolio]
+# Initial wealth in dollars
+initial_budget = 10000.0
+
+# Continuously compounded risk-free growth rate (1/year)
+risk_free_rate = 0.045
+
+# Target annualized growth rate for the minimum-variance QP (1/year)
+target_growth = 0.10
+
+# Fraction of initial wealth held in cash (risk-free asset).
+# 0.0 = fully invested in the risky portfolio (RA notebook).
+# >0.0 = partial cash position (RRFA notebook, from CML/tangent theory).
+# The risky weights always sum to 1 regardless of cash_fraction.
+cash_fraction = 0.0
+
+[profile]
+# Your questionnaire answers (informational, not used by the code)
+risk_tolerance = "risk-averse"      # risk-averse, balanced, risk-tolerant
+time_horizon = "long"                # short, medium, long
+primary_objective = "growth"         # preservation, income, growth, balanced
+archetype = "Conservative Growth"    # one of the 5 archetypes
