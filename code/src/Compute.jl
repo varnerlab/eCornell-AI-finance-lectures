@@ -1712,6 +1712,304 @@ function backtest_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
     return result;
 end
 
+# --- Session 3: Sigma-Bandit Functions -------------------------------------------
+
+"""
+    classify_regime(λ::Float64; θ::Float64 = 0.5) -> Symbol
+
+Classify the current sentiment into a regime bin. Returns `:bearish` if
+λ > θ, `:bullish` if λ < -θ, `:neutral` otherwise.
+"""
+function classify_regime(λ::Float64; θ::Float64 = 0.5)::Symbol
+    if λ > θ
+        return :bearish;
+    elseif λ < -θ
+        return :bullish;
+    else
+        return :neutral;
+    end
+end
+
+"""
+    sigma_bandit_world(σ::Float64, context::MyRebalancingContextModel, t::Int) -> Float64
+
+The "world" function for the sigma-bandit. Given a candidate CES elasticity σ,
+computes the CES utility-maximizing allocation at time step t using the context's
+current preference weights and prices. Returns the CES utility as the reward signal.
+"""
+function sigma_bandit_world(σ::Float64, context::MyRebalancingContextModel, t::Int)::Float64
+
+    # compute preference weights from current context -
+    gm_t = context.marketfactor[min(t, length(context.marketfactor))];
+    gamma = compute_preference_weights(context.sim_parameters, context.tickers, gm_t, context.lambda);
+
+    K = length(context.tickers);
+    prices = [context.marketdata[t, i + 1] for i in 1:K];
+
+    # solve CES allocation -
+    problem = MyCESChoiceProblem();
+    problem.gamma = gamma;
+    problem.prices = prices;
+    problem.B = context.B;
+    problem.epsilon = context.epsilon;
+    problem.sigma = σ;
+    (shares, _) = allocate_ces(problem);
+
+    # evaluate CES utility as reward -
+    utility = evaluate_ces(shares, gamma; sigma = σ);
+
+    return utility;
+end
+
+"""
+    solve_sigma_bandit(bandit::MySigmaBanditModel, context::MyRebalancingContextModel,
+        lambda_series::Array{Float64,1}, time_indices::Array{Int,1}) -> MySigmaBanditResult
+
+Run per-regime epsilon-greedy over the sigma grid. For each time index:
+classify the regime from lambda_series, select a sigma arm (epsilon-greedy
+within that regime's bandit state), call sigma_bandit_world, and update
+the regime's arm mean.
+"""
+function solve_sigma_bandit(bandit::MySigmaBanditModel, context::MyRebalancingContextModel,
+    lambda_series::Array{Float64,1}, time_indices::Array{Int,1})::MySigmaBanditResult
+
+    σ_grid = bandit.sigma_grid;
+    K_arms = length(σ_grid);
+    θ = bandit.lambda_threshold;
+    T = length(time_indices);
+
+    # per-regime state -
+    regimes = [:bearish, :neutral, :bullish];
+    arm_means = Dict(r => zeros(K_arms) for r in regimes);
+    arm_counts = Dict(r => zeros(Int, K_arms) for r in regimes);
+    regime_rounds = Dict(r => 0 for r in regimes);
+
+    # storage -
+    reward_history = zeros(T);
+    exploration_history = zeros(T);
+
+    for (iter, t) in enumerate(time_indices)
+
+        # classify regime -
+        λ_t = lambda_series[min(t, length(lambda_series))];
+        regime = classify_regime(λ_t; θ = θ);
+
+        # update context lambda -
+        ctx = deepcopy(context);
+        ctx.lambda = λ_t;
+
+        # regime-local round count for epsilon decay -
+        regime_rounds[regime] += 1;
+        t_local = regime_rounds[regime];
+
+        # decaying epsilon -
+        ε_t = t_local > 1 ? t_local^(-1.0/3.0) * (K_arms * log(t_local))^(1.0/3.0) : 1.0;
+        ε_t = clamp(ε_t, 0.0, 1.0);
+        exploration_history[iter] = ε_t;
+
+        # epsilon-greedy arm selection -
+        if rand() < ε_t
+            arm = rand(1:K_arms);
+        else
+            arm = argmax(arm_means[regime]);
+        end
+
+        # pull arm -
+        σ_chosen = σ_grid[arm];
+        utility = sigma_bandit_world(σ_chosen, ctx, t);
+
+        # update -
+        arm_counts[regime][arm] += 1;
+        lr = bandit.alpha > 0 ? bandit.alpha : 1.0 / arm_counts[regime][arm];
+        arm_means[regime][arm] += lr * (utility - arm_means[regime][arm]);
+
+        reward_history[iter] = utility;
+    end
+
+    # extract best sigma per regime -
+    best_sigma = Dict{Symbol,Float64}();
+    for r in regimes
+        if sum(arm_counts[r]) > 0
+            best_sigma[r] = σ_grid[argmax(arm_means[r])];
+        else
+            best_sigma[r] = σ_grid[div(K_arms, 2) + 1]; # default to middle
+        end
+    end
+
+    # package result -
+    result = MySigmaBanditResult();
+    result.best_sigma_per_regime = best_sigma;
+    result.arm_means_per_regime = arm_means;
+    result.arm_counts_per_regime = arm_counts;
+    result.reward_history = reward_history;
+    result.exploration_history = exploration_history;
+
+    return result;
+end
+
+"""
+    backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
+        sim_params::Dict{String,Tuple{Float64,Float64,Float64}},
+        sigma_map::Dict{Symbol,Float64};
+        B₀, offset, L_short, L_long, GAIN, L_growth, lambda_threshold, epsilon) -> MyBacktestResult
+
+Run the rebalancing engine with CES allocator across all paths, where σ is looked
+up per regime from sigma_map based on the current λ. Pattern follows backtest_bandit
+but uses :ces allocation with regime-dependent σ.
+"""
+function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
+    sim_params::Dict{String,Tuple{Float64,Float64,Float64}},
+    sigma_map::Dict{Symbol,Float64};
+    B₀::Float64 = 10000.0, offset::Int = 84,
+    L_short::Int = 21, L_long::Int = 63,
+    GAIN::Float64 = 10.0, L_growth::Int = 10,
+    lambda_threshold::Float64 = 0.5,
+    epsilon::Float64 = 0.1)::MyBacktestResult
+
+    Δt = 1.0 / 252.0;
+    n_paths = scenario.n_paths;
+    n_steps = scenario.n_steps;
+    K = length(tickers);
+    n_trading = n_steps - offset;
+
+    final_wealth = zeros(n_paths);
+    max_drawdowns = zeros(n_paths);
+    sharpe_ratios = zeros(n_paths);
+
+    for p in 1:n_paths
+
+        # extract path -
+        mkt = scenario.market_paths[p, :];
+        ema_s = compute_ema(mkt; window = L_short);
+        ema_l = compute_ema(mkt; window = L_long);
+        λ = compute_lambda(ema_s, ema_l; G = GAIN);
+        λ[1:offset] .= 0.0;
+
+        gm_raw = compute_market_growth(mkt; Δt = Δt);
+        gm_e = compute_ema(gm_raw; window = L_growth);
+
+        # build price matrix -
+        pmatrix = zeros(n_steps, K + 1);
+        pmatrix[:, 1] = 1:n_steps;
+        for k in 1:K
+            pmatrix[:, k + 1] = scenario.price_paths[p, :, k];
+        end
+
+        # build context -
+        ctx = build(MyRebalancingContextModel, (
+            B = B₀, tickers = tickers, marketdata = pmatrix,
+            marketfactor = gm_e, sim_parameters = sim_params,
+            lambda = 0.0, Δt = Δt, epsilon = epsilon
+        ));
+
+        rules = build(MyTriggerRules, (
+            max_drawdown = 0.15, max_turnover = 0.50,
+            rebalance_schedule = ones(Int, n_trading)
+        ));
+
+        # custom engine loop with regime-dependent sigma -
+        results = Dict{Int,MyRebalancingResult}();
+
+        # initial allocation -
+        λ_init = λ[offset];
+        regime_init = classify_regime(λ_init; θ = lambda_threshold);
+        σ_init = sigma_map[regime_init];
+        ctx.lambda = λ_init;
+        results[0] = allocate_shares(offset, ctx; allocator = :ces, sigma = σ_init);
+
+        peak_wealth = B₀;
+
+        for day in 1:n_trading
+            actual_day = offset + day;
+
+            # liquidate -
+            prev = results[day - 1];
+            liquidation_value = prev.cash;
+            for i in 1:K
+                liquidation_value += prev.shares[i] * pmatrix[actual_day, i + 1];
+            end
+
+            peak_wealth = max(peak_wealth, liquidation_value);
+            drawdown = peak_wealth > 0 ? (peak_wealth - liquidation_value) / peak_wealth : 0.0;
+
+            if drawdown > rules.max_drawdown
+                derisk_result = MyRebalancingResult();
+                derisk_result.shares = zeros(K);
+                derisk_result.cash = liquidation_value;
+                derisk_result.gamma = zeros(K);
+                derisk_result.sigma = 0.0;
+                results[day] = derisk_result;
+            else
+                ctx_day = deepcopy(ctx);
+                ctx_day.B = liquidation_value;
+                ctx_day.lambda = λ[min(actual_day, length(λ))];
+
+                regime = classify_regime(ctx_day.lambda; θ = lambda_threshold);
+                σ_day = sigma_map[regime];
+
+                new_result = allocate_shares(actual_day, ctx_day; allocator = :ces, sigma = σ_day);
+
+                # turnover cap -
+                old_shares = results[day - 1].shares;
+                trade_value = sum(abs(new_result.shares[i] - old_shares[i]) * pmatrix[actual_day, i + 1] for i in 1:K);
+                turnover_frac = liquidation_value > 0 ? trade_value / liquidation_value : 0.0;
+                if turnover_frac > rules.max_turnover
+                    scale = rules.max_turnover / turnover_frac;
+                    old_cash = results[day - 1].cash;
+                    new_cash = new_result.cash;
+                    for i in 1:K
+                        new_result.shares[i] = old_shares[i] + scale * (new_result.shares[i] - old_shares[i]);
+                    end
+                    new_result.cash = old_cash + scale * (new_cash - old_cash);
+                end
+
+                results[day] = new_result;
+            end
+        end
+
+        # compute wealth and metrics -
+        wealth = compute_wealth_series(results, pmatrix, tickers; offset = offset);
+        final_wealth[p] = wealth[end];
+        returns = diff(wealth) ./ wealth[1:end-1];
+        peak = accumulate(max, wealth);
+        max_drawdowns[p] = maximum((peak .- wealth) ./ peak);
+        vol = std(returns) * sqrt(252);
+        mean_ret = (wealth[end] / wealth[1] - 1.0);
+        sharpe_ratios[p] = vol > 0 ? mean_ret / vol : 0.0;
+    end
+
+    result = MyBacktestResult();
+    result.scenario_label = scenario.label;
+    result.strategy_label = "Sigma-Bandit CES";
+    result.final_wealth = final_wealth;
+    result.max_drawdowns = max_drawdowns;
+    result.sharpe_ratios = sharpe_ratios;
+
+    return result;
+end
+
+"""
+    build_compliance_config(; concentration_cap::Float64 = 0.40,
+        drawdown_gate::Float64 = 0.15, turnover_limit::Float64 = 0.50,
+        position_size_limit::Float64 = 5000.0) -> Dict{String,Float64}
+
+Package compliance parameters into a dictionary for Session 4's production system.
+Trades within these limits auto-execute; trades exceeding them queue for human review.
+"""
+function build_compliance_config(;
+    concentration_cap::Float64 = 0.40,
+    drawdown_gate::Float64 = 0.15,
+    turnover_limit::Float64 = 0.50,
+    position_size_limit::Float64 = 5000.0)::Dict{String,Float64}
+
+    return Dict{String,Float64}(
+        "concentration_cap" => concentration_cap,
+        "drawdown_gate" => drawdown_gate,
+        "turnover_limit" => turnover_limit,
+        "position_size_limit" => position_size_limit,
+    );
+end
+
 # --- Session 3: EWLS Functions --------------------------------------------------
 
 """

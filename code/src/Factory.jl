@@ -240,6 +240,22 @@ function build(type::Type{MyEpsilonGreedyBanditModel}, data::NamedTuple)::MyEpsi
     return model;
 end
 
+# --- Session 3: Sigma-Bandit Builders --------------------------------------------
+
+"""
+    build(type::Type{MySigmaBanditModel}, data::NamedTuple) -> MySigmaBanditModel
+"""
+function build(type::Type{MySigmaBanditModel}, data::NamedTuple)::MySigmaBanditModel
+
+    model = MySigmaBanditModel();
+    model.sigma_grid = data.sigma_grid;
+    model.n_iterations = data.n_iterations;
+    model.alpha = data.alpha;
+    model.lambda_threshold = data.lambda_threshold;
+
+    return model;
+end
+
 # --- Session 4: Production Builders ---------------------------------------------
 
 """

@@ -27,6 +27,7 @@ build(::Type{MyBacktestScenario}, ::NamedTuple)
 build(::Type{MyValidationReport}; strategy_label::String, criteria::Dict{String,Float64}, actuals::Dict{String,Float64})
 build(::Type{MyBanditContext}, ::NamedTuple)
 build(::Type{MyEpsilonGreedyBanditModel}, ::NamedTuple)
+build(::Type{MySigmaBanditModel}, ::NamedTuple)
 ```
 
 ## Data Generation
@@ -53,6 +54,25 @@ compute_cvar
 bandit_world
 solve_bandit
 compute_regret
+```
+
+## Sigma-Bandit (CES Elasticity Learning)
+
+### Types
+
+```@docs
+MySigmaBanditModel
+MySigmaBanditResult
+```
+
+### Functions
+
+```@docs
+classify_regime
+sigma_bandit_world
+solve_sigma_bandit
+backtest_sigma_bandit
+build_compliance_config
 ```
 
 ## EWLS (Exponentially Weighted Least Squares)

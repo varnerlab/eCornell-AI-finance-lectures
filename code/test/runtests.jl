@@ -748,6 +748,92 @@ const SIM_PARAMS = Dict(
     end
 
     # ===================================================================
+    @testset "Compute — Session 3 (Sigma-Bandit)" begin
+
+        @testset "classify_regime" begin
+            @test classify_regime(1.0; θ=0.5) == :bearish
+            @test classify_regime(-1.0; θ=0.5) == :bullish
+            @test classify_regime(0.0; θ=0.5) == :neutral
+            @test classify_regime(0.5; θ=0.5) == :neutral   # boundary
+            @test classify_regime(-0.5; θ=0.5) == :neutral   # boundary
+            @test classify_regime(0.51; θ=0.5) == :bearish
+        end
+
+        @testset "sigma_bandit_world — positive utility" begin
+            # build a minimal context -
+            T_test = 120;
+            K_test = N_ASSETS;
+            Δt = 1.0 / 252.0;
+            Random.seed!(42);
+            market_test = 100.0 .* exp.(cumsum(randn(T_test) * 0.01));
+            gm_raw_test = compute_market_growth(market_test; Δt=Δt);
+            gm_ema_test = compute_ema(gm_raw_test; window=10);
+            pmatrix_test = zeros(T_test, K_test + 1);
+            pmatrix_test[:, 1] = 1:T_test;
+            for k in 1:K_test
+                pmatrix_test[:, k+1] = 100.0 .* exp.(cumsum(randn(T_test) * 0.015));
+            end
+
+            ctx = build(MyRebalancingContextModel, (
+                B=10000.0, tickers=TICKERS, marketdata=pmatrix_test,
+                marketfactor=gm_ema_test, sim_parameters=SIM_PARAMS,
+                lambda=0.0, Δt=Δt, epsilon=0.1
+            ));
+
+            u = sigma_bandit_world(2.0, ctx, 84);
+            @test u > 0
+            @test isfinite(u)
+        end
+
+        @testset "solve_sigma_bandit — returns valid result" begin
+            T_test = 120;
+            K_test = N_ASSETS;
+            Δt = 1.0 / 252.0;
+            Random.seed!(42);
+            market_test = 100.0 .* exp.(cumsum(randn(T_test) * 0.01));
+            gm_raw_test = compute_market_growth(market_test; Δt=Δt);
+            gm_ema_test = compute_ema(gm_raw_test; window=10);
+            ema_s_test = compute_ema(market_test; window=21);
+            ema_l_test = compute_ema(market_test; window=63);
+            λ_test = compute_lambda(ema_s_test, ema_l_test; G=10.0);
+            pmatrix_test = zeros(T_test, K_test + 1);
+            pmatrix_test[:, 1] = 1:T_test;
+            for k in 1:K_test
+                pmatrix_test[:, k+1] = 100.0 .* exp.(cumsum(randn(T_test) * 0.015));
+            end
+
+            ctx = build(MyRebalancingContextModel, (
+                B=10000.0, tickers=TICKERS, marketdata=pmatrix_test,
+                marketfactor=gm_ema_test, sim_parameters=SIM_PARAMS,
+                lambda=0.0, Δt=Δt, epsilon=0.1
+            ));
+
+            σ_grid = [0.5, 1.0, 2.0, 3.0];
+            bandit = build(MySigmaBanditModel, (
+                sigma_grid=σ_grid, n_iterations=50, alpha=0.1, lambda_threshold=0.5
+            ));
+
+            result = solve_sigma_bandit(bandit, ctx, λ_test, collect(85:T_test));
+            @test haskey(result.best_sigma_per_regime, :bearish)
+            @test haskey(result.best_sigma_per_regime, :neutral)
+            @test haskey(result.best_sigma_per_regime, :bullish)
+            @test result.best_sigma_per_regime[:neutral] ∈ σ_grid
+            @test length(result.reward_history) == length(85:T_test)
+        end
+
+        @testset "build_compliance_config" begin
+            config = build_compliance_config(;
+                concentration_cap=0.35, drawdown_gate=0.10,
+                turnover_limit=0.40, position_size_limit=3000.0
+            );
+            @test config["concentration_cap"] ≈ 0.35
+            @test config["drawdown_gate"] ≈ 0.10
+            @test config["turnover_limit"] ≈ 0.40
+            @test config["position_size_limit"] ≈ 3000.0
+        end
+    end
+
+    # ===================================================================
     @testset "Compute — Session 4 (Production)" begin
 
         @testset "generate_synthetic_sentiment" begin

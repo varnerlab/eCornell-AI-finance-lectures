@@ -420,6 +420,56 @@ mutable struct MyBanditResult
     MyBanditResult() = new();
 end
 
+# --- Session 3: Sigma-Bandit Types ----------------------------------------------
+
+"""
+    MySigmaBanditModel
+
+Configuration for the sigma-bandit: epsilon-greedy learning of CES elasticity per regime.
+
+### Fields
+- `sigma_grid::Array{Float64,1}` — discrete σ values to explore (e.g., [0.5, 1.0, 1.5, 2.0, 3.0, 5.0])
+- `n_iterations::Int` — bandit rounds per regime bin
+- `alpha::Float64` — learning rate for reward averaging
+- `lambda_threshold::Float64` — threshold θ for regime binning (bearish if λ > θ, bullish if λ < -θ)
+"""
+mutable struct MySigmaBanditModel
+
+    # data -
+    sigma_grid::Array{Float64,1}
+    n_iterations::Int
+    alpha::Float64
+    lambda_threshold::Float64
+
+    # constructor -
+    MySigmaBanditModel() = new();
+end
+
+"""
+    MySigmaBanditResult
+
+Output from sigma-bandit learning: best σ per regime and convergence data.
+
+### Fields
+- `best_sigma_per_regime::Dict{Symbol,Float64}` — best σ for each regime (:bearish, :neutral, :bullish)
+- `arm_means_per_regime::Dict{Symbol,Array{Float64,1}}` — mean reward per σ arm per regime
+- `arm_counts_per_regime::Dict{Symbol,Array{Int,1}}` — pull counts per σ arm per regime
+- `reward_history::Array{Float64,1}` — reward at each iteration (all regimes interleaved)
+- `exploration_history::Array{Float64,1}` — exploration probability at each iteration
+"""
+mutable struct MySigmaBanditResult
+
+    # data -
+    best_sigma_per_regime::Dict{Symbol,Float64}
+    arm_means_per_regime::Dict{Symbol,Array{Float64,1}}
+    arm_counts_per_regime::Dict{Symbol,Array{Int,1}}
+    reward_history::Array{Float64,1}
+    exploration_history::Array{Float64,1}
+
+    # constructor -
+    MySigmaBanditResult() = new();
+end
+
 # --- Session 3: EWLS Types -----------------------------------------------------
 
 """

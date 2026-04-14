@@ -42,6 +42,7 @@ export MyRebalancingContextModel, MyTriggerRules, MyRebalancingResult
 export MyBacktestScenario, MyBacktestResult, MyValidationReport
 export MyBanditContext, MyEpsilonGreedyBanditModel, MyBanditResult
 export MyEWLSState
+export MySigmaBanditModel, MySigmaBanditResult
 export MySentimentSignal, MyEscalationEvent, MyProductionDayResult, MyProductionContext
 export MyLiveProductionDayResult, MyStressScenario, MyStressResult
 
@@ -65,6 +66,8 @@ export backtest_engine, backtest_buyhold, backtest_buyhold_market
 export compute_cvar
 export bandit_world, solve_bandit, compute_regret, backtest_bandit
 export ewls_init, ewls_update!, replay_engine_ewls
+export classify_regime, sigma_bandit_world, solve_sigma_bandit
+export backtest_sigma_bandit, build_compliance_config
 
 # export compute — Session 4 -
 export generate_synthetic_sentiment, check_escalation_triggers
