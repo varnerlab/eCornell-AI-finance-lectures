@@ -1,23 +1,21 @@
 ticker,sector
-DIS,Communication Services
-NFLX,Communication Services
-AMZN,Consumer Discretionary
-HD,Consumer Discretionary
-TJX,Consumer Discretionary
-COST,Consumer Staples
+VZ,Communication Services
+T,Communication Services
+MCD,Consumer Discretionary
+PG,Consumer Staples
+KO,Consumer Staples
+PEP,Consumer Staples
+WMT,Consumer Staples
+XOM,Energy
 CVX,Energy
 JPM,Financials
-V,Financials
-MA,Financials
-UNH,Health Care
-LLY,Health Care
-ABBV,Health Care
+BRK.B,Financials
+JNJ,Health Care
+MRK,Health Care
 HON,Industrials
-CAT,Industrials
+UPS,Industrials
 AAPL,Information Technology
 MSFT,Information Technology
-NVDA,Information Technology
-AVGO,Information Technology
-CRM,Information Technology
-SHW,Materials
+APD,Materials
 AMT,Real Estate
+NEE,Utilities

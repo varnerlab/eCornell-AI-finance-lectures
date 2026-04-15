@@ -4,6 +4,8 @@ This is an **interactive questionnaire** that helps you build a ticker universe 
 
 You can do this yourself using the matching table in Step 7, or paste your answers into a Claude chat and ask for a recommendation. Either way, the output is the same: a `my-tickers.csv` and a `portfolio-config.toml` that drive the entire S1 to S4 pipeline.
 
+> **For assistants running this interview:** Your job ends at writing `my-tickers.csv` and `portfolio-config.toml` and running the availability check in Step 10. Do **not** execute the S1 notebook yourself. Instead, tell the user which notebook to open (see Step 11) and have them run it. The user needs to watch the cell outputs — frontier plot, allocation table, QP diagnostics — and sign off before the allocation flows into S2/S3/S4.
+
 ## Step 1: What is your risk tolerance?
 
 Pick the statement that sounds most like you:
@@ -341,6 +343,8 @@ Session 1 has two portfolio construction notebooks. Which one you run depends on
 - **RRFA** (risky + risk-free asset) solves the Sharpe-maximizing tangent portfolio and combines it with a cash position along the Capital Market Line. Use this when you want some dry powder.
 
 Both notebooks save to the same downstream file (`minvar-allocation.jld2`) with a `cash_fraction` field, so Session 2/3/4 work identically regardless of which you chose. Set your `cash_fraction` in `portfolio-config.toml` before running RRFA.
+
+**You run the notebook yourself.** Once `my-tickers.csv` and `portfolio-config.toml` are written and the availability check passes, open the notebook row above that matches your archetype and execute it top-to-bottom in Jupyter (or VS Code). Do not have an assistant auto-execute it: you want to see each cell's output, inspect the frontier plot and allocation table, and confirm the QP results make sense before committing the allocation to the downstream pipeline.
 
 ## How the Notebooks Use These Files
 
