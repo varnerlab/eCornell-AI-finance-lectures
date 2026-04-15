@@ -4,7 +4,7 @@
 
 [portfolio]
 # Initial wealth in dollars
-initial_budget = 10000.0
+initial_budget = 100000.0
 
 # Continuously compounded risk-free growth rate (1/year)
 risk_free_rate = 0.045
@@ -20,7 +20,7 @@ cash_fraction = 0.0
 
 [profile]
 # Your questionnaire answers (informational, not used by the code)
-risk_tolerance = "risk-averse"      # risk-averse, balanced, risk-tolerant
+risk_tolerance = "balanced"          # risk-averse, balanced, risk-tolerant
 time_horizon = "long"                # short, medium, long
 primary_objective = "growth"         # preservation, income, growth, balanced
-archetype = "Conservative Growth"    # one of the 5 archetypes
+archetype = "Growth-Oriented"        # one of the 5 archetypes
