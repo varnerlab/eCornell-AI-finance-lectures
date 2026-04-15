@@ -300,11 +300,14 @@ end
 Holds the results of backtesting a strategy across multiple paths.
 
 ### Fields
-- `scenario_label::String` — which scenario was tested
-- `strategy_label::String` — which strategy was tested
-- `final_wealth::Array{Float64,1}` — final wealth for each path
-- `max_drawdowns::Array{Float64,1}` — max drawdown for each path
-- `sharpe_ratios::Array{Float64,1}` — Sharpe ratio for each path
+- `scenario_label::String`: which scenario was tested
+- `strategy_label::String`: which strategy was tested
+- `final_wealth::Array{Float64,1}`: final wealth for each path
+- `max_drawdowns::Array{Float64,1}`: max drawdown for each path
+- `sharpe_ratios::Array{Float64,1}`: Sharpe ratio for each path
+- `wealth_paths::Matrix{Float64}`: `(n_trading+1, n_paths)` matrix of per-path
+  wealth trajectories over the active window. Column `p` is the full wealth
+  series for path `p` starting from `B₀` on the first active day.
 """
 mutable struct MyBacktestResult
 
@@ -314,6 +317,7 @@ mutable struct MyBacktestResult
     final_wealth::Array{Float64,1}
     max_drawdowns::Array{Float64,1}
     sharpe_ratios::Array{Float64,1}
+    wealth_paths::Matrix{Float64}
 
     # constructor -
     MyBacktestResult() = new();

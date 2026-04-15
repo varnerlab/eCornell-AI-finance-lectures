@@ -1257,6 +1257,7 @@ function backtest_engine(scenario::MyBacktestScenario, tickers::Array{String,1},
     final_wealth = zeros(n_paths);
     max_drawdowns = zeros(n_paths);
     sharpe_ratios = zeros(n_paths);
+    wealth_paths = zeros(n_trading + 1, n_paths);
 
     for p in 1:n_paths
 
@@ -1297,6 +1298,7 @@ function backtest_engine(scenario::MyBacktestScenario, tickers::Array{String,1},
         # run engine with Cobb-Douglas allocator -
         results = run_rebalancing_engine(ctx, rules, λ; offset=offset, allocator=:cobb_douglas);
         wealth = compute_wealth_series(results, pmatrix, tickers; offset=offset);
+        wealth_paths[:, p] .= wealth;
 
         # metrics -
         final_wealth[p] = wealth[end];
@@ -1315,6 +1317,7 @@ function backtest_engine(scenario::MyBacktestScenario, tickers::Array{String,1},
     result.final_wealth = final_wealth;
     result.max_drawdowns = max_drawdowns;
     result.sharpe_ratios = sharpe_ratios;
+    result.wealth_paths = wealth_paths;
 
     return result;
 end
@@ -1347,6 +1350,7 @@ function backtest_buyhold(scenario::MyBacktestScenario, tickers::Array{String,1}
     final_wealth = zeros(n_paths);
     max_drawdowns = zeros(n_paths);
     sharpe_ratios = zeros(n_paths);
+    wealth_paths = zeros(n_trading + 1, n_paths);
 
     for p in 1:n_paths
 
@@ -1358,6 +1362,7 @@ function backtest_buyhold(scenario::MyBacktestScenario, tickers::Array{String,1}
             day = offset + d;
             wealth[d+1] = sum(shares[k] * scenario.price_paths[p, day, k] for k in 1:K);
         end
+        wealth_paths[:, p] .= wealth;
 
         final_wealth[p] = wealth[end];
         returns = diff(wealth) ./ wealth[1:end-1];
@@ -1375,6 +1380,7 @@ function backtest_buyhold(scenario::MyBacktestScenario, tickers::Array{String,1}
     result.final_wealth = final_wealth;
     result.max_drawdowns = max_drawdowns;
     result.sharpe_ratios = sharpe_ratios;
+    result.wealth_paths = wealth_paths;
 
     return result;
 end
@@ -1410,6 +1416,7 @@ function backtest_buyhold_market(scenario::MyBacktestScenario;
     final_wealth  = zeros(n_paths);
     max_drawdowns = zeros(n_paths);
     sharpe_ratios = zeros(n_paths);
+    wealth_paths = zeros(n_trading + 1, n_paths);
 
     for p in 1:n_paths
 
@@ -1421,6 +1428,7 @@ function backtest_buyhold_market(scenario::MyBacktestScenario;
             day = offset + d;
             wealth[d+1] = shares * scenario.market_paths[p, day];
         end
+        wealth_paths[:, p] .= wealth;
 
         final_wealth[p] = wealth[end];
         returns = diff(wealth) ./ wealth[1:end-1];
@@ -1438,6 +1446,7 @@ function backtest_buyhold_market(scenario::MyBacktestScenario;
     result.final_wealth = final_wealth;
     result.max_drawdowns = max_drawdowns;
     result.sharpe_ratios = sharpe_ratios;
+    result.wealth_paths = wealth_paths;
 
     return result;
 end
@@ -1627,6 +1636,7 @@ function backtest_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
     final_wealth = zeros(n_paths);
     max_drawdowns = zeros(n_paths);
     sharpe_ratios = zeros(n_paths);
+    wealth_paths = zeros(n_trading + 1, n_paths);
 
     for p in 1:n_paths
 
@@ -1690,6 +1700,7 @@ function backtest_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
 
         results = run_rebalancing_engine(ctx, rules, λ; offset=offset, allocator=:cobb_douglas);
         wealth = compute_wealth_series(results, pmatrix, tickers; offset=offset);
+        wealth_paths[:, p] .= wealth;
 
         # metrics -
         final_wealth[p] = wealth[end];
@@ -1708,6 +1719,7 @@ function backtest_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
     result.final_wealth = final_wealth;
     result.max_drawdowns = max_drawdowns;
     result.sharpe_ratios = sharpe_ratios;
+    result.wealth_paths = wealth_paths;
 
     return result;
 end
@@ -1875,6 +1887,7 @@ function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{Stri
     final_wealth = zeros(n_paths);
     max_drawdowns = zeros(n_paths);
     sharpe_ratios = zeros(n_paths);
+    wealth_paths = zeros(n_trading + 1, n_paths);
 
     for p in 1:n_paths
 
@@ -1969,6 +1982,7 @@ function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{Stri
 
         # compute wealth and metrics -
         wealth = compute_wealth_series(results, pmatrix, tickers; offset = offset);
+        wealth_paths[:, p] .= wealth;
         final_wealth[p] = wealth[end];
         returns = diff(wealth) ./ wealth[1:end-1];
         peak = accumulate(max, wealth);
@@ -1984,6 +1998,7 @@ function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{Stri
     result.final_wealth = final_wealth;
     result.max_drawdowns = max_drawdowns;
     result.sharpe_ratios = sharpe_ratios;
+    result.wealth_paths = wealth_paths;
 
     return result;
 end
