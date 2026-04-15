@@ -1,6 +1,6 @@
 # Let's Find Your Tickers
 
-This is an **interactive questionnaire** that helps you build a ticker universe tailored to your investment profile. Answer the five questions below, match your answers to one of five archetypes, then copy the archetype's ticker list and budget into two configuration files that every notebook in the course reads from.
+This is an **interactive questionnaire** that helps you build a ticker universe tailored to your investment profile. Answer the six questions below, match your answers to one of five archetypes, then copy the archetype's ticker list, budget, and concentration cap into two configuration files that every notebook in the course reads from.
 
 You can do this yourself using the matching table in Step 7, or paste your answers into a Claude chat and ask for a recommendation. Either way, the output is the same: a `my-tickers.csv` and a `portfolio-config.toml` that drive the entire S1 to S4 pipeline.
 
@@ -57,9 +57,26 @@ A few notes:
 - The course uses the same relative math regardless of budget, so results scale linearly. A $10,000 portfolio and a $10,000,000 portfolio produce the same percentage returns and drawdowns.
 - Position sizing and transaction costs are what differ at scale. With $10,000, you can own fractional shares of all 22 names. With $1,000, you may need fewer names.
 
-## Step 6: Match Your Profile to an Archetype
+## Step 6: What is your single-name concentration cap?
 
-Use the table below. Find the row that most closely matches your answers to Steps 1-3.
+Unconstrained minimum-variance QPs routinely put 30-50% into one or two low-volatility names. That is a mathematical optimum, not a policy most investors can live with. Institutional mandates typically cap single-name exposure to protect against idiosyncratic blowups.
+
+Pick a cap that matches your book size and risk policy:
+
+- **(a) Tight (5-10%).** Diversified mandates, broad universes (20+ names), fiduciary accounts.
+- **(b) Standard (15-25%).** Most actively managed portfolios. Balances concentration against diversification.
+- **(c) Loose (30-50%).** Concentrated high-conviction books, 5-10 names total.
+- **(d) Unconstrained (100%).** Research and teaching only. Expect single-name concentration.
+
+The cap loads into the notebooks as `max_weight` and is enforced as `w_i <= max_weight` in the min-variance QP. Must satisfy `max_weight >= 1/N` or the problem is infeasible.
+
+```
+Concentration cap (decimal, e.g., 0.20 for 20%): ____________
+```
+
+## Step 7: Match Your Profile to an Archetype
+
+Use the table below. Find the row that most closely matches your answers to Steps 1-3. The archetype suggests a reasonable default for Step 6 (concentration cap): Conservative books lean tight, Aggressive Growth books can tolerate looser caps.
 
 | Archetype | Risk | Horizon | Objective | Character |
 |-----------|------|---------|-----------|-----------|
@@ -71,9 +88,9 @@ Use the table below. Find the row that most closely matches your answers to Step
 
 If your answers span rows, pick the closest. The archetype is a starting point, not a prescription.
 
-## Step 7: Copy Your Archetype's Ticker List
+## Step 8: Copy Your Archetype's Ticker List
 
-Each archetype below lists ~20-25 tickers spanning the 11 GICS sectors. All tickers are pre-verified against `sim-calibration.jld2` (424 S&P 500 names, 2014-2024). Apply your Step 4 exclusions after copying.
+Each archetype below lists ~20-25 tickers spanning the 11 GICS sectors. All tickers are pre-verified against `sim-calibration.jld2` (424 S&P 500 names, 2014-2024). Apply your Step 4 exclusions after copying. The default `max_weight` suggested next to each archetype assumes you keep the full list; tighten or loosen based on your Step 6 answer.
 
 ### Conservative Income (20 tickers)
 Heavy on dividend aristocrats, utilities, REITs, and staples. Low beta throughout.
@@ -218,7 +235,7 @@ FCX,Materials
 AMT,Real Estate
 ```
 
-## Step 8: Save Your Configuration
+## Step 9: Save Your Configuration
 
 The S1 notebooks read from two files in `lectures/session-1/data/`:
 
@@ -255,12 +272,13 @@ config = Dict(
         "initial_budget" => 10_000.0,           # from Step 5
         "risk_free_rate" => 0.045,              # 4.5%/yr
         "target_growth" => 0.10,                # 10%/yr
+        "max_weight" => 0.20,                   # from Step 6 (concentration cap)
     ),
     "profile" => Dict(
         "risk_tolerance" => "risk-averse",      # from Step 1
         "time_horizon" => "long",                # from Step 2
         "primary_objective" => "growth",         # from Step 3
-        "archetype" => "Conservative Growth",    # from Step 6
+        "archetype" => "Conservative Growth",    # from Step 7
     ),
 )
 open(joinpath(_PATH_TO_DATA, "portfolio-config.toml"), "w") do io
@@ -270,7 +288,7 @@ end
 println("Wrote my-tickers.csv and portfolio-config.toml")
 ```
 
-## Step 9: Verify Tickers Exist in the Calibration File
+## Step 10: Verify Tickers Exist in the Calibration File
 
 After writing the files, run this check to confirm all tickers are in `sim-calibration.jld2`:
 
@@ -306,7 +324,7 @@ If any ticker is missing, substitute it with another from the same sector (see t
 - The ticker was not in the S&P 500 during 2014-2024.
 - The symbol format differs (e.g., `BRK.B` vs `BRK-B`).
 
-## Step 10: Choose Your Construction Notebook
+## Step 11: Choose Your Construction Notebook
 
 Session 1 has two portfolio construction notebooks. Which one you run depends on your archetype:
 
@@ -336,9 +354,10 @@ N = length(my_tickers)
 
 # Portfolio configuration
 cfg = TOML.parsefile(joinpath(_PATH_TO_DATA, "portfolio-config.toml"))
-B₀       = cfg["portfolio"]["initial_budget"]
-g_f      = cfg["portfolio"]["risk_free_rate"]
-R_target = cfg["portfolio"]["target_growth"]
+B₀         = cfg["portfolio"]["initial_budget"]
+g_f        = cfg["portfolio"]["risk_free_rate"]
+R_target   = cfg["portfolio"]["target_growth"]
+max_weight = cfg["portfolio"]["max_weight"]    # concentration cap, enforced in QP bounds
 ```
 
 Every downstream session (S2 rebalancing, S3 online learning, S4 production) inherits these values via the saved `minvar-allocation.jld2` artifact. A single edit propagates through the entire pipeline.

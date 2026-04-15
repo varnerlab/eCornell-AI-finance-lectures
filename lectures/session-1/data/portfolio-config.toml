@@ -18,6 +18,13 @@ target_growth = 0.10
 # The risky weights always sum to 1 regardless of cash_fraction.
 cash_fraction = 0.0
 
+# Maximum weight on any single ticker in the risky portfolio (concentration cap).
+# Enforced as w_i <= max_weight in the min-variance QP.
+# Must satisfy max_weight >= 1/N for feasibility (N = number of tickers).
+# Typical ranges: 0.20-0.25 for concentrated books (<= 10 tickers),
+# 0.05-0.10 for diversified books. Use 1.0 to disable the cap.
+max_weight = 0.20
+
 [profile]
 # Your questionnaire answers (informational, not used by the code)
 risk_tolerance = "balanced"          # risk-averse, balanced, risk-tolerant
