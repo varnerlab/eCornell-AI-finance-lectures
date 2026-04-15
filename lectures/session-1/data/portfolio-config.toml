@@ -9,8 +9,12 @@ initial_budget = 100000.0
 # Continuously compounded risk-free growth rate (1/year)
 risk_free_rate = 0.045
 
-# Target annualized growth rate for the minimum-variance QP (1/year)
-target_growth = 0.10
+# Target annualized growth rate for the minimum-variance QP (1/year, CCGR).
+# Set as a spread over risk_free_rate; archetype-default suggestions in interview.md Step 8:
+#   Conservative Income  +2-3 pp  (~0.07)    Growth-Oriented    +7-9 pp   (~0.13)
+#   Conservative Growth  +4-5 pp  (~0.09)    Aggressive Growth  +11-13 pp (~0.16)
+#   Balanced             +5-6 pp  (~0.10)
+target_growth = 0.07
 
 # Fraction of initial wealth held in cash (risk-free asset).
 # 0.0 = fully invested in the risky portfolio (RA notebook).

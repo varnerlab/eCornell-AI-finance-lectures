@@ -1,10 +1,10 @@
 # Let's Find Your Tickers
 
-This is an **interactive questionnaire** that helps you build a ticker universe tailored to your investment profile. Answer the six questions below, match your answers to one of five archetypes, then copy the archetype's ticker list, budget, and concentration cap into two configuration files that every notebook in the course reads from.
+This is an **interactive questionnaire** that helps you build a ticker universe tailored to your investment profile. Answer the seven questions below, match your answers to one of five archetypes, then copy the archetype's ticker list, budget, concentration cap, and target growth rate into two configuration files that every notebook in the course reads from.
 
 You can do this yourself using the matching table in Step 7, or paste your answers into a Claude chat and ask for a recommendation. Either way, the output is the same: a `my-tickers.csv` and a `portfolio-config.toml` that drive the entire S1 to S4 pipeline.
 
-> **For assistants running this interview:** Your job ends at writing `my-tickers.csv` and `portfolio-config.toml` and running the availability check in Step 10. Do **not** execute the S1 notebook yourself. Instead, tell the user which notebook to open (see Step 11) and have them run it. The user needs to watch the cell outputs — frontier plot, allocation table, QP diagnostics — and sign off before the allocation flows into S2/S3/S4.
+> **For assistants running this interview:** Your job ends at writing `my-tickers.csv` and `portfolio-config.toml` and running the availability check in Step 11. Do **not** execute the S1 notebook yourself. Instead, tell the user which notebook to open (see Step 12) and have them run it. The user needs to watch the cell outputs: frontier plot, allocation table, QP diagnostics, and sign off before the allocation flows into S2/S3/S4.
 
 ## Step 1: What is your risk tolerance?
 
@@ -90,7 +90,27 @@ Use the table below. Find the row that most closely matches your answers to Step
 
 If your answers span rows, pick the closest. The archetype is a starting point, not a prescription.
 
-## Step 8: Copy Your Archetype's Ticker List
+## Step 8: What is your target growth rate?
+
+The minimum-variance QP requires a target: $\mu^\top w \geq R_{\text{target}}$. A risk-averse income investor asking for 10%/yr growth is self-contradictory (the QP will force concentration in whatever high-growth names it can find under the cap); an aggressive growth investor capped at 10%/yr leaves return on the table. Set the target as a spread over the risk-free rate `g_f` to make the choice explicit.
+
+Your archetype suggests a default. Override if you have a reason.
+
+| Archetype | Default spread over `g_f` | Default `target_growth` (at `g_f = 4.5%`) |
+|-----------|---------------------------|-------------------------------------------|
+| Conservative Income   | +2 to +3 pp  | `0.07` |
+| Conservative Growth   | +4 to +5 pp  | `0.09` |
+| Balanced              | +5 to +6 pp  | `0.10` |
+| Growth-Oriented       | +7 to +9 pp  | `0.13` |
+| Aggressive Growth     | +11 to +13 pp | `0.16` |
+
+Feasibility: `R_target` must sit inside the convex hull of `E[g_i]` under the concentration cap, otherwise the QP returns infeasible. The RA/RRFA notebooks skip infeasible frontier points in the sweep and will error on the target-point solve; pick a tighter target or loosen `max_weight` if that happens.
+
+```
+Target growth rate (decimal, e.g., 0.07 for 7%/yr CCGR): ____________
+```
+
+## Step 9: Copy Your Archetype's Ticker List
 
 Each archetype below lists ~20-25 tickers spanning the 11 GICS sectors. All tickers are pre-verified against `sim-calibration.jld2` (424 S&P 500 names, 2014-2024). Apply your Step 4 exclusions after copying. The default `max_weight` suggested next to each archetype assumes you keep the full list; tighten or loosen based on your Step 6 answer.
 
@@ -237,7 +257,7 @@ FCX,Materials
 AMT,Real Estate
 ```
 
-## Step 9: Save Your Configuration
+## Step 10: Save Your Configuration
 
 The S1 notebooks read from two files in `lectures/session-1/data/`:
 
@@ -273,7 +293,7 @@ config = Dict(
     "portfolio" => Dict(
         "initial_budget" => 10_000.0,           # from Step 5
         "risk_free_rate" => 0.045,              # 4.5%/yr
-        "target_growth" => 0.10,                # 10%/yr
+        "target_growth" => 0.09,                # from Step 8 (archetype default shown; override if needed)
         "max_weight" => 0.20,                   # from Step 6 (concentration cap)
     ),
     "profile" => Dict(
@@ -290,7 +310,7 @@ end
 println("Wrote my-tickers.csv and portfolio-config.toml")
 ```
 
-## Step 10: Verify Tickers Exist in the Calibration File
+## Step 11: Verify Tickers Exist in the Calibration File
 
 After writing the files, run this check to confirm all tickers are in `sim-calibration.jld2`:
 
@@ -326,7 +346,7 @@ If any ticker is missing, substitute it with another from the same sector (see t
 - The ticker was not in the S&P 500 during 2014-2024.
 - The symbol format differs (e.g., `BRK.B` vs `BRK-B`).
 
-## Step 11: Choose Your Construction Notebook
+## Step 12: Choose Your Construction Notebook
 
 Session 1 has two portfolio construction notebooks. Which one you run depends on your archetype:
 
