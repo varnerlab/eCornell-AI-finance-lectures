@@ -20,3 +20,6 @@ docs/build/
 docs/site/
 code/docs/build/
 code/docs/site/
+
+# tmp stuff -
+tmp/

@@ -1,7 +1,21 @@
 {
   "permissions": {
     "allow": [
-      "Skill(update-config)"
+      "Skill(update-config)",
+      "Bash(ls *)",
+      "Read(//Users/jeffreyvarner/**)",
+      "Read(//Users/jeffreyvarner/Desktop/**)",
+      "Bash(python3 -c ' *)",
+      "Bash(python3 *)",
+      "Bash(julia --version)",
+      "Bash(time julia *)",
+      "Bash(tee /tmp/intro-cache-log.txt)",
+      "Bash(jupyter --version)",
+      "Bash(jupyter kernelspec *)",
+      "Bash(jupyter nbconvert *)",
+      "Bash(julia --project=. test-intro-plot.jl)",
+      "WebSearch",
+      "Bash(julia *)"
     ]
   }
 }
