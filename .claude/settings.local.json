@@ -15,7 +15,11 @@
       "Bash(jupyter nbconvert *)",
       "Bash(julia --project=. test-intro-plot.jl)",
       "WebSearch",
-      "Bash(julia *)"
+      "Bash(julia *)",
+      "Bash(git -C /Users/jeffreyvarner/Desktop/julia_work/eCornell-AI-finance-lectures status --short)",
+      "Bash(git add *)",
+      "Bash(git commit -m ' *)",
+      "Bash(git push *)"
     ]
   }
 }
