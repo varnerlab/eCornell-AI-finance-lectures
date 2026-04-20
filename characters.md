@@ -14,6 +14,6 @@ Maya's boss. Supervising principal at Lindenfield. Asks the gating question in S
 
 Builder of Lindenfield's AI intake tool (the agent that sorts clients into archetypes and produces the first-pass allocation). Answers for the design of the intake system when the S1 allocation is challenged in S2.
 
-## Dr. Amara Okafor
+## Dr. Sara Kim
 
 Head of Quantitative Research at Lindenfield. Introduced in S2 as the source of the utility-based rebalancing framework that has been on the internal roadmap for two years. Her pitch reduces to three operational claims (signal, utility function, trigger rules) that become the three deliverables of the S2 lecture.
