@@ -37,6 +37,17 @@ When reviewing new lecture or example notebooks, follow this workflow:
 - Plural: `The two `let...end` blocks below render...` becomes `In the code blocks below, we render...`
 - This rule is about prose only. The Julia `x = let ... end` binding pattern and its `name::Type` announcement convention are unchanged.
 
+**CRITICAL: Decorator phrases before display math**
+- Prose that introduces a `$$...$$` display-math block must end with a **decorator phrase followed by a colon**. The decorator signals "formula coming."
+- Preferred forms (pick whichever fits): `is given by:`, `is defined as:`, `takes the form:`, `yields:`, `satisfies:`, `reduces to:`, `becomes:`, `follows as:`, `given by:`
+- Not acceptable:
+  - Bare `is:` (e.g., `the Cobb-Douglas utility function is:`) — too bare, reads as unfinished
+  - Bare `is` (no colon at all)
+  - Prose ending with a period followed by a formula on the next line (missing the transition entirely)
+- Noun-only decorators like `... the Sharpe ratio:` or `... the allocation:` are acceptable when the noun names the formula's content, but verb-based forms are preferred.
+- When tightening verbose prose, do NOT cut the decorator. Going from `is defined as:` to `is:` is a regression. Keep `is given by:` which is short and complete.
+- Applies to all lecture and example notebooks.
+
 ### Step 3: Generate Learning Objectives and Summary Section
 Generate three components:
 
