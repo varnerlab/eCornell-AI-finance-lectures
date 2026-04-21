@@ -23,6 +23,20 @@ When reviewing new lecture or example notebooks, follow this workflow:
 - When unsure, make sections shorter, not longer
 - Check nearby sections for formatting patterns before writing new content
 
+**CRITICAL: Task section openers**
+- Every `## Task N: ...` section must begin with a sentence that starts with `In this task, ...`
+- Minimal template: prepend `In this task, ` to the existing first sentence and lowercase the next word
+- Example: `We generate one forward market path...` becomes `In this task, we generate one forward market path...`
+- Applies to all Example notebooks (3 tasks each by convention) and any Lecture notebook that uses explicit Task sections
+
+**CRITICAL: Referring to code cells in prose**
+- Do NOT reference the Julia `let...end` implementation detail in notebook prose
+- Use `In the code block below, we ...` or `The code block below ...` instead
+- Example: `The `let...end` block below loads the surrogate models, calls the generator, and computes EMAs.` becomes `In the code block below, we load the surrogate models, call the generator, and compute EMAs.`
+- The rewrite is not a pure string swap: switching the subject from "block" to "we" drags verb conjugations with it (`loads`→`load`). Rewrite per-cell, not find-replace.
+- Plural: `The two `let...end` blocks below render...` becomes `In the code blocks below, we render...`
+- This rule is about prose only. The Julia `x = let ... end` binding pattern and its `name::Type` announcement convention are unchanged.
+
 ### Step 3: Generate Learning Objectives and Summary Section
 Generate three components:
 
