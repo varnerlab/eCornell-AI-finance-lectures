@@ -6,9 +6,11 @@ using CSV
 using DataFrames
 using Distributions
 using FileIO
+using HTTP
 using HypothesisTests
 using Ipopt
 using JLD2
+using JSON
 using JuMP
 using JumpHMM
 using LinearAlgebra
@@ -42,9 +44,10 @@ export MyRebalancingContextModel, MyTriggerRules, MyRebalancingResult
 export MyBacktestScenario, MyBacktestResult, MyValidationReport
 export MyBanditContext, MyEpsilonGreedyBanditModel, MyBanditResult
 export MyEWLSState
-export MySigmaBanditModel, MySigmaBanditResult
+export MyEtaBanditModel, MyEtaBanditResult
 export MySentimentSignal, MyEscalationEvent, MyProductionDayResult, MyProductionContext
 export MyLiveProductionDayResult, MyStressScenario, MyStressResult
+export MyNewsScenario, MyNewsItem, MyNewsCorpus
 
 # export factory -
 export build
@@ -58,7 +61,7 @@ export compute_ema, compute_lambda, compute_market_growth, compute_preference_we
 export allocate_cobb_douglas, allocate_ces, allocate_log_linear
 export evaluate_cobb_douglas, evaluate_ces, evaluate_log_linear
 export allocate_shares, run_rebalancing_engine, compute_wealth_series
-export compute_adaptive_sigma
+export compute_adaptive_eta
 
 # export compute — Session 3 -
 export generate_training_prices, generate_hmm_scenario, generate_hybrid_scenario
@@ -66,14 +69,17 @@ export backtest_engine, backtest_buyhold, backtest_buyhold_market
 export compute_cvar
 export bandit_world, solve_bandit, compute_regret, backtest_bandit
 export ewls_init, ewls_update!, replay_engine_ewls
-export classify_regime, sigma_bandit_world, solve_sigma_bandit
-export backtest_sigma_bandit, build_compliance_config
+export classify_regime, eta_bandit_world, solve_eta_bandit
+export backtest_eta_bandit, build_compliance_config
 
 # export compute — Session 4 -
 export generate_synthetic_sentiment, check_escalation_triggers
 export run_production_simulation, compute_dashboard_metrics
 export compute_live_sentiment, compute_position_drawdown
 export run_production_step, apply_stress_scenario
+export simulate_news_corpus, aggregate_news_factor
+export generate_news_text!, score_news_with_claude!
+export estimate_sim_with_news
 
 # export files -
 export load_price_data, save_results, load_results

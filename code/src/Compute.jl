@@ -424,28 +424,61 @@ function compute_market_growth(prices::Array{Float64,1}; Δt::Float64 = 1.0/252.
 end
 
 """
-    compute_preference_weights(sim_parameters::Dict{String,Tuple{Float64,Float64,Float64}},
-        tickers::Array{String,1}, gm_t::Float64, lambda::Float64) -> Array{Float64,1}
+    compute_preference_weights(sim_parameters, tickers, gm_t, lambda;
+        news_t=nothing, nu_loadings=nothing) -> Array{Float64,1}
 
-Compute Cobb-Douglas preference exponents gamma_i from SIM parameters and sentiment.
+Compute Cobb-Douglas preference exponents gamma_i from SIM parameters and
+sentiment, with an optional news factor extension.
+
+Without news (default):
 
     gamma_i = tanh(alpha_i / beta_i^lambda + beta_i^(1-lambda) * E[g_m])
 
-where alpha_i is the firm-specific intercept (Jensen's alpha), beta_i is the market sensitivity,
-and lambda is the sentiment/risk-aversion parameter.
+With news (`news_t` and `nu_loadings` both supplied, length `K`):
+
+    gamma_i = tanh(alpha_i / beta_i^lambda + beta_i^(1-lambda) * E[g_m] + nu_i * news_i)
+
+The news term sits outside the `beta_i^lambda` regime-lens wrapper because
+news is a separate information channel: lambda interprets market exposure,
+while `nu_i * news_i` adds information that did not enter the SIM regression.
+
+### Arguments
+- `sim_parameters` — `Dict{String,Tuple{Float64,Float64,Float64}}` of `(alpha, beta, sigma_eps)` per ticker
+- `tickers` — column order
+- `gm_t` — current expected market growth rate
+- `lambda` — current sentiment/risk-aversion parameter
+
+### Keyword arguments
+- `news_t::Union{Nothing,Vector{Float64}} = nothing` — current-day news factor (length K)
+- `nu_loadings::Union{Nothing,Vector{Float64}} = nothing` — per-asset news loadings (length K)
+
+If either keyword is `nothing`, the news term is dropped and the function
+reduces to the single-index form. This preserves backwards compatibility with
+all existing callers.
 """
 function compute_preference_weights(sim_parameters::Dict{String,Tuple{Float64,Float64,Float64}},
-    tickers::Array{String,1}, gm_t::Float64, lambda::Float64)::Array{Float64,1}
+    tickers::Array{String,1}, gm_t::Float64, lambda::Float64;
+    news_t::Union{Nothing,Array{Float64,1}} = nothing,
+    nu_loadings::Union{Nothing,Array{Float64,1}} = nothing)::Array{Float64,1}
 
     # setup -
     K = length(tickers);
     gamma = zeros(K);
+
+    use_news = (news_t !== nothing) && (nu_loadings !== nothing);
+    if use_news
+        @assert length(news_t) == K "news_t length must equal number of tickers";
+        @assert length(nu_loadings) == K "nu_loadings length must equal number of tickers";
+    end
 
     # compute preference weights -
     for i in 1:K
         (αᵢ, βᵢ, _) = sim_parameters[tickers[i]];
         RF = max(abs(βᵢ)^lambda, 1e-8); # risk factor, clamped
         g_hat = αᵢ / RF + (βᵢ / RF) * gm_t;
+        if use_news
+            g_hat += nu_loadings[i] * news_t[i];
+        end
         gamma[i] = tanh(g_hat);
     end
 
@@ -515,11 +548,11 @@ Solve the CES utility maximization problem analytically.
     maximize   (sum gamma_i * n_i^rho)^(1/rho)
     subject to B = sum(n_i * p_i)
 
-where rho = (sigma - 1)/sigma. Analytical solution for preferred assets:
+where rho = (eta - 1)/eta. Analytical solution for preferred assets:
 
-    n_i* = (gamma_i^sigma / p_i^sigma) / sum_{j in S+}(gamma_j^sigma / p_j^(sigma-1)) * B_adj
+    n_i* = (gamma_i^eta / p_i^eta) / sum_{j in S+}(gamma_j^eta / p_j^(eta-1)) * B_adj
 
-As sigma -> 1, this converges to Cobb-Douglas. As sigma -> inf, converges to linear (all-in on best).
+As eta -> 1, this converges to Cobb-Douglas. As eta -> inf, converges to linear (all-in on best).
 """
 function allocate_ces(problem::MyCESChoiceProblem)::Tuple{Array{Float64,1},Float64}
 
@@ -528,7 +561,7 @@ function allocate_ces(problem::MyCESChoiceProblem)::Tuple{Array{Float64,1},Float
     prices = problem.prices;
     B = problem.B;
     ε = problem.epsilon;
-    σ = problem.sigma;
+    η = problem.eta;
     K = length(gamma);
 
     # separate preferred and non-preferred -
@@ -548,12 +581,12 @@ function allocate_ces(problem::MyCESChoiceProblem)::Tuple{Array{Float64,1},Float
     # preferred: CES analytical solution -
     cash = 0.0;
     if length(preferred) > 0 && remaining_B > 0
-        # weight_i = gamma_i^sigma / p_i^sigma (demand function from CES)
+        # weight_i = gamma_i^eta / p_i^eta (demand function from CES)
         weights = zeros(length(preferred));
         for (j, i) in enumerate(preferred)
-            weights[j] = (gamma[i]^σ) / (prices[i]^σ);
+            weights[j] = (gamma[i]^η) / (prices[i]^η);
         end
-        denom = sum((gamma[preferred[j]]^σ) / (prices[preferred[j]]^(σ - 1)) for j in 1:length(preferred));
+        denom = sum((gamma[preferred[j]]^η) / (prices[preferred[j]]^(η - 1)) for j in 1:length(preferred));
         for (j, i) in enumerate(preferred)
             shares[i] = (weights[j] / denom) * remaining_B;
         end
@@ -640,13 +673,13 @@ function evaluate_cobb_douglas(shares::Array{Float64,1}, gamma::Array{Float64,1}
 end
 
 """
-    evaluate_ces(shares::Array{Float64,1}, gamma::Array{Float64,1}; sigma::Float64 = 2.0) -> Float64
+    evaluate_ces(shares::Array{Float64,1}, gamma::Array{Float64,1}; eta::Float64 = 2.0) -> Float64
 
-Compute CES utility value: U = (sum gamma_i * n_i^rho)^(1/rho) where rho = (sigma-1)/sigma.
+Compute CES utility value: U = (sum gamma_i * n_i^rho)^(1/rho) where rho = (eta-1)/eta.
 """
-function evaluate_ces(shares::Array{Float64,1}, gamma::Array{Float64,1}; sigma::Float64 = 2.0)::Float64
+function evaluate_ces(shares::Array{Float64,1}, gamma::Array{Float64,1}; eta::Float64 = 2.0)::Float64
 
-    ρ = (sigma - 1.0) / sigma;
+    ρ = (eta - 1.0) / eta;
     preferred = findall(gamma .> 0);
     if length(preferred) == 0
         return 0.0;
@@ -672,18 +705,18 @@ end
 # --- Session 2: Rebalancing Engine ----------------------------------------------
 
 """
-    compute_adaptive_sigma(λ::Float64; σ_min::Float64 = 0.5, σ_max::Float64 = 5.0) -> Float64
+    compute_adaptive_eta(λ::Float64; η_min::Float64 = 0.5, η_max::Float64 = 5.0) -> Float64
 
 Compute sentiment-adaptive CES elasticity of substitution. Maps the current
-sentiment signal λ to an elasticity σ ∈ [σ_min, σ_max]:
+sentiment signal λ to an elasticity η ∈ [η_min, η_max]:
 
-    σ(λ) = σ_min + (σ_max - σ_min) / (1 + |λ|)
+    η(λ) = η_min + (η_max - η_min) / (1 + |λ|)
 
-When neutral (λ ≈ 0), σ → σ_max (concentrate on best asset). When sentiment
-is extreme (|λ| large), σ → σ_min (diversify, hedge bets).
+When neutral (λ ≈ 0), η → η_max (concentrate on best asset). When sentiment
+is extreme (|λ| large), η → η_min (diversify, hedge bets).
 """
-function compute_adaptive_sigma(λ::Float64; σ_min::Float64 = 0.5, σ_max::Float64 = 5.0)::Float64
-    return σ_min + (σ_max - σ_min) / (1.0 + abs(λ));
+function compute_adaptive_eta(λ::Float64; η_min::Float64 = 0.5, η_max::Float64 = 5.0)::Float64
+    return η_min + (η_max - η_min) / (1.0 + abs(λ));
 end
 
 """
@@ -695,12 +728,14 @@ This is the bridge between the utility-based allocators and the rebalancing engi
 
 ### Allocator options
 - `:cobb_douglas` — Cobb-Douglas utility (default)
-- `:ces` — CES utility with sigma = 2.0
+- `:ces` — CES utility with eta = 2.0
 - `:log_linear` — Log-linear utility
 """
 function allocate_shares(t::Int, context::MyRebalancingContextModel;
     allocator::Symbol = :cobb_douglas,
-    sigma::Float64 = 2.0)::MyRebalancingResult
+    eta::Float64 = 2.0,
+    news_t::Union{Nothing,Array{Float64,1}} = nothing,
+    nu_loadings::Union{Nothing,Array{Float64,1}} = nothing)::MyRebalancingResult
 
     # unpack -
     B = context.B;
@@ -714,7 +749,8 @@ function allocate_shares(t::Int, context::MyRebalancingContextModel;
 
     # compute preference weights -
     gm_t = gm[min(t, length(gm))];
-    gamma = compute_preference_weights(sim_params, tickers, gm_t, λ);
+    gamma = compute_preference_weights(sim_params, tickers, gm_t, λ;
+        news_t = news_t, nu_loadings = nu_loadings);
 
     # get current prices -
     prices = [marketdata[t, i + 1] for i in 1:K];
@@ -733,7 +769,7 @@ function allocate_shares(t::Int, context::MyRebalancingContextModel;
         problem.prices = prices;
         problem.B = B;
         problem.epsilon = ε;
-        problem.sigma = sigma;
+        problem.eta = eta;
         (shares, cash) = allocate_ces(problem);
     elseif allocator == :log_linear
         problem = MyLogLinearChoiceProblem();
@@ -751,7 +787,7 @@ function allocate_shares(t::Int, context::MyRebalancingContextModel;
     result.shares = shares;
     result.cash = cash;
     result.gamma = gamma;
-    result.sigma = (allocator == :ces) ? sigma : 0.0;
+    result.eta = (allocator == :ces) ? eta : 0.0;
 
     # return -
     return result;
@@ -770,16 +806,18 @@ Daily loop:
 3. If hold: propagate prior positions
 4. If drawdown exceeded: de-risk to cash
 
-When `adaptive_sigma = true` and `allocator = :ces`, the elasticity of substitution
-is recomputed each rebalance day via `compute_adaptive_sigma(λ_t)` using `sigma_bounds`.
+When `adaptive_eta = true` and `allocator = :ces`, the elasticity of substitution
+is recomputed each rebalance day via `compute_adaptive_eta(λ_t)` using `eta_bounds`.
 """
 function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTriggerRules,
     lambda_series::Array{Float64,1}; offset::Int = 84,
     allocator::Symbol = :cobb_douglas,
-    sigma::Float64 = 2.0,
-    adaptive_sigma::Bool = false,
-    sigma_bounds::Tuple{Float64,Float64} = (0.5, 5.0),
-    cost_bps::Float64 = 0.0)::Dict{Int,MyRebalancingResult}
+    eta::Float64 = 2.0,
+    adaptive_eta::Bool = false,
+    eta_bounds::Tuple{Float64,Float64} = (0.5, 5.0),
+    cost_bps::Float64 = 0.0,
+    news_paths::Union{Nothing,Array{Float64,2}} = nothing,
+    nu_loadings::Union{Nothing,Array{Float64,1}} = nothing)::Dict{Int,MyRebalancingResult}
 
     # setup -
     tickers = context.tickers;
@@ -789,13 +827,27 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
     T = length(schedule);
     cost_rate = cost_bps / 10_000.0;
 
+    use_news = (news_paths !== nothing) && (nu_loadings !== nothing);
+    if use_news
+        @assert size(news_paths, 2) == K "news_paths must have K columns";
+        @assert length(nu_loadings) == K "nu_loadings length must equal K";
+    end
+
+    # helper to slice the news factor for a given day, or nothing if news disabled -
+    news_for_day = function(day_idx::Int)
+        use_news || return nothing;
+        d = min(day_idx, size(news_paths, 1));
+        return news_paths[d, :];
+    end
+
     # results storage -
     results = Dict{Int,MyRebalancingResult}();
 
     # initial allocation at offset -
-    σ_init = (adaptive_sigma && allocator == :ces) ?
-        compute_adaptive_sigma(context.lambda; σ_min = sigma_bounds[1], σ_max = sigma_bounds[2]) : sigma;
-    results[0] = allocate_shares(offset, context; allocator = allocator, sigma = σ_init);
+    η_init = (adaptive_eta && allocator == :ces) ?
+        compute_adaptive_eta(context.lambda; η_min = eta_bounds[1], η_max = eta_bounds[2]) : eta;
+    results[0] = allocate_shares(offset, context; allocator = allocator, eta = η_init,
+        news_t = news_for_day(offset), nu_loadings = use_news ? nu_loadings : nothing);
 
     # initial trade cost: all of B₀ is "traded" from cash into shares -
     if cost_rate > 0.0
@@ -839,7 +891,7 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
                 end
                 derisk_result.cash = derisk_cash;
                 derisk_result.gamma = zeros(K);
-                derisk_result.sigma = 0.0;
+                derisk_result.eta = 0.0;
                 results[day] = derisk_result;
             else
                 # rebalance via utility maximization -
@@ -847,9 +899,10 @@ function run_rebalancing_engine(context::MyRebalancingContextModel, rules::MyTri
                 ctx.B = liquidation_value;
                 ctx.lambda = lambda_series[min(actual_day, length(lambda_series))];
 
-                σ_t = (adaptive_sigma && allocator == :ces) ?
-                    compute_adaptive_sigma(ctx.lambda; σ_min = sigma_bounds[1], σ_max = sigma_bounds[2]) : sigma;
-                new_result = allocate_shares(actual_day, ctx; allocator = allocator, sigma = σ_t);
+                η_t = (adaptive_eta && allocator == :ces) ?
+                    compute_adaptive_eta(ctx.lambda; η_min = eta_bounds[1], η_max = eta_bounds[2]) : eta;
+                new_result = allocate_shares(actual_day, ctx; allocator = allocator, eta = η_t,
+                    news_t = news_for_day(actual_day), nu_loadings = use_news ? nu_loadings : nothing);
 
                 # check turnover cap -
                 if day > 0 && haskey(results, day - 1)
@@ -1724,7 +1777,7 @@ function backtest_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
     return result;
 end
 
-# --- Session 3: Sigma-Bandit Functions -------------------------------------------
+# --- Session 3: Eta-Bandit Functions --------------------------------------------
 
 """
     classify_regime(λ::Float64; θ::Float64 = 0.5) -> Symbol
@@ -1743,13 +1796,13 @@ function classify_regime(λ::Float64; θ::Float64 = 0.5)::Symbol
 end
 
 """
-    sigma_bandit_world(σ::Float64, context::MyRebalancingContextModel, t::Int) -> Float64
+    eta_bandit_world(η::Float64, context::MyRebalancingContextModel, t::Int) -> Float64
 
-The "world" function for the sigma-bandit. Given a candidate CES elasticity σ,
+The "world" function for the eta-bandit. Given a candidate CES elasticity η,
 computes the CES utility-maximizing allocation at time step t using the context's
 current preference weights and prices. Returns the CES utility as the reward signal.
 """
-function sigma_bandit_world(σ::Float64, context::MyRebalancingContextModel, t::Int)::Float64
+function eta_bandit_world(η::Float64, context::MyRebalancingContextModel, t::Int)::Float64
 
     # compute preference weights from current context -
     gm_t = context.marketfactor[min(t, length(context.marketfactor))];
@@ -1764,29 +1817,29 @@ function sigma_bandit_world(σ::Float64, context::MyRebalancingContextModel, t::
     problem.prices = prices;
     problem.B = context.B;
     problem.epsilon = context.epsilon;
-    problem.sigma = σ;
+    problem.eta = η;
     (shares, _) = allocate_ces(problem);
 
     # evaluate CES utility as reward -
-    utility = evaluate_ces(shares, gamma; sigma = σ);
+    utility = evaluate_ces(shares, gamma; eta = η);
 
     return utility;
 end
 
 """
-    solve_sigma_bandit(bandit::MySigmaBanditModel, context::MyRebalancingContextModel,
-        lambda_series::Array{Float64,1}, time_indices::Array{Int,1}) -> MySigmaBanditResult
+    solve_eta_bandit(bandit::MyEtaBanditModel, context::MyRebalancingContextModel,
+        lambda_series::Array{Float64,1}, time_indices::Array{Int,1}) -> MyEtaBanditResult
 
-Run per-regime epsilon-greedy over the sigma grid. For each time index:
-classify the regime from lambda_series, select a sigma arm (epsilon-greedy
-within that regime's bandit state), call sigma_bandit_world, and update
+Run per-regime epsilon-greedy over the eta grid. For each time index:
+classify the regime from lambda_series, select an η arm (epsilon-greedy
+within that regime's bandit state), call eta_bandit_world, and update
 the regime's arm mean.
 """
-function solve_sigma_bandit(bandit::MySigmaBanditModel, context::MyRebalancingContextModel,
-    lambda_series::Array{Float64,1}, time_indices::Array{Int,1})::MySigmaBanditResult
+function solve_eta_bandit(bandit::MyEtaBanditModel, context::MyRebalancingContextModel,
+    lambda_series::Array{Float64,1}, time_indices::Array{Int,1})::MyEtaBanditResult
 
-    σ_grid = bandit.sigma_grid;
-    K_arms = length(σ_grid);
+    η_grid = bandit.eta_grid;
+    K_arms = length(η_grid);
     θ = bandit.lambda_threshold;
     T = length(time_indices);
 
@@ -1827,8 +1880,8 @@ function solve_sigma_bandit(bandit::MySigmaBanditModel, context::MyRebalancingCo
         end
 
         # pull arm -
-        σ_chosen = σ_grid[arm];
-        utility = sigma_bandit_world(σ_chosen, ctx, t);
+        η_chosen = η_grid[arm];
+        utility = eta_bandit_world(η_chosen, ctx, t);
 
         # update -
         arm_counts[regime][arm] += 1;
@@ -1838,19 +1891,19 @@ function solve_sigma_bandit(bandit::MySigmaBanditModel, context::MyRebalancingCo
         reward_history[iter] = utility;
     end
 
-    # extract best sigma per regime -
-    best_sigma = Dict{Symbol,Float64}();
+    # extract best η per regime -
+    best_eta = Dict{Symbol,Float64}();
     for r in regimes
         if sum(arm_counts[r]) > 0
-            best_sigma[r] = σ_grid[argmax(arm_means[r])];
+            best_eta[r] = η_grid[argmax(arm_means[r])];
         else
-            best_sigma[r] = σ_grid[div(K_arms, 2) + 1]; # default to middle
+            best_eta[r] = η_grid[div(K_arms, 2) + 1]; # default to middle
         end
     end
 
     # package result -
-    result = MySigmaBanditResult();
-    result.best_sigma_per_regime = best_sigma;
+    result = MyEtaBanditResult();
+    result.best_eta_per_regime = best_eta;
     result.arm_means_per_regime = arm_means;
     result.arm_counts_per_regime = arm_counts;
     result.reward_history = reward_history;
@@ -1860,18 +1913,18 @@ function solve_sigma_bandit(bandit::MySigmaBanditModel, context::MyRebalancingCo
 end
 
 """
-    backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
+    backtest_eta_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
         sim_params::Dict{String,Tuple{Float64,Float64,Float64}},
-        sigma_map::Dict{Symbol,Float64};
+        eta_map::Dict{Symbol,Float64};
         B₀, offset, L_short, L_long, GAIN, L_growth, lambda_threshold, epsilon) -> MyBacktestResult
 
-Run the rebalancing engine with CES allocator across all paths, where σ is looked
-up per regime from sigma_map based on the current λ. Pattern follows backtest_bandit
-but uses :ces allocation with regime-dependent σ.
+Run the rebalancing engine with CES allocator across all paths, where η is looked
+up per regime from eta_map based on the current λ. Pattern follows backtest_bandit
+but uses :ces allocation with regime-dependent η.
 """
-function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
+function backtest_eta_bandit(scenario::MyBacktestScenario, tickers::Array{String,1},
     sim_params::Dict{String,Tuple{Float64,Float64,Float64}},
-    sigma_map::Dict{Symbol,Float64};
+    eta_map::Dict{Symbol,Float64};
     B₀::Float64 = 10000.0, offset::Int = 84,
     L_short::Int = 21, L_long::Int = 63,
     GAIN::Float64 = 10.0, L_growth::Int = 10,
@@ -1920,15 +1973,15 @@ function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{Stri
             rebalance_schedule = ones(Int, n_trading)
         ));
 
-        # custom engine loop with regime-dependent sigma -
+        # custom engine loop with regime-dependent η -
         results = Dict{Int,MyRebalancingResult}();
 
         # initial allocation -
         λ_init = λ[offset];
         regime_init = classify_regime(λ_init; θ = lambda_threshold);
-        σ_init = sigma_map[regime_init];
+        η_init = eta_map[regime_init];
         ctx.lambda = λ_init;
-        results[0] = allocate_shares(offset, ctx; allocator = :ces, sigma = σ_init);
+        results[0] = allocate_shares(offset, ctx; allocator = :ces, eta = η_init);
 
         peak_wealth = B₀;
 
@@ -1950,7 +2003,7 @@ function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{Stri
                 derisk_result.shares = zeros(K);
                 derisk_result.cash = liquidation_value;
                 derisk_result.gamma = zeros(K);
-                derisk_result.sigma = 0.0;
+                derisk_result.eta = 0.0;
                 results[day] = derisk_result;
             else
                 ctx_day = deepcopy(ctx);
@@ -1958,9 +2011,9 @@ function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{Stri
                 ctx_day.lambda = λ[min(actual_day, length(λ))];
 
                 regime = classify_regime(ctx_day.lambda; θ = lambda_threshold);
-                σ_day = sigma_map[regime];
+                η_day = eta_map[regime];
 
-                new_result = allocate_shares(actual_day, ctx_day; allocator = :ces, sigma = σ_day);
+                new_result = allocate_shares(actual_day, ctx_day; allocator = :ces, eta = η_day);
 
                 # turnover cap -
                 old_shares = results[day - 1].shares;
@@ -1994,7 +2047,7 @@ function backtest_sigma_bandit(scenario::MyBacktestScenario, tickers::Array{Stri
 
     result = MyBacktestResult();
     result.scenario_label = scenario.label;
-    result.strategy_label = "Sigma-Bandit CES";
+    result.strategy_label = "Eta-Bandit CES";
     result.final_wealth = final_wealth;
     result.max_drawdowns = max_drawdowns;
     result.sharpe_ratios = sharpe_ratios;
@@ -2888,4 +2941,406 @@ function apply_stress_scenario(scenario::MyStressScenario, current_prices::Array
     result.capital_preserved = capital_preserved;
 
     return result;
+end
+
+# --- Session 4: News Sentiment Pipeline -----------------------------------------
+
+"""
+    simulate_news_corpus(prices, tickers, scenario; seed) -> MyNewsCorpus
+
+Generate a synthetic news corpus and a news-shocked price matrix for the given
+scenario. For each ticker on each trading day, draw a Poisson-distributed
+number of items at rate `scenario.arrival_intensity`. Each item gets a
+sentiment score `s ~ N(scenario.sentiment_mean, scenario.sentiment_sd)` clipped
+to `[-1, +1]` and a templated stub text (filled with realistic copy by
+[`generate_news_text!`](@ref)).
+
+The asymmetric shock applied to ticker `i` on day `t` is the sum over items
+mentioning `(i, t)` of
+
+    Δ = -κ_neg · max(-s, 0) + κ_pos · max(s, 0)
+
+The shocked price path compounds the original returns and applies the news
+shock multiplicatively `shock_lag` days after each item's publication:
+
+    P_shocked[t, i] = P_shocked[t-1, i] · (P[t, i] / P[t-1, i]) · exp(Δ_{i, t - shock_lag})
+
+With `shock_lag = 0` the shock hits the same day (contemporaneous); with
+`shock_lag = 1` (the pedagogical default used in the S4 example) news
+published on day `t` moves the price on day `t+1`, mirroring the typical
+real-world event study where an 8-K or earnings release after the close
+drives the following session's return. The lag also makes `news_factor[t]`
+genuinely predictive of `g_{t+1}` so the news-extended γ has out-of-sample
+alpha to chase.
+
+The returned `MyNewsCorpus` carries the items, the `T × K` `news_factor`
+(daily mean of `true_score` over items mentioning each ticker; zero if none),
+the shocked price matrix, and the seed for reproducibility. After calling
+[`score_news_with_claude!`](@ref), recompute the factor with
+[`aggregate_news_factor`](@ref) using `:claude_score` to get the
+LLM-estimated signal.
+
+### Arguments
+- `prices::Array{Float64,2}` — `T × K` baseline price matrix (no day-index column)
+- `tickers::Array{String,1}` — length-`K` ticker labels (column order)
+- `scenario::MyNewsScenario` — controls shock magnitudes and arrival rates
+
+### Keyword arguments
+- `seed::Int = -1` — RNG seed; if non-positive, RNG is left as-is
+- `shock_lag::Int = 0` — days between publication and price reaction
+
+### Returns
+- `MyNewsCorpus` with `items`, `tickers`, `scenario`, `news_factor`,
+  `shocked_prices`, and `seed` populated.
+"""
+function simulate_news_corpus(prices::Array{Float64,2}, tickers::Array{String,1},
+    scenario::MyNewsScenario; seed::Int = -1, shock_lag::Int = 0)::MyNewsCorpus
+
+    if seed > 0
+        Random.seed!(seed);
+    end
+
+    (T, K) = size(prices);
+    @assert length(tickers) == K "tickers length must equal number of price columns";
+
+    # generate items per ticker per day -
+    items = MyNewsItem[];
+    arrival = Distributions.Poisson(scenario.arrival_intensity);
+    for i in 1:K, t in 1:T
+        n_items = rand(arrival);
+        for _ in 1:n_items
+            s = scenario.sentiment_mean + scenario.sentiment_sd * randn();
+            s = clamp(s, -1.0, 1.0);
+            item = MyNewsItem();
+            item.ticker = tickers[i];
+            item.publication_day = t;
+            item.text = "[stub] $(tickers[i]) news, day $t, planted sentiment $(round(s, digits=3))";
+            item.true_score = s;
+            item.claude_score = NaN;
+            item.source = "synthetic_news";
+            push!(items, item);
+        end
+    end
+
+    # aggregate true sentiment per (ticker, day) into the news factor -
+    news_factor = aggregate_news_factor(items, T, tickers; use_score = :true_score);
+
+    # apply asymmetric shock to the price path -
+    κp = scenario.kappa_pos;
+    κn = scenario.kappa_neg;
+    shocked = zeros(T, K);
+    shocked[1, :] .= prices[1, :];
+    for i in 1:K, t in 2:T
+        # items whose publication predates this return by `shock_lag` days
+        src_day = t - shock_lag;
+        Δ = 0.0;
+        if src_day >= 1
+            day_items = filter(it -> it.ticker == tickers[i] && it.publication_day == src_day, items);
+            for it in day_items
+                s = it.true_score;
+                Δ += -κn * max(-s, 0.0) + κp * max(s, 0.0);
+            end
+        end
+        raw_growth = prices[t, i] / prices[t-1, i];
+        shocked[t, i] = shocked[t-1, i] * raw_growth * exp(Δ);
+    end
+
+    # package -
+    corpus = MyNewsCorpus();
+    corpus.items = items;
+    corpus.tickers = tickers;
+    corpus.scenario = scenario;
+    corpus.news_factor = news_factor;
+    corpus.shocked_prices = shocked;
+    corpus.seed = seed;
+
+    return corpus;
+end
+
+"""
+    aggregate_news_factor(items, T, tickers; use_score) -> Matrix{Float64}
+
+Build the `T × K` daily news-factor matrix by averaging item scores per
+`(publication_day, ticker)`. Days without items get zero (interpreted as "no
+news today"). The score field is selected by `use_score`:
+
+- `:true_score` — the planted sentiment used to generate the price shock
+- `:claude_score` — the sentiment Claude extracted from the item text
+- `:raw_score` — synonym for `:true_score`
+
+### Arguments
+- `items::Array{MyNewsItem,1}` — corpus items
+- `T::Int` — number of trading days (rows)
+- `tickers::Array{String,1}` — column order
+
+### Keyword arguments
+- `use_score::Symbol = :claude_score` — which score field to aggregate
+"""
+function aggregate_news_factor(items::Array{MyNewsItem,1}, T::Int,
+    tickers::Array{String,1}; use_score::Symbol = :claude_score)::Array{Float64,2}
+
+    K = length(tickers);
+    ticker_idx = Dict(t => i for (i, t) in enumerate(tickers));
+
+    sums = zeros(T, K);
+    counts = zeros(Int, T, K);
+    for it in items
+        haskey(ticker_idx, it.ticker) || continue;
+        i = ticker_idx[it.ticker];
+        t = it.publication_day;
+        (1 <= t <= T) || continue;
+        s = if use_score === :claude_score
+            it.claude_score;
+        elseif use_score === :true_score || use_score === :raw_score
+            it.true_score;
+        else
+            error("Unknown score field: $use_score");
+        end
+        isnan(s) && continue; # skip unscored items
+        sums[t, i] += s;
+        counts[t, i] += 1;
+    end
+
+    factor = zeros(T, K);
+    for t in 1:T, i in 1:K
+        factor[t, i] = counts[t, i] > 0 ? sums[t, i] / counts[t, i] : 0.0;
+    end
+
+    return factor;
+end
+
+# --- Session 4: Claude API Integration ------------------------------------------
+# All API calls are gated behind `live=true`. When `live=false` (the default),
+# `generate_news_text!` is a no-op (items keep the templated stub text from
+# `simulate_news_corpus`) and `score_news_with_claude!` simulates Claude scoring
+# by adding small Gaussian noise to `true_score`. This lets the notebook run
+# end-to-end without an API key while preserving the live-mode code path.
+
+"""
+    _sentiment_bucket(s) -> String
+
+Map a sentiment score in `[-1, +1]` to a discrete tone label used in headline
+generation prompts. Bucketing avoids asking the LLM to encode a real number;
+the round-trip noise is then recovered by [`score_news_with_claude!`](@ref).
+"""
+function _sentiment_bucket(s::Float64)::String
+    if s <= -0.6
+        return "strongly negative";
+    elseif s <= -0.2
+        return "mildly negative";
+    elseif s < 0.2
+        return "neutral";
+    elseif s < 0.6
+        return "mildly positive";
+    else
+        return "strongly positive";
+    end
+end
+
+"""
+    _call_claude(prompt; api_key, model, max_tokens) -> String
+
+Make a single POST to the Anthropic Messages API and return the text payload.
+Errors propagate up. Used by [`generate_news_text!`](@ref) and
+[`score_news_with_claude!`](@ref).
+"""
+function _call_claude(prompt::String; api_key::String, model::String,
+    max_tokens::Int)::String
+
+    url = "https://api.anthropic.com/v1/messages";
+    headers = [
+        "x-api-key" => api_key,
+        "anthropic-version" => "2023-06-01",
+        "content-type" => "application/json",
+    ];
+    body = JSON.json(Dict(
+        "model" => model,
+        "max_tokens" => max_tokens,
+        "messages" => [Dict("role" => "user", "content" => prompt)],
+    ));
+    response = HTTP.request("POST", url, headers, body);
+    parsed = JSON.parse(String(response.body));
+    return String(parsed["content"][1]["text"]);
+end
+
+"""
+    generate_news_text!(corpus; live, api_key, model, rate_limit_seconds) -> MyNewsCorpus
+
+Replace each item's templated stub text with a Claude-generated single-line
+headline whose tone matches the item's `true_score`. The score is bucketed
+into one of five tone labels (strongly negative / mildly negative / neutral /
+mildly positive / strongly positive) and the LLM writes a plausible headline
+in that tone.
+
+In cached/stub mode (`live=false`, the default) the corpus is returned
+unchanged — items keep the stub text written by [`simulate_news_corpus`](@ref).
+This lets the notebook execute end-to-end without an API key.
+
+In live mode, makes one HTTP call per item to the Anthropic Messages API. For
+~400 items at the default 0-second rate limit, regeneration takes
+2-3 minutes and costs roughly \$1 on Sonnet 4.6.
+
+### Arguments
+- `corpus::MyNewsCorpus` — corpus to populate (mutated in place)
+
+### Keyword arguments
+- `live::Bool = false` — call Claude when true; no-op when false
+- `api_key::String = ""` — Anthropic API key; if empty, reads `ENV["ANTHROPIC_API_KEY"]`
+- `model::String = "claude-sonnet-4-6"` — Anthropic model id
+- `rate_limit_seconds::Float64 = 0.0` — sleep between requests
+"""
+function generate_news_text!(corpus::MyNewsCorpus;
+    live::Bool = false,
+    api_key::String = "",
+    model::String = "claude-sonnet-4-6",
+    rate_limit_seconds::Float64 = 0.0)::MyNewsCorpus
+
+    if !live
+        return corpus;
+    end
+
+    if isempty(api_key)
+        api_key = get(ENV, "ANTHROPIC_API_KEY", "");
+    end
+    isempty(api_key) && error("generate_news_text! live=true requires ANTHROPIC_API_KEY in ENV or api_key kwarg");
+
+    for item in corpus.items
+        bucket = _sentiment_bucket(item.true_score);
+        prompt = string(
+            "Write a single-line financial news headline (max 100 characters) ",
+            "about ticker $(item.ticker). The tone should be $bucket. ",
+            "Output only the headline text, no preamble, no quotes."
+        );
+        text = _call_claude(prompt; api_key = api_key, model = model, max_tokens = 100);
+        item.text = strip(text);
+        item.source = "synthetic_news_claude";
+        rate_limit_seconds > 0.0 && sleep(rate_limit_seconds);
+    end
+
+    return corpus;
+end
+
+"""
+    score_news_with_claude!(corpus; live, api_key, model, cached_noise_sd, seed,
+        rate_limit_seconds) -> MyNewsCorpus
+
+Fill `item.claude_score` for each item with Claude's extracted sentiment in
+`[-1, +1]`.
+
+In cached/stub mode (`live=false`, the default), `claude_score = true_score +
+N(0, cached_noise_sd)` clipped to `[-1, +1]`. The Gaussian noise simulates
+imperfect LLM scoring so the downstream regression sees a realistic
+signal-to-noise ratio without an API call. With `cached_noise_sd = 0.0`, the
+LLM is treated as oracle (perfect knowledge case).
+
+In live mode, makes one HTTP call per item asking Claude to score the
+headline. Unparseable replies become `NaN` and are skipped by
+[`aggregate_news_factor`](@ref).
+
+### Arguments
+- `corpus::MyNewsCorpus` — corpus whose items get `claude_score` filled (mutated)
+
+### Keyword arguments
+- `live::Bool = false` — call Claude when true; otherwise stub with Gaussian noise
+- `api_key::String = ""` — Anthropic API key; defaults to `ENV["ANTHROPIC_API_KEY"]`
+- `model::String = "claude-sonnet-4-6"` — Anthropic model id
+- `cached_noise_sd::Float64 = 0.10` — stub-mode scoring noise standard deviation
+- `seed::Int = -1` — RNG seed for stub-mode noise; non-positive leaves RNG as-is
+- `rate_limit_seconds::Float64 = 0.0` — sleep between live-mode requests
+"""
+function score_news_with_claude!(corpus::MyNewsCorpus;
+    live::Bool = false,
+    api_key::String = "",
+    model::String = "claude-sonnet-4-6",
+    cached_noise_sd::Float64 = 0.10,
+    seed::Int = -1,
+    rate_limit_seconds::Float64 = 0.0)::MyNewsCorpus
+
+    if !live
+        if seed > 0
+            Random.seed!(seed);
+        end
+        for item in corpus.items
+            noisy = item.true_score + cached_noise_sd * randn();
+            item.claude_score = clamp(noisy, -1.0, 1.0);
+        end
+        return corpus;
+    end
+
+    if isempty(api_key)
+        api_key = get(ENV, "ANTHROPIC_API_KEY", "");
+    end
+    isempty(api_key) && error("score_news_with_claude! live=true requires ANTHROPIC_API_KEY in ENV or api_key kwarg");
+
+    for item in corpus.items
+        prompt = string(
+            "Read this financial news headline and assign a sentiment score in [-1.0, +1.0] ",
+            "for the mentioned company. -1 = strongly bearish, 0 = neutral, ",
+            "+1 = strongly bullish. Output only the number, no explanation.\n\n",
+            "Headline: $(item.text)\nScore:"
+        );
+        reply = _call_claude(prompt; api_key = api_key, model = model, max_tokens = 10);
+        s = try
+            parse(Float64, strip(reply));
+        catch
+            NaN;
+        end
+        item.claude_score = isnan(s) ? NaN : clamp(s, -1.0, 1.0);
+        rate_limit_seconds > 0.0 && sleep(rate_limit_seconds);
+    end
+
+    return corpus;
+end
+
+# --- Session 4: SIM-with-news Loading Estimator ---------------------------------
+
+"""
+    estimate_sim_with_news(growth_rates, market_growth, news_factor, tickers)
+        -> (sim_parameters, nu_loadings)
+
+Estimate the SIM-with-news model per asset by ordinary least squares,
+
+    g_{i,t} = α_i + β_i · g_{m,t} + ν_i · news_{i,t} + ε_{i,t}
+
+The three input matrices must share the same `T` rows; align them at the
+caller (typically by trimming the first day so growth rates of length `T-1`
+match a corresponding `T-1`-row slice of the news factor).
+
+### Arguments
+- `growth_rates::Array{Float64,2}` — `T × K` per-asset CCGR growth rates
+- `market_growth::Array{Float64,1}` — length-`T` market growth rate series
+- `news_factor::Array{Float64,2}` — `T × K` daily aggregated news per ticker
+- `tickers::Array{String,1}` — length-`K` ticker labels (column order)
+
+### Returns
+- `sim_parameters::Dict{String,Tuple{Float64,Float64,Float64}}` —
+  `(α_i, β_i, σ_ε,i)` per ticker, drop-in replacement for the SIM dict the
+  rebalancing engine consumes
+- `nu_loadings::Array{Float64,1}` — length-`K` news loadings in column order
+"""
+function estimate_sim_with_news(growth_rates::Array{Float64,2},
+    market_growth::Array{Float64,1}, news_factor::Array{Float64,2},
+    tickers::Array{String,1})
+
+    (T, K) = size(growth_rates);
+    @assert length(market_growth) == T "market_growth length must match growth_rates rows";
+    @assert size(news_factor) == (T, K) "news_factor shape must match growth_rates";
+    @assert length(tickers) == K "tickers length must match growth_rates columns";
+
+    sim_params = Dict{String,Tuple{Float64,Float64,Float64}}();
+    nu_loadings = zeros(K);
+
+    for i in 1:K
+        # design matrix [1, g_m, news_i] -
+        X = hcat(ones(T), market_growth, news_factor[:, i]);
+        y = growth_rates[:, i];
+        coeffs = (X' * X) \ (X' * y);
+        residuals = y .- X * coeffs;
+        dof = max(T - 3, 1);
+        σ_ε = sqrt(sum(residuals .^ 2) / dof);
+        sim_params[tickers[i]] = (coeffs[1], coeffs[2], σ_ε);
+        nu_loadings[i] = coeffs[3];
+    end
+
+    return (sim_params, nu_loadings);
 end

@@ -140,15 +140,15 @@ Budget-constrained CES (Constant Elasticity of Substitution) utility maximizatio
 
     U(n) = (sum gamma_i * n_i^rho)^(1/rho)
 
-where rho = (sigma - 1)/sigma and sigma is the elasticity of substitution.
-As sigma -> 1, CES -> Cobb-Douglas. As sigma -> inf, CES -> linear.
+where rho = (eta - 1)/eta and eta is the elasticity of substitution.
+As eta -> 1, CES -> Cobb-Douglas. As eta -> inf, CES -> linear.
 
 ### Fields
 - `gamma::Array{Float64,1}` — preference weights per asset
 - `prices::Array{Float64,1}` — current share prices
 - `B::Float64` — total budget
 - `epsilon::Float64` — minimum share floor for non-preferred assets
-- `sigma::Float64` — elasticity of substitution (sigma > 0, sigma != 1)
+- `eta::Float64` — elasticity of substitution (eta > 0, eta != 1)
 """
 mutable struct MyCESChoiceProblem
 
@@ -157,7 +157,7 @@ mutable struct MyCESChoiceProblem
     prices::Array{Float64,1}
     B::Float64
     epsilon::Float64
-    sigma::Float64
+    eta::Float64
 
     # constructor -
     MyCESChoiceProblem() = new();
@@ -253,7 +253,7 @@ Holds the state of the portfolio at a single time step.
 - `shares::Array{Float64,1}` — number of shares held per asset
 - `cash::Float64` — unallocated cash
 - `gamma::Array{Float64,1}` — preference weights at this step
-- `sigma::Float64` — CES elasticity of substitution used at this step (0.0 if not CES)
+- `eta::Float64` — CES elasticity of substitution used at this step (0.0 if not CES)
 """
 mutable struct MyRebalancingResult
 
@@ -261,7 +261,7 @@ mutable struct MyRebalancingResult
     shares::Array{Float64,1}
     cash::Float64
     gamma::Array{Float64,1}
-    sigma::Float64
+    eta::Float64
 
     # constructor -
     MyRebalancingResult() = new();
@@ -424,54 +424,54 @@ mutable struct MyBanditResult
     MyBanditResult() = new();
 end
 
-# --- Session 3: Sigma-Bandit Types ----------------------------------------------
+# --- Session 3: Eta-Bandit Types ------------------------------------------------
 
 """
-    MySigmaBanditModel
+    MyEtaBanditModel
 
-Configuration for the sigma-bandit: epsilon-greedy learning of CES elasticity per regime.
+Configuration for the eta-bandit: epsilon-greedy learning of CES elasticity per regime.
 
 ### Fields
-- `sigma_grid::Array{Float64,1}` — discrete σ values to explore (e.g., [0.5, 1.0, 1.5, 2.0, 3.0, 5.0])
+- `eta_grid::Array{Float64,1}` — discrete η values to explore (e.g., [0.5, 1.0, 1.5, 2.0, 3.0, 5.0])
 - `n_iterations::Int` — bandit rounds per regime bin
 - `alpha::Float64` — learning rate for reward averaging
 - `lambda_threshold::Float64` — threshold θ for regime binning (bearish if λ > θ, bullish if λ < -θ)
 """
-mutable struct MySigmaBanditModel
+mutable struct MyEtaBanditModel
 
     # data -
-    sigma_grid::Array{Float64,1}
+    eta_grid::Array{Float64,1}
     n_iterations::Int
     alpha::Float64
     lambda_threshold::Float64
 
     # constructor -
-    MySigmaBanditModel() = new();
+    MyEtaBanditModel() = new();
 end
 
 """
-    MySigmaBanditResult
+    MyEtaBanditResult
 
-Output from sigma-bandit learning: best σ per regime and convergence data.
+Output from eta-bandit learning: best η per regime and convergence data.
 
 ### Fields
-- `best_sigma_per_regime::Dict{Symbol,Float64}` — best σ for each regime (:bearish, :neutral, :bullish)
-- `arm_means_per_regime::Dict{Symbol,Array{Float64,1}}` — mean reward per σ arm per regime
-- `arm_counts_per_regime::Dict{Symbol,Array{Int,1}}` — pull counts per σ arm per regime
+- `best_eta_per_regime::Dict{Symbol,Float64}` — best η for each regime (:bearish, :neutral, :bullish)
+- `arm_means_per_regime::Dict{Symbol,Array{Float64,1}}` — mean reward per η arm per regime
+- `arm_counts_per_regime::Dict{Symbol,Array{Int,1}}` — pull counts per η arm per regime
 - `reward_history::Array{Float64,1}` — reward at each iteration (all regimes interleaved)
 - `exploration_history::Array{Float64,1}` — exploration probability at each iteration
 """
-mutable struct MySigmaBanditResult
+mutable struct MyEtaBanditResult
 
     # data -
-    best_sigma_per_regime::Dict{Symbol,Float64}
+    best_eta_per_regime::Dict{Symbol,Float64}
     arm_means_per_regime::Dict{Symbol,Array{Float64,1}}
     arm_counts_per_regime::Dict{Symbol,Array{Int,1}}
     reward_history::Array{Float64,1}
     exploration_history::Array{Float64,1}
 
     # constructor -
-    MySigmaBanditResult() = new();
+    MyEtaBanditResult() = new();
 end
 
 # --- Session 3: EWLS Types -----------------------------------------------------
@@ -727,4 +727,97 @@ mutable struct MyStressResult
 
     # constructor -
     MyStressResult() = new();
+end
+
+# --- Session 4: News Sentiment Types --------------------------------------------
+
+"""
+    MyNewsScenario
+
+Scenario controls for synthetic news generation. The asymmetric shock applied
+to the price path on each item's arrival day is
+
+    Δ = -κ_neg · max(-s, 0) + κ_pos · max(s, 0)
+
+where `s` ∈ [-1, +1] is the item's sentiment score.
+
+### Fields
+- `label::String` — scenario name (e.g., `"baseline_asymmetric"`, `"pure_noise"`)
+- `kappa_pos::Float64` — upside shock magnitude per unit |s| (e.g., 0.005 = 50 bp)
+- `kappa_neg::Float64` — downside shock magnitude per unit |s| (e.g., 0.010 = 100 bp)
+- `arrival_intensity::Float64` — Poisson rate of news items per ticker per trading day
+- `sentiment_mean::Float64` — mean of the sentiment score distribution per item
+- `sentiment_sd::Float64` — standard deviation of the sentiment score distribution per item
+"""
+mutable struct MyNewsScenario
+
+    # data -
+    label::String
+    kappa_pos::Float64
+    kappa_neg::Float64
+    arrival_intensity::Float64
+    sentiment_mean::Float64
+    sentiment_sd::Float64
+
+    # constructor -
+    MyNewsScenario() = new();
+end
+
+"""
+    MyNewsItem
+
+A single news item. The `true_score` is the planted sentiment used to compute
+the price shock; `claude_score` is what the LLM extracts back from the text and
+is filled by [`score_news_with_claude!`](@ref). For look-ahead-clean backtests,
+all engine reads must respect `publication_day`.
+
+### Fields
+- `ticker::String` — the asset the item references
+- `publication_day::Int` — trading-day index when the item becomes public
+- `text::String` — headline / body of the item (LLM-generated or templated)
+- `true_score::Float64` — planted sentiment in [-1, +1] used to drive the price shock
+- `claude_score::Float64` — sentiment in [-1, +1] extracted from the text by the LLM
+- `source::String` — provenance tag (e.g., `"synthetic_news"`, `"synthetic_filing"`)
+"""
+mutable struct MyNewsItem
+
+    # data -
+    ticker::String
+    publication_day::Int
+    text::String
+    true_score::Float64
+    claude_score::Float64
+    source::String
+
+    # constructor -
+    MyNewsItem() = new();
+end
+
+"""
+    MyNewsCorpus
+
+A collection of news items generated under a single scenario, together with the
+post-shock price matrix the items imply.
+
+### Fields
+- `items::Array{MyNewsItem,1}` — all generated items (any ticker, any day)
+- `tickers::Array{String,1}` — universe the corpus covers (column order for `news_factor`)
+- `scenario::MyNewsScenario` — scenario used to generate this corpus
+- `news_factor::Array{Float64,2}` — `T × K` daily aggregated sentiment per ticker
+  (mean of items mentioning ticker `i` on day `t`, zero if none)
+- `shocked_prices::Array{Float64,2}` — `T × K` price matrix after asymmetric shocks
+- `seed::Int` — RNG seed used for reproducibility
+"""
+mutable struct MyNewsCorpus
+
+    # data -
+    items::Array{MyNewsItem,1}
+    tickers::Array{String,1}
+    scenario::MyNewsScenario
+    news_factor::Array{Float64,2}
+    shocked_prices::Array{Float64,2}
+    seed::Int
+
+    # constructor -
+    MyNewsCorpus() = new();
 end

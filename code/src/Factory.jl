@@ -86,7 +86,7 @@ end
     build(type::Type{MyCESChoiceProblem}, data::NamedTuple) -> MyCESChoiceProblem
 
 Build a CES choice problem from a named tuple.
-Expected fields: gamma, prices, B, epsilon, sigma.
+Expected fields: gamma, prices, B, epsilon, eta.
 """
 function build(type::Type{MyCESChoiceProblem}, data::NamedTuple)::MyCESChoiceProblem
 
@@ -96,7 +96,7 @@ function build(type::Type{MyCESChoiceProblem}, data::NamedTuple)::MyCESChoicePro
     problem.prices = data.prices;
     problem.B = data.B;
     problem.epsilon = data.epsilon;
-    problem.sigma = data.sigma;
+    problem.eta = data.eta;
 
     # return -
     return problem;
@@ -240,15 +240,15 @@ function build(type::Type{MyEpsilonGreedyBanditModel}, data::NamedTuple)::MyEpsi
     return model;
 end
 
-# --- Session 3: Sigma-Bandit Builders --------------------------------------------
+# --- Session 3: Eta-Bandit Builders ---------------------------------------------
 
 """
-    build(type::Type{MySigmaBanditModel}, data::NamedTuple) -> MySigmaBanditModel
+    build(type::Type{MyEtaBanditModel}, data::NamedTuple) -> MyEtaBanditModel
 """
-function build(type::Type{MySigmaBanditModel}, data::NamedTuple)::MySigmaBanditModel
+function build(type::Type{MyEtaBanditModel}, data::NamedTuple)::MyEtaBanditModel
 
-    model = MySigmaBanditModel();
-    model.sigma_grid = data.sigma_grid;
+    model = MyEtaBanditModel();
+    model.eta_grid = data.eta_grid;
     model.n_iterations = data.n_iterations;
     model.alpha = data.alpha;
     model.lambda_threshold = data.lambda_threshold;
@@ -288,4 +288,63 @@ function build(type::Type{MyProductionContext}, data::NamedTuple)::MyProductionC
     ctx.max_bandit_churn = data.max_bandit_churn;
 
     return ctx;
+end
+
+# --- Session 4: News Sentiment Builders -----------------------------------------
+
+"""
+    build(type::Type{MyNewsScenario}, data::NamedTuple) -> MyNewsScenario
+
+Build a `MyNewsScenario` from a named tuple with fields
+`label`, `kappa_pos`, `kappa_neg`, `arrival_intensity`, `sentiment_mean`, `sentiment_sd`.
+"""
+function build(type::Type{MyNewsScenario}, data::NamedTuple)::MyNewsScenario
+
+    s = MyNewsScenario();
+    s.label = data.label;
+    s.kappa_pos = data.kappa_pos;
+    s.kappa_neg = data.kappa_neg;
+    s.arrival_intensity = data.arrival_intensity;
+    s.sentiment_mean = data.sentiment_mean;
+    s.sentiment_sd = data.sentiment_sd;
+
+    return s;
+end
+
+"""
+    build(type::Type{MyNewsItem}, data::NamedTuple) -> MyNewsItem
+
+Build a `MyNewsItem` from a named tuple with fields
+`ticker`, `publication_day`, `text`, `true_score`, `claude_score`, `source`.
+"""
+function build(type::Type{MyNewsItem}, data::NamedTuple)::MyNewsItem
+
+    item = MyNewsItem();
+    item.ticker = data.ticker;
+    item.publication_day = data.publication_day;
+    item.text = data.text;
+    item.true_score = data.true_score;
+    item.claude_score = data.claude_score;
+    item.source = data.source;
+
+    return item;
+end
+
+"""
+    build(type::Type{MyNewsCorpus}, data::NamedTuple) -> MyNewsCorpus
+
+Build a `MyNewsCorpus` from a named tuple with fields
+`items`, `tickers`, `scenario`, `news_factor`, `shocked_prices`, `seed`.
+"""
+function build(type::Type{MyNewsCorpus}, data::NamedTuple)::MyNewsCorpus
+
+    c = MyNewsCorpus();
+    c.items = data.items;
+    c.tickers = data.tickers;
+    c.scenario = data.scenario;
+    c.news_factor = data.news_factor;
+    c.shocked_prices = data.shocked_prices;
+    c.seed = data.seed;
+
+    return c;
 end

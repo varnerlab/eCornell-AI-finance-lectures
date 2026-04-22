@@ -80,9 +80,9 @@ const SIM_PARAMS = Dict(
 
         @testset "MyCESChoiceProblem" begin
             p = build(MyCESChoiceProblem, (
-                gamma=[0.5, 0.3, 0.2], prices=[100.0, 50.0, 80.0], B=10000.0, epsilon=0.1, sigma=2.0));
+                gamma=[0.5, 0.3, 0.2], prices=[100.0, 50.0, 80.0], B=10000.0, epsilon=0.1, eta=2.0));
             @test p isa MyCESChoiceProblem
-            @test p.sigma == 2.0
+            @test p.eta == 2.0
         end
 
         @testset "MyLogLinearChoiceProblem" begin
@@ -348,7 +348,7 @@ const SIM_PARAMS = Dict(
             B = 10000.0;
 
             problem = build(MyCESChoiceProblem, (
-                gamma=gamma, prices=prices, B=B, epsilon=0.1, sigma=2.0));
+                gamma=gamma, prices=prices, B=B, epsilon=0.1, eta=2.0));
             (shares, cash) = allocate_ces(problem);
 
             total = sum(shares .* prices) + cash;
@@ -380,7 +380,7 @@ const SIM_PARAMS = Dict(
         @testset "evaluate_ces" begin
             shares = [10.0, 20.0, 5.0];
             gamma = [0.5, 0.3, 0.2];
-            u = evaluate_ces(shares, gamma; sigma=2.0);
+            u = evaluate_ces(shares, gamma; eta=2.0);
             @test u > 0
         end
 
@@ -391,22 +391,22 @@ const SIM_PARAMS = Dict(
             @test u > 0
         end
 
-        @testset "compute_adaptive_sigma" begin
-            # neutral → σ_max
-            @test compute_adaptive_sigma(0.0; σ_min=0.5, σ_max=5.0) ≈ 5.0
+        @testset "compute_adaptive_eta" begin
+            # neutral → η_max
+            @test compute_adaptive_eta(0.0; η_min=0.5, η_max=5.0) ≈ 5.0
 
-            # large |λ| → approaches σ_min
-            σ_extreme = compute_adaptive_sigma(10.0; σ_min=0.5, σ_max=5.0);
-            @test σ_extreme > 0.5
-            @test σ_extreme < 1.0
+            # large |λ| → approaches η_min
+            η_extreme = compute_adaptive_eta(10.0; η_min=0.5, η_max=5.0);
+            @test η_extreme > 0.5
+            @test η_extreme < 1.0
 
             # monotonically decreasing in |λ|
             λ_vals = [0.0, 0.5, 1.0, 2.0, 5.0, 10.0];
-            σ_vals = [compute_adaptive_sigma(λ) for λ in λ_vals];
-            @test all(diff(σ_vals) .< 0)
+            η_vals = [compute_adaptive_eta(λ) for λ in λ_vals];
+            @test all(diff(η_vals) .< 0)
 
             # negative λ gives same result as positive (symmetric)
-            @test compute_adaptive_sigma(-2.0) ≈ compute_adaptive_sigma(2.0)
+            @test compute_adaptive_eta(-2.0) ≈ compute_adaptive_eta(2.0)
         end
     end
 
@@ -748,7 +748,7 @@ const SIM_PARAMS = Dict(
     end
 
     # ===================================================================
-    @testset "Compute — Session 3 (Sigma-Bandit)" begin
+    @testset "Compute — Session 3 (Eta-Bandit)" begin
 
         @testset "classify_regime" begin
             @test classify_regime(1.0; θ=0.5) == :bearish
@@ -759,7 +759,7 @@ const SIM_PARAMS = Dict(
             @test classify_regime(0.51; θ=0.5) == :bearish
         end
 
-        @testset "sigma_bandit_world — positive utility" begin
+        @testset "eta_bandit_world — positive utility" begin
             # build a minimal context -
             T_test = 120;
             K_test = N_ASSETS;
@@ -780,12 +780,12 @@ const SIM_PARAMS = Dict(
                 lambda=0.0, Δt=Δt, epsilon=0.1
             ));
 
-            u = sigma_bandit_world(2.0, ctx, 84);
+            u = eta_bandit_world(2.0, ctx, 84);
             @test u > 0
             @test isfinite(u)
         end
 
-        @testset "solve_sigma_bandit — returns valid result" begin
+        @testset "solve_eta_bandit — returns valid result" begin
             T_test = 120;
             K_test = N_ASSETS;
             Δt = 1.0 / 252.0;
@@ -808,16 +808,16 @@ const SIM_PARAMS = Dict(
                 lambda=0.0, Δt=Δt, epsilon=0.1
             ));
 
-            σ_grid = [0.5, 1.0, 2.0, 3.0];
-            bandit = build(MySigmaBanditModel, (
-                sigma_grid=σ_grid, n_iterations=50, alpha=0.1, lambda_threshold=0.5
+            η_grid = [0.5, 1.0, 2.0, 3.0];
+            bandit = build(MyEtaBanditModel, (
+                eta_grid=η_grid, n_iterations=50, alpha=0.1, lambda_threshold=0.5
             ));
 
-            result = solve_sigma_bandit(bandit, ctx, λ_test, collect(85:T_test));
-            @test haskey(result.best_sigma_per_regime, :bearish)
-            @test haskey(result.best_sigma_per_regime, :neutral)
-            @test haskey(result.best_sigma_per_regime, :bullish)
-            @test result.best_sigma_per_regime[:neutral] ∈ σ_grid
+            result = solve_eta_bandit(bandit, ctx, λ_test, collect(85:T_test));
+            @test haskey(result.best_eta_per_regime, :bearish)
+            @test haskey(result.best_eta_per_regime, :neutral)
+            @test haskey(result.best_eta_per_regime, :bullish)
+            @test result.best_eta_per_regime[:neutral] ∈ η_grid
             @test length(result.reward_history) == length(85:T_test)
         end
 
@@ -1066,6 +1066,237 @@ const SIM_PARAMS = Dict(
             @test result.drawdown > 0.15  # exceeds max_drawdown
             @test result.would_derisk == true
             @test length(result.triggers_fired) > 0
+        end
+    end
+
+    # ===================================================================
+    @testset "Compute — Session 4 (News Sentiment Pipeline)" begin
+
+        @testset "MyNewsScenario / MyNewsItem / MyNewsCorpus construction" begin
+            @test MyNewsScenario() isa MyNewsScenario
+            @test MyNewsItem() isa MyNewsItem
+            @test MyNewsCorpus() isa MyNewsCorpus
+        end
+
+        @testset "build news types" begin
+            scen = build(MyNewsScenario, (label="t", kappa_pos=0.005, kappa_neg=0.010,
+                arrival_intensity=0.3, sentiment_mean=0.0, sentiment_sd=0.5));
+            @test scen.label == "t"
+            @test scen.kappa_neg == 0.010
+
+            item = build(MyNewsItem, (ticker="AAA", publication_day=42,
+                text="hello", true_score=0.4, claude_score=0.45, source="syn"));
+            @test item.ticker == "AAA"
+            @test item.publication_day == 42
+            @test item.true_score == 0.4
+        end
+
+        @testset "simulate_news_corpus invariants" begin
+            Random.seed!(42);
+            T, K = 100, 3;
+            tickers_local = ["AAA", "BBB", "CCC"];
+            prices = ones(T, K);
+            for t in 2:T, i in 1:K
+                prices[t, i] = prices[t-1, i] * exp(0.0002 + 0.01 * randn());
+            end
+
+            scen = build(MyNewsScenario, (label="baseline", kappa_pos=0.005, kappa_neg=0.010,
+                arrival_intensity=0.3, sentiment_mean=0.0, sentiment_sd=0.5));
+            corpus = simulate_news_corpus(prices, tickers_local, scen; seed=7);
+
+            @test corpus isa MyNewsCorpus
+            @test size(corpus.news_factor) == (T, K)
+            @test size(corpus.shocked_prices) == (T, K)
+            # day 1 prices are unshocked (initialized from baseline)
+            @test corpus.shocked_prices[1, :] == prices[1, :]
+            # all true_scores are bounded
+            @test all(-1.0 .<= [it.true_score for it in corpus.items] .<= 1.0)
+            # claude_scores are NaN until score_news_with_claude! runs
+            @test all(isnan(it.claude_score) for it in corpus.items)
+        end
+
+        @testset "simulate_news_corpus — zero shock recovers baseline" begin
+            Random.seed!(123);
+            T, K = 50, 2;
+            tickers_local = ["X", "Y"];
+            prices = ones(T, K);
+            for t in 2:T, i in 1:K
+                prices[t, i] = prices[t-1, i] * exp(0.001 + 0.005 * randn());
+            end
+
+            scen = build(MyNewsScenario, (label="zero", kappa_pos=0.0, kappa_neg=0.0,
+                arrival_intensity=0.5, sentiment_mean=0.0, sentiment_sd=0.5));
+            corpus = simulate_news_corpus(prices, tickers_local, scen; seed=1);
+
+            @test isapprox(corpus.shocked_prices, prices; atol=1e-12)
+        end
+
+        @testset "simulate_news_corpus — negative bias drops shocked prices below baseline" begin
+            Random.seed!(99);
+            T, K = 200, 2;
+            tickers_local = ["X", "Y"];
+            prices = ones(T, K) .* 100.0;
+
+            # purely negative news, positive arrival rate, baseline flat (no drift)
+            scen = build(MyNewsScenario, (label="neg", kappa_pos=0.005, kappa_neg=0.010,
+                arrival_intensity=0.5, sentiment_mean=-0.5, sentiment_sd=0.1));
+            corpus = simulate_news_corpus(prices, tickers_local, scen; seed=11);
+
+            @test all(corpus.shocked_prices[end, :] .< prices[end, :])
+        end
+
+        @testset "aggregate_news_factor — empty days are zero" begin
+            items = MyNewsItem[];
+            it = build(MyNewsItem, (ticker="A", publication_day=3, text="",
+                true_score=0.5, claude_score=0.6, source="syn"));
+            push!(items, it);
+            factor = aggregate_news_factor(items, 5, ["A", "B"]; use_score=:claude_score);
+            @test factor[3, 1] ≈ 0.6
+            @test factor[3, 2] == 0.0
+            @test factor[1, 1] == 0.0
+        end
+
+        @testset "aggregate_news_factor — multi-item daily mean" begin
+            items = [
+                build(MyNewsItem, (ticker="A", publication_day=2, text="",
+                    true_score=0.4, claude_score=0.4, source="syn")),
+                build(MyNewsItem, (ticker="A", publication_day=2, text="",
+                    true_score=0.8, claude_score=0.8, source="syn")),
+            ];
+            factor = aggregate_news_factor(items, 3, ["A"]; use_score=:true_score);
+            @test factor[2, 1] ≈ 0.6  # mean(0.4, 0.8)
+        end
+
+        @testset "score_news_with_claude! — stub mode fills claude_score" begin
+            Random.seed!(0);
+            scen = build(MyNewsScenario, (label="t", kappa_pos=0.005, kappa_neg=0.010,
+                arrival_intensity=0.5, sentiment_mean=0.0, sentiment_sd=0.4));
+            prices = ones(40, 2);
+            corpus = simulate_news_corpus(prices, ["A", "B"], scen; seed=3);
+            score_news_with_claude!(corpus; live=false, cached_noise_sd=0.10, seed=4);
+            @test all(isfinite(it.claude_score) for it in corpus.items)
+            @test all(-1.0 .<= [it.claude_score for it in corpus.items] .<= 1.0)
+
+            # cached_noise_sd = 0 → claude_score == true_score
+            score_news_with_claude!(corpus; live=false, cached_noise_sd=0.0, seed=5);
+            @test all(isapprox(it.claude_score, it.true_score; atol=1e-12) for it in corpus.items)
+        end
+
+        @testset "generate_news_text! — live=false is a no-op" begin
+            Random.seed!(0);
+            scen = build(MyNewsScenario, (label="t", kappa_pos=0.005, kappa_neg=0.010,
+                arrival_intensity=0.4, sentiment_mean=0.0, sentiment_sd=0.4));
+            prices = ones(20, 2);
+            corpus = simulate_news_corpus(prices, ["A", "B"], scen; seed=6);
+            stubs_before = [it.text for it in corpus.items];
+            generate_news_text!(corpus; live=false);
+            stubs_after = [it.text for it in corpus.items];
+            @test stubs_before == stubs_after
+        end
+
+        @testset "estimate_sim_with_news — recovers planted ν" begin
+            Random.seed!(42);
+            T, K = 600, 3;
+            tickers_local = ["AAA", "BBB", "CCC"];
+            true_alpha = [0.0001, 0.0002, 0.00005];
+            true_beta  = [1.10, 0.80, 1.40];
+            true_nu    = [0.020, 0.005, 0.030];
+            true_sigma_eps = [0.008, 0.006, 0.012];
+
+            market = ones(T);
+            for t in 2:T
+                market[t] = market[t-1] * exp(0.0003 + 0.012 * randn());
+            end
+
+            scen = build(MyNewsScenario, (label="t", kappa_pos=0.0, kappa_neg=0.0,
+                arrival_intensity=0.4, sentiment_mean=0.0, sentiment_sd=0.5));
+            corpus = simulate_news_corpus(ones(T, K), tickers_local, scen; seed=7);
+            gm = log.(market[2:end] ./ market[1:end-1]);
+            prices = ones(T, K) .* 100.0;
+            for t in 2:T, i in 1:K
+                g = true_alpha[i] + true_beta[i] * gm[t-1] +
+                    true_nu[i] * corpus.news_factor[t, i] + true_sigma_eps[i] * randn();
+                prices[t, i] = prices[t-1, i] * exp(g);
+            end
+
+            growth = log.(prices[2:end, :] ./ prices[1:end-1, :]);
+            (sim_params, nu_hat) = estimate_sim_with_news(growth, gm,
+                corpus.news_factor[2:end, :], tickers_local);
+
+            for i in 1:K
+                @test isapprox(nu_hat[i], true_nu[i]; atol=0.005)
+                (a, b, _) = sim_params[tickers_local[i]];
+                @test isapprox(b, true_beta[i]; atol=0.10)
+            end
+        end
+
+        @testset "compute_preference_weights — nu=0 reduces to SIM" begin
+            tickers_local = TICKERS;
+            K = length(tickers_local);
+            gm_t = 0.05;
+            lambda = 0.0;
+            gamma_sim = compute_preference_weights(SIM_PARAMS, tickers_local, gm_t, lambda);
+            gamma_news_zero = compute_preference_weights(SIM_PARAMS, tickers_local, gm_t, lambda;
+                news_t=zeros(K), nu_loadings=zeros(K));
+            @test maximum(abs.(gamma_sim .- gamma_news_zero)) < 1e-12
+        end
+
+        @testset "compute_preference_weights — positive news lifts γ" begin
+            tickers_local = TICKERS;
+            K = length(tickers_local);
+            gm_t = 0.0;  # neutral market growth
+            lambda = 0.0;
+
+            news_pos = fill(0.5, K);  # uniform positive news
+            nu_unit  = ones(K);
+
+            γ_base = compute_preference_weights(SIM_PARAMS, tickers_local, gm_t, lambda);
+            γ_news = compute_preference_weights(SIM_PARAMS, tickers_local, gm_t, lambda;
+                news_t=news_pos, nu_loadings=nu_unit);
+
+            # positive ν · news term shifts every g_hat upward, so tanh output rises
+            # (or stays at the +1 saturation). For SIM params with non-saturating
+            # baseline γ, every component should strictly increase.
+            non_sat = abs.(γ_base) .< 0.99
+            @test all(γ_news[non_sat] .> γ_base[non_sat])
+        end
+
+        @testset "run_rebalancing_engine — news kwargs preserve backwards compatibility" begin
+            Random.seed!(42);
+            T_test = 150;
+            K_test = N_ASSETS;
+            Δt = 1.0 / 252.0;
+            market_test = 100.0 .* exp.(cumsum(randn(T_test) * 0.01));
+            gm_raw = compute_market_growth(market_test; Δt=Δt);
+            gm_ema = compute_ema(gm_raw; window=10);
+            ema_s  = compute_ema(market_test; window=21);
+            ema_l  = compute_ema(market_test; window=63);
+            λ_test = compute_lambda(ema_s, ema_l; G=10.0);
+            pmatrix = zeros(T_test, K_test + 1);
+            pmatrix[:, 1] = 1:T_test;
+            for k in 1:K_test
+                pmatrix[:, k+1] = 100.0 .* exp.(cumsum(randn(T_test) * 0.015));
+            end
+
+            ctx = build(MyRebalancingContextModel, (
+                B=10000.0, tickers=TICKERS, marketdata=pmatrix,
+                marketfactor=gm_ema, sim_parameters=SIM_PARAMS,
+                lambda=0.0, Δt=Δt, epsilon=0.1
+            ));
+            rules = build(MyTriggerRules, (
+                max_drawdown=0.99, max_turnover=1.0,
+                rebalance_schedule=ones(Int, T_test - 84)
+            ));
+
+            r_baseline = run_rebalancing_engine(ctx, rules, λ_test; offset=84);
+            r_news_zero = run_rebalancing_engine(ctx, rules, λ_test; offset=84,
+                news_paths=zeros(T_test, K_test), nu_loadings=zeros(K_test));
+
+            # zero news loadings should produce identical share trajectories
+            for d in keys(r_baseline)
+                @test isapprox(r_baseline[d].shares, r_news_zero[d].shares; atol=1e-10)
+                @test isapprox(r_baseline[d].cash, r_news_zero[d].cash; atol=1e-6)
+            end
         end
     end
 
