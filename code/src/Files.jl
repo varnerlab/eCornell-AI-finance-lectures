@@ -29,6 +29,32 @@ Each key is a ticker symbol; each value is a DataFrame with columns:
 MyTestingMarketDataSet() = _jld2(joinpath(_PATH_TO_DATA, "SP500-Daily-OHLC-1-2-2025-to-12-31-2025.jld2"));
 
 """
+    MyExtendedTestingMarketDataSet() -> Dict{String, Any}
+
+Load the testing dataset extended with 2026 year-to-date Daily OHLC. Concatenates
+`SP500-Daily-OHLC-1-2-2025-to-12-31-2025.jld2` with
+`SP500-Daily-OHLC-1-2-2026-to-04-22-2026.jld2` per ticker. Tickers present in
+both windows are vcat-ed in chronological order; tickers present only in 2025
+are returned 2025-only.
+
+Returned shape mirrors `MyTestingMarketDataSet`: top-level Dict with key
+`"dataset"` whose value is `Dict{String, DataFrame}` keyed by ticker.
+"""
+function MyExtendedTestingMarketDataSet()::Dict{String,Any}
+    d_2025 = _jld2(joinpath(_PATH_TO_DATA, "SP500-Daily-OHLC-1-2-2025-to-12-31-2025.jld2"));
+    d_2026 = _jld2(joinpath(_PATH_TO_DATA, "SP500-Daily-OHLC-1-2-2026-to-04-22-2026.jld2"));
+    ds_2025 = d_2025["dataset"]::Dict{String,DataFrame};
+    ds_2026 = d_2026["dataset"]::Dict{String,DataFrame};
+    combined = Dict{String,DataFrame}();
+    for (ticker, df_2025) ∈ ds_2025
+        combined[ticker] = haskey(ds_2026, ticker) ?
+            vcat(df_2025, ds_2026[ticker]) :
+            df_2025;
+    end
+    return Dict{String,Any}("dataset" => combined);
+end;
+
+"""
     MyMarketSurrogateModel() -> JumpHiddenMarkovModel
 
 Load the pre-trained JumpHMM market surrogate model fitted on SPY (2014–2024).

@@ -85,7 +85,7 @@ export estimate_sim_with_news
 # export files -
 export load_price_data, save_results, load_results
 export save_production_results, load_production_results
-export MyTrainingMarketDataSet, MyTestingMarketDataSet
+export MyTrainingMarketDataSet, MyTestingMarketDataSet, MyExtendedTestingMarketDataSet
 export MyMarketSurrogateModel, MyPortfolioSurrogateModel, MySyntheticTrainingDataSet, MySIMCalibration, MyCurrentPrices
 
 # export HMM aliases and types -
