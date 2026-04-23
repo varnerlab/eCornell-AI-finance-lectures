@@ -1286,6 +1286,224 @@ function generate_hybrid_scenario(market_model::JumpHiddenMarkovModel,
     ));
 end
 
+"""
+    generate_drifted_hybrid_scenario(market_model, portfolio_surrogate, sim_calibration, my_tickers;
+        n_paths, n_steps, Δt, P₀_market, start_prices, r2_preserve_threshold, label, seed,
+        drift_scale, drift_seed, alpha_se, beta_se,
+        market_growth_drift_sd) -> MyBacktestScenario
+
+Drift-aware variant of `generate_hybrid_scenario` with two independent drift
+channels:
+
+1. **Per-asset (α, β) drift.** Per (path, ticker) draws of
+
+       αᵢᵗʳᵘᵉ = α̂ᵢ + drift_scale · SEαᵢ · zα,
+       βᵢᵗʳᵘᵉ = β̂ᵢ + drift_scale · SEβᵢ · zβ,
+
+   with `zα, zβ ~ N(0, 1)`. Captures movement in the cross-sectional structure
+   between the calibration window and the deployment horizon. The allocator
+   that later reads `MyBacktestScenario.price_paths` continues to use the
+   frozen point estimates (α̂, β̂); the gap quantifies the cost of stale
+   calibration.
+
+2. **Per-path market-growth drift.** A single per-path multiplicative scaler
+
+       Gₘᵃʳᵏᵉᵗ ← (1 + δₚ) · Gₘᵃʳᵏᵉᵗ,   δₚ ~ N(0, market_growth_drift_sd),
+
+   applied before the market price recursion and the per-asset SIM composition.
+   Captures cross-path variation in the deployment-year market regime that the
+   HMM ensemble (calibrated on a single historical window) understates.
+   Within-path HMM jumps and regime persistence are preserved; only the
+   per-path average level is shifted.
+
+Both channels share `drift_seed`; market draws happen first per path, then
+the per-ticker α/β draws. Setting both `drift_scale = 0.0` and
+`market_growth_drift_sd = 0.0` reproduces `generate_hybrid_scenario` exactly
+when both share the same `seed`.
+
+The idiosyncratic-noise variance budget uses the calibrated β (the same
+construction as `generate_hybrid_scenario`), so realized R² of a drifted
+path moves with the drift in β rather than being re-pinned to the
+calibration value.
+
+`alpha_se` and `beta_se` default to bootstrap SE values pulled from
+`sim_calibration["bootstrap_results"]` if that key exists; for the
+"cross-sectional drift" interpretation pass them explicitly as a Dict
+keyed by ticker.
+"""
+function generate_drifted_hybrid_scenario(
+    market_model::JumpHiddenMarkovModel,
+    portfolio_surrogate::Dict{String,Any},
+    sim_calibration::Dict{String,Any},
+    my_tickers::Vector{String};
+    n_paths::Int = 500, n_steps::Int = 252, Δt::Float64 = 1.0/252.0,
+    P₀_market::Float64 = 100.0,
+    start_prices::Union{Nothing,Dict{String,Float64}} = nothing,
+    r2_preserve_threshold::Float64 = 0.80,
+    label::String = "Hybrid-SIM (drifted)",
+    seed::Union{Nothing,Int} = nothing,
+    drift_scale::Float64 = 0.0,
+    drift_seed::Union{Nothing,Int} = nothing,
+    alpha_se::Union{Nothing,Dict{String,Float64}} = nothing,
+    beta_se::Union{Nothing,Dict{String,Float64}} = nothing,
+    market_growth_drift_sd::Float64 = 0.0)::MyBacktestScenario
+
+    # --- Preflight: unpack calibration ---
+    calib_tickers = sim_calibration["tickers"]::Vector{String};
+    calib_alpha   = sim_calibration["alpha"]::Vector{Float64};
+    calib_beta    = sim_calibration["beta"]::Vector{Float64};
+    calib_r2      = sim_calibration["r_squared"]::Vector{Float64};
+    calib_lookup = Dict{String, NamedTuple{(:α, :β, :r²), Tuple{Float64,Float64,Float64}}}();
+    for (i, t) ∈ enumerate(calib_tickers)
+        calib_lookup[t] = (α = calib_alpha[i], β = calib_beta[i], r² = calib_r2[i]);
+    end
+
+    # --- Bootstrap SE lookup (only consulted when drift_scale > 0) ---
+    α_se_lk = alpha_se;
+    β_se_lk = beta_se;
+    if drift_scale > 0.0 && (α_se_lk === nothing || β_se_lk === nothing)
+        haskey(sim_calibration, "bootstrap_results") ||
+            throw(ArgumentError("generate_drifted_hybrid_scenario: drift_scale > 0 needs alpha_se/beta_se or sim_calibration[\"bootstrap_results\"]"));
+        bs = sim_calibration["bootstrap_results"]::Dict{String,Dict{String,Any}};
+        α_se_lk === nothing && (α_se_lk = Dict(t => Float64(bs[t]["alpha_std"]) for t ∈ my_tickers));
+        β_se_lk === nothing && (β_se_lk = Dict(t => Float64(bs[t]["beta_std"])  for t ∈ my_tickers));
+    end
+    if drift_scale > 0.0
+        for t ∈ my_tickers
+            haskey(α_se_lk, t) || throw(ArgumentError("alpha_se missing ticker $(t)"));
+            haskey(β_se_lk, t) || throw(ArgumentError("beta_se missing ticker $(t)"));
+        end
+    end
+
+    marginals = portfolio_surrogate["marginals"];
+    copula    = portfolio_surrogate["copula"];
+    surrogate_tickers = portfolio_surrogate["tickers"]::Vector{String};
+    col_idx = Dict{String, Int}();
+    for (i, t) ∈ enumerate(surrogate_tickers)
+        col_idx[t] = i;
+    end
+
+    # --- Validate user tickers ---
+    missing_calib = String[];
+    missing_marg  = String[];
+    for t ∈ my_tickers
+        haskey(calib_lookup, t) || push!(missing_calib, t);
+        haskey(marginals,    t) || push!(missing_marg,  t);
+    end
+    if !isempty(missing_calib) || !isempty(missing_marg)
+        msg = "generate_drifted_hybrid_scenario: missing tickers";
+        !isempty(missing_calib) && (msg *= "\n  not in sim_calibration: $(missing_calib)");
+        !isempty(missing_marg)  && (msg *= "\n  not in portfolio_surrogate[\"marginals\"]: $(missing_marg)");
+        msg *= "\n  source of truth: MySIMCalibration()[\"tickers\"]";
+        throw(ArgumentError(msg));
+    end
+
+    σ²_m_synth = (sim_calibration["sigma_market"]::Float64)^2;
+    K = length(my_tickers);
+    p0 = Float64[
+        (start_prices === nothing) ? 100.0 : get(start_prices, t, 100.0)
+        for t ∈ my_tickers
+    ];
+
+    # --- Reproducibility: separate RNG streams for path generation vs drift draws ---
+    if seed !== nothing
+        Random.seed!(seed);
+    end
+    drift_rng = drift_seed === nothing ? Random.default_rng() : MersenneTwister(drift_seed);
+
+    sim_result = hmm_simulate(market_model, n_steps; n_paths = n_paths);
+
+    market_paths = zeros(n_paths, n_steps);
+    price_paths  = zeros(n_paths, n_steps, K);
+
+    for p ∈ 1:n_paths
+
+        G_full = Float64.(sim_result.paths[p].observations);
+        G_market = G_full[2:end];
+        T_eff = length(G_market);
+
+        # Per-path market-growth drift draw, consumed before any per-ticker drift
+        # so the RNG ordering is well-defined when both channels are active.
+        if market_growth_drift_sd > 0.0
+            δ_p = market_growth_drift_sd * randn(drift_rng);
+            G_market = (1.0 + δ_p) .* G_market;
+        end
+
+        mkt = zeros(n_steps);
+        mkt[1] = P₀_market;
+        for t ∈ 1:T_eff
+            mkt[t+1] = mkt[t] * exp(G_market[t] * Δt);
+        end
+        market_paths[p, :] = mkt;
+
+        U = JumpHMM.sample_dependence(copula, n_steps);
+
+        for (k, ticker) ∈ enumerate(my_tickers)
+
+            r_j = hmm_simulate(marginals[ticker], n_steps; n_paths = 1);
+            obs_full = Float64.(r_j.paths[1].observations);
+            obs_j = obs_full[2:end] .- mean(obs_full[2:end]);
+            σ²_HMM = var(obs_j);
+
+            c = calib_lookup[ticker];
+            α_calib     = c.α;
+            β_calib_raw = c.β;
+            r²_real     = c.r²;
+
+            # Variance budget for ε uses the calibrated β (potentially floored in
+            # the low-R² branch). Drift only enters at the SIM composition step
+            # below, so the noise envelope matches the frozen-truth generator.
+            β_calib = β_calib_raw;
+            if r²_real >= r2_preserve_threshold
+                σ²_ε_target = (r²_real >= 1.0 - 1e-12) ? 0.0 :
+                              β_calib_raw^2 * σ²_m_synth * (1.0 - r²_real) / r²_real;
+                ε_scaled = (σ²_HMM > 0.0 && σ²_ε_target > 0.0) ?
+                           sqrt(σ²_ε_target / σ²_HMM) .* obs_j :
+                           zeros(T_eff);
+            else
+                ratio = β_calib_raw^2 * σ²_m_synth / σ²_HMM;
+                if ratio > 0.90
+                    β_calib = sign(β_calib_raw) * sqrt(0.90 * σ²_HMM / σ²_m_synth);
+                    s² = 0.10;
+                else
+                    s² = 1.0 - ratio;
+                end
+                ε_scaled = sqrt(s²) .* obs_j;
+            end
+
+            # Per-path drifted truth. drift_scale = 0 collapses to the calibrated
+            # values and consumes no RNG state, so the path is bit-identical to
+            # generate_hybrid_scenario when both share `seed`.
+            if drift_scale > 0.0
+                α_true = α_calib + drift_scale * α_se_lk[ticker] * randn(drift_rng);
+                β_true = β_calib + drift_scale * β_se_lk[ticker] * randn(drift_rng);
+            else
+                α_true = α_calib;
+                β_true = β_calib;
+            end
+
+            sorted_eps   = sort(ε_scaled);
+            copula_ranks = ordinalrank(U[2:end, col_idx[ticker]]);
+            ε_reordered  = sorted_eps[copula_ranks];
+
+            g_i = α_true .+ β_true .* G_market .+ ε_reordered;
+
+            price_paths[p, 1, k] = p0[k];
+            for t ∈ 1:T_eff
+                price_paths[p, t+1, k] = price_paths[p, t, k] * exp(g_i[t] * Δt);
+            end
+        end
+    end
+
+    return build(MyBacktestScenario, (
+        label = label,
+        price_paths = price_paths,
+        market_paths = market_paths,
+        n_paths = n_paths,
+        n_steps = n_steps
+    ));
+end
+
 # --- Session 3: Backtesting Functions -------------------------------------------
 
 """

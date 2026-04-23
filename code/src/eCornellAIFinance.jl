@@ -65,6 +65,7 @@ export compute_adaptive_eta
 
 # export compute — Session 3 -
 export generate_training_prices, generate_hmm_scenario, generate_hybrid_scenario
+export generate_drifted_hybrid_scenario
 export backtest_engine, backtest_buyhold, backtest_buyhold_market
 export compute_cvar
 export bandit_world, solve_bandit, compute_regret, backtest_bandit
