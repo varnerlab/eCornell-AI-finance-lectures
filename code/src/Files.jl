@@ -29,6 +29,46 @@ Each key is a ticker symbol; each value is a DataFrame with columns:
 MyTestingMarketDataSet() = _jld2(joinpath(_PATH_TO_DATA, "SP500-Daily-OHLC-1-2-2025-to-12-31-2025.jld2"));
 
 """
+    MyDeploymentMarketDataSet(; n_warmup::Int = 84) -> Dict{String, Any}
+
+Load the deployment-period dataset: the last `n_warmup` trading days of the 2024
+training set (used for EMA warmup) concatenated with the full 2025 + 2026 YTD
+testing data. Used when the engine should *actually* deploy on the first day
+of the test period (e.g., 2025-01-02) rather than burning the first
+`n_warmup` test days as warmup.
+
+Concretely: with `n_warmup = 84` (the engine's default offset), the warmup
+window covers ~early September 2024 through year-end 2024, and the engine
+buys in on the first 2025 trading day. This means the engine is exposed to
+the early-2025 correction (SPY −19% Feb to April 8 2025, "tariff
+liberation day") rather than missing it during EMA warmup.
+
+Tickers present in the test set are returned with their 2024-tail warmup
+prepended if also present in the training set; tickers only in the test
+set are returned 2025+2026-only (with no warmup, which would break the
+engine's EMA windows for those tickers).
+
+Returned shape mirrors `MyExtendedTestingMarketDataSet`: top-level Dict
+with key `"dataset"` whose value is `Dict{String, DataFrame}`.
+"""
+function MyDeploymentMarketDataSet(; n_warmup::Int = 84)::Dict{String,Any}
+    train    = MyTrainingMarketDataSet()["dataset"]::Dict{String,DataFrame};
+    test_ext = MyExtendedTestingMarketDataSet()["dataset"]::Dict{String,DataFrame};
+    combined = Dict{String,DataFrame}();
+    for (ticker, df_test) ∈ test_ext
+        if haskey(train, ticker)
+            df_train = train[ticker];
+            n_train = size(df_train, 1);
+            warmup_df = df_train[max(1, n_train - n_warmup + 1):n_train, :];
+            combined[ticker] = vcat(warmup_df, df_test);
+        else
+            combined[ticker] = df_test;
+        end
+    end
+    return Dict{String,Any}("dataset" => combined);
+end;
+
+"""
     MyExtendedTestingMarketDataSet() -> Dict{String, Any}
 
 Load the testing dataset extended with 2026 year-to-date Daily OHLC. Concatenates
