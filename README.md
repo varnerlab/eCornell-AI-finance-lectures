@@ -56,10 +56,9 @@ Replace static variance minimization with utility-based allocation and daily reb
 | [Lecture](lectures/session-2/eCornell-AI-Finance-S2-Lecture-AIRebalancingEngine-May-2026.ipynb) | Theory: utility maximization, Cobb-Douglas/CES/log-linear, EMA sentiment, SIM preferences, trigger rules |
 | [Example 1](lectures/session-2/eCornell-AI-Finance-S2-Example-BuildCobbDouglasAllocator-May-2026.ipynb) | Build the allocator: synthetic market data, preference weights, utility comparison |
 | [Example 2](lectures/session-2/eCornell-AI-Finance-S2-Example-RebalancingEngineScorecard-May-2026.ipynb) | Run the engine: rebalancing loop, scorecard vs. benchmarks, sensitivity analysis |
-| [Example 3](lectures/session-2/eCornell-AI-Finance-S2-Example-StaticVsAdaptiveComparison-May-2026.ipynb) | Compare static and adaptive allocation performance |
-| [Example 4](lectures/session-2/eCornell-AI-Finance-S2-Example-StressTestRebalancingEngine-May-2026.ipynb) | Stress test the rebalancing process and controls |
-| [Example 5](lectures/session-2/eCornell-AI-Finance-S2-Example-TurnoverAttributionDiagnostics-May-2026.ipynb) | Diagnose turnover sources and attribution |
-| [Example 6](lectures/session-2/eCornell-AI-Finance-S2-Example-RegimeAwareSentiment-May-2026.ipynb) | Analyze sentiment features under regime variation |
+| [Example 3](lectures/session-2/eCornell-AI-Finance-S2-Example-MonteCarloEvaluation-May-2026.ipynb) | Monte Carlo evaluation: tail-risk scorecard, paired static-vs-adaptive comparison, regime dependence |
+| [Example 4](lectures/session-2/eCornell-AI-Finance-S2-Example-TurnoverAttributionDiagnostics-May-2026.ipynb) | Diagnose turnover sources and attribution |
+| [Example 5](lectures/session-2/eCornell-AI-Finance-S2-Example-RegimeAwareSentiment-May-2026.ipynb) | Analyze sentiment features under regime variation |
 
 ### [Session 3: Online Learning Validation and Bandit Challengers](lectures/session-3/)
 Validate adaptive decision policies with online learning diagnostics and challenger strategies. This session focuses on replay, ticker selection, uncertainty updates, and formal validation reporting to test whether adaptive logic remains robust out of sample.
