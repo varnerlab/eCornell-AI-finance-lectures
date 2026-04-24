@@ -42,11 +42,11 @@ Build a classical Markowitz portfolio from synthetic data, then stress test it u
 |:---------|:------------|
 | [Lecture](lectures/session-1/eCornell-AI-Finance-S1-Lecture-StressTestingMinVariancePortfolios-May-2026.ipynb) | Theory: growth rates, reward/risk, estimation, Markowitz QP, efficient frontier, three weaknesses, stress testing framework |
 | [Introduction](lectures/session-1/eCornell-AI-Finance-S1-Introduction-MayasFirstPortfolio-May-2026.ipynb) | Orientation and narrative setup for portfolio design decisions |
-| [Example 1](lectures/session-1/eCornell-AI-Finance-S1-Example-StylizedFacts-Example-May-2026.ipynb) | Estimate stylized facts used by downstream portfolio logic |
-| [Example 2](lectures/session-1/eCornell-AI-Finance-S1-Example-SIMParameterEstimation-May-2026.ipynb) | Fit Single Index Model parameters from synthetic data |
-| [Example 3](lectures/session-1/eCornell-AI-Finance-S1-Example-BuildMinVariancePortfolio-RA-May-2026.ipynb) | Build a risk-aware minimum-variance portfolio |
-| [Example 4](lectures/session-1/eCornell-AI-Finance-S1-Example-MinVariancePortfolio-RRFA-May-2026.ipynb) | Compare min-variance construction variants |
-| [Example 5](lectures/session-1/eCornell-AI-Finance-S1-Example-StressTestMinVariancePortfolio-May-2026.ipynb) | Stress test under scenario shocks and summarize baseline performance |
+| [Example 1](lectures/session-1/eCornell-AI-Finance-S1-Example-Optional-StylizedFacts-May-2026.ipynb) | Estimate stylized facts used by downstream portfolio logic |
+| [Example 2](lectures/session-1/eCornell-AI-Finance-S1-Example-Optional-SIMParameterEstimation-May-2026.ipynb) | Fit Single Index Model parameters from synthetic data |
+| [Example 3](lectures/session-1/eCornell-AI-Finance-S1-Example-Core-BuildMinVariancePortfolio-RA-May-2026.ipynb) | Build a risk-aware minimum-variance portfolio |
+| [Example 4](lectures/session-1/eCornell-AI-Finance-S1-Example-Core-MinVariancePortfolio-RRFA-May-2026.ipynb) | Compare min-variance construction variants |
+| [Example 5](lectures/session-1/eCornell-AI-Finance-S1-Example-Core-StressTestMinVariancePortfolio-May-2026.ipynb) | Stress test under scenario shocks and summarize baseline performance |
 
 ### [Session 2: From Static Weights to Adaptive Allocation - Designing the AI Rebalancing Engine](lectures/session-2/)
 Replace static variance minimization with utility-based allocation and daily rebalancing logic. Build and compare allocation families, connect sentiment and fundamentals, and evaluate scorecards under realistic operating constraints.

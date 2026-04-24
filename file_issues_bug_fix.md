@@ -1,8 +1,8 @@
-# JLD2 `EOFError` in `S1-Example-BuildMinVar-RA` — Root Cause and Fix
+# JLD2 `EOFError` in `S1-Example-Core-BuildMinVar-RA` — Root Cause and Fix
 
 ## Symptom
 
-Running the `S1-Example-BuildMinVariancePortfolio-RA` notebook fails in a cell that calls `load_results(...)` (`code/src/Files.jl:151`) with:
+Running the `S1-Example-Core-BuildMinVariancePortfolio-RA` notebook fails in a cell that calls `load_results(...)` (`code/src/Files.jl:151`) with:
 
 ```
 EOFError: read end of file
