@@ -66,10 +66,10 @@ Validate adaptive decision policies with online learning diagnostics and challen
 | Notebook | Description |
 |:---------|:------------|
 | [Lecture](lectures/session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb) | Theory: online learning validation design and challenger evaluation |
-| [Example 1](lectures/session-3/eCornell-AI-Finance-S3-Example-EWLSEngineReplay-May-2026.ipynb) | Replay adaptive engine behavior on held-out trajectories |
-| [Example 2](lectures/session-3/eCornell-AI-Finance-S3-Example-TickerPickerBandit-May-2026.ipynb) | Build and evaluate the ticker picker bandit challenger |
+| [Example 1](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-EWLSEngineReplay-May-2026.ipynb) | Replay adaptive engine behavior on held-out trajectories |
+| [Example 2](lectures/session-3/eCornell-AI-Finance-S3-Example-Optional-TickerPickerBandit-May-2026.ipynb) | Build and evaluate the ticker picker bandit challenger |
 | [Example 3](lectures/session-3/eCornell-AI-Finance-S3-Example-BanditSigmaLearning-May-2026.ipynb) | Learn uncertainty parameters for exploration control |
-| [Example 4](lectures/session-3/eCornell-AI-Finance-S3-Example-ValidationReport-May-2026.ipynb) | Produce a structured validation report with pass/fail criteria |
+| [Example 4](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-ValidationReport-May-2026.ipynb) | Produce a structured validation report with pass/fail criteria |
 
 ### [Session 4: From Prototype to Production - Sentiment, Triggers, and Portfolio Operations](lectures/session-4/)
 Operationalize the portfolio engine with paper trading, production controls, sentiment-triggered overrides, and dashboard monitoring. This session emphasizes day-to-day operations, escalation handling, and transparent decision logs.
