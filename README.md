@@ -60,16 +60,17 @@ Replace static variance minimization with utility-based allocation and daily reb
 | [Example 4](lectures/session-2/eCornell-AI-Finance-S2-Example-Optional-TurnoverAttributionDiagnostics-May-2026.ipynb) | Diagnose turnover sources and attribution |
 | [Example 5](lectures/session-2/eCornell-AI-Finance-S2-Example-Optional-RegimeAwareSentiment-May-2026.ipynb) | Analyze sentiment features under regime variation |
 
-### [Session 3: Online Learning Validation and Bandit Challengers](lectures/session-3/)
-Validate adaptive decision policies with online learning diagnostics and challenger strategies. This session focuses on replay, ticker selection, uncertainty updates, and formal validation reporting to test whether adaptive logic remains robust out of sample.
+### [Session 3: Teaching the Engine to Learn - Online Estimation, Bandit Learning, and Formal Validation](lectures/session-3/)
+Replace the engine's frozen SIM calibration with daily EWLS updates, swap the hand-tuned CES elasticity heuristic for a bandit-learned map per sentiment regime, and produce a four-gate validation report plus compliance configuration that gates production scale-up.
 
 | Notebook | Description |
 |:---------|:------------|
-| [Lecture](lectures/session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb) | Theory: online learning validation design and challenger evaluation |
-| [Example 1](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-EWLSEngineReplay-May-2026.ipynb) | Replay adaptive engine behavior on held-out trajectories |
-| [Example 2](lectures/session-3/eCornell-AI-Finance-S3-Example-Optional-TickerPickerBandit-May-2026.ipynb) | Build and evaluate the ticker picker bandit challenger |
-| [Example 3](lectures/session-3/eCornell-AI-Finance-S3-Example-BanditSigmaLearning-May-2026.ipynb) | Learn uncertainty parameters for exploration control |
-| [Example 4](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-ValidationReport-May-2026.ipynb) | Produce a structured validation report with pass/fail criteria |
+| [Lecture](lectures/session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb) | Theory: EWLS online SIM estimation, epsilon-greedy bandit for CES elasticity, formal deployment gates |
+| [Introduction](lectures/session-3/eCornell-AI-Finance-S3-Introduction-MayasLearningEngine-May-2026.ipynb) | Orientation: Maya's engine scale-up hinges on parameter drift, learned eta, and four deployment gates |
+| [Example 1](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-EWLSEngineReplay-May-2026.ipynb) | Replay the engine with frozen vs. EWLS-online SIM parameters on the Monte Carlo ensemble |
+| [Example 2](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-BanditEtaLearning-May-2026.ipynb) | Learn the CES elasticity per sentiment regime with an epsilon-greedy multi-armed bandit |
+| [Example 3](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-ValidationReport-May-2026.ipynb) | Produce a pass/fail validation report and export the compliance configuration for Session 4 |
+| [Example 4](lectures/session-3/eCornell-AI-Finance-S3-Example-Optional-TickerPickerBandit-May-2026.ipynb) | Optional: extend the bandit to combinatorial asset selection over $2^K{-}1$ subsets |
 
 ### [Session 4: From Prototype to Production - Sentiment, Triggers, and Portfolio Operations](lectures/session-4/)
 Operationalize the portfolio engine with paper trading, production controls, sentiment-triggered overrides, and dashboard monitoring. This session emphasizes day-to-day operations, escalation handling, and transparent decision logs.
