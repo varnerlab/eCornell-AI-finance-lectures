@@ -54,11 +54,11 @@ Replace static variance minimization with utility-based allocation and daily reb
 | Notebook | Description |
 |:---------|:------------|
 | [Lecture](lectures/session-2/eCornell-AI-Finance-S2-Lecture-AIRebalancingEngine-May-2026.ipynb) | Theory: utility maximization, Cobb-Douglas/CES/log-linear, EMA sentiment, SIM preferences, trigger rules |
-| [Example 1](lectures/session-2/eCornell-AI-Finance-S2-Example-BuildCobbDouglasAllocator-May-2026.ipynb) | Build the allocator: synthetic market data, preference weights, utility comparison |
-| [Example 2](lectures/session-2/eCornell-AI-Finance-S2-Example-RebalancingEngineScorecard-May-2026.ipynb) | Run the engine: rebalancing loop, scorecard vs. benchmarks, sensitivity analysis |
-| [Example 3](lectures/session-2/eCornell-AI-Finance-S2-Example-MonteCarloEvaluation-May-2026.ipynb) | Monte Carlo evaluation: tail-risk scorecard, paired static-vs-adaptive comparison, regime dependence |
-| [Example 4](lectures/session-2/eCornell-AI-Finance-S2-Example-TurnoverAttributionDiagnostics-May-2026.ipynb) | Diagnose turnover sources and attribution |
-| [Example 5](lectures/session-2/eCornell-AI-Finance-S2-Example-RegimeAwareSentiment-May-2026.ipynb) | Analyze sentiment features under regime variation |
+| [Example 1](lectures/session-2/eCornell-AI-Finance-S2-Example-Core-BuildCobbDouglasAllocator-May-2026.ipynb) | Build the allocator: synthetic market data, preference weights, utility comparison |
+| [Example 2](lectures/session-2/eCornell-AI-Finance-S2-Example-Core-RebalancingEngineScorecard-May-2026.ipynb) | Run the engine: rebalancing loop, scorecard vs. benchmarks, sensitivity analysis |
+| [Example 3](lectures/session-2/eCornell-AI-Finance-S2-Example-Core-MonteCarloEvaluation-May-2026.ipynb) | Monte Carlo evaluation: tail-risk scorecard, paired static-vs-adaptive comparison, regime dependence |
+| [Example 4](lectures/session-2/eCornell-AI-Finance-S2-Example-Optional-TurnoverAttributionDiagnostics-May-2026.ipynb) | Diagnose turnover sources and attribution |
+| [Example 5](lectures/session-2/eCornell-AI-Finance-S2-Example-Optional-RegimeAwareSentiment-May-2026.ipynb) | Analyze sentiment features under regime variation |
 
 ### [Session 3: Online Learning Validation and Bandit Challengers](lectures/session-3/)
 Validate adaptive decision policies with online learning diagnostics and challenger strategies. This session focuses on replay, ticker selection, uncertainty updates, and formal validation reporting to test whether adaptive logic remains robust out of sample.

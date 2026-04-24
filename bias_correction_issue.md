@@ -1,7 +1,7 @@
 # Bias Correction Issue: Monte Carlo Evaluation of the S2 Rebalancing Engine
 
 **Date:** 2026-04-23
-**Notebook affected:** `lectures/session-2/eCornell-AI-Finance-S2-Example-MonteCarloEvaluation-May-2026.ipynb`
+**Notebook affected:** `lectures/session-2/eCornell-AI-Finance-S2-Example-Core-MonteCarloEvaluation-May-2026.ipynb`
 **Commit:** `6463280`
 
 ## TL;DR
@@ -473,7 +473,7 @@ future sessions.
 
 - `code/src/Compute.jl` — added `generate_drifted_hybrid_scenario`
 - `code/src/eCornellAIFinance.jl` — exported new function
-- `lectures/session-2/eCornell-AI-Finance-S2-Example-MonteCarloEvaluation-May-2026.ipynb` — new notebook
+- `lectures/session-2/eCornell-AI-Finance-S2-Example-Core-MonteCarloEvaluation-May-2026.ipynb` — new notebook
 - Deleted: `eCornell-AI-Finance-S2-Example-StaticVsAdaptiveComparison-May-2026.ipynb`
 - Deleted: `eCornell-AI-Finance-S2-Example-StressTestRebalancingEngine-May-2026.ipynb`
 
