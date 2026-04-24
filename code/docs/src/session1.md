@@ -55,6 +55,8 @@ compute_turnover
 ```@docs
 MyTrainingMarketDataSet
 MyTestingMarketDataSet
+MyExtendedTestingMarketDataSet
+MyDeploymentMarketDataSet
 MyMarketSurrogateModel
 MyPortfolioSurrogateModel
 MySyntheticTrainingDataSet

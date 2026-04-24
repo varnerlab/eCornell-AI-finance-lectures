@@ -27,7 +27,7 @@ build(::Type{MyBacktestScenario}, ::NamedTuple)
 build(::Type{MyValidationReport}; strategy_label::String, criteria::Dict{String,Float64}, actuals::Dict{String,Float64})
 build(::Type{MyBanditContext}, ::NamedTuple)
 build(::Type{MyEpsilonGreedyBanditModel}, ::NamedTuple)
-build(::Type{MySigmaBanditModel}, ::NamedTuple)
+build(::Type{MyEtaBanditModel}, ::NamedTuple)
 ```
 
 ## Data Generation
@@ -36,6 +36,7 @@ build(::Type{MySigmaBanditModel}, ::NamedTuple)
 generate_training_prices
 generate_hmm_scenario
 generate_hybrid_scenario
+generate_drifted_hybrid_scenario
 ```
 
 ## Backtesting
@@ -56,22 +57,22 @@ solve_bandit
 compute_regret
 ```
 
-## Sigma-Bandit (CES Elasticity Learning)
+## Eta-Bandit (CES Elasticity Learning)
 
 ### Types
 
 ```@docs
-MySigmaBanditModel
-MySigmaBanditResult
+MyEtaBanditModel
+MyEtaBanditResult
 ```
 
 ### Functions
 
 ```@docs
 classify_regime
-sigma_bandit_world
-solve_sigma_bandit
-backtest_sigma_bandit
+eta_bandit_world
+solve_eta_bandit
+backtest_eta_bandit
 build_compliance_config
 ```
 

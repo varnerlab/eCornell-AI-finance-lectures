@@ -37,7 +37,7 @@ compute_ema
 compute_lambda
 compute_market_growth
 compute_preference_weights
-compute_adaptive_sigma
+compute_adaptive_eta
 ```
 
 ## Utility-Based Allocation
