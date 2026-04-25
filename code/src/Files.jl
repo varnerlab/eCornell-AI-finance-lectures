@@ -236,3 +236,103 @@ function load_production_results(path::String)
     data = load(path);
     return (data["results"], data["events"]);
 end
+
+# --- Session 4: intraday queue, decisions, and ticket persistence --------------
+
+"""
+    save_queue!(path::String, items::Vector{MyComplianceQueueItem})
+
+Write or overwrite the day's queue file with the provided items. The
+intraday production runner appends to the in-memory list and saves the
+full list each fire (atomic file rewrite).
+"""
+function save_queue!(path::String, items::Vector{MyComplianceQueueItem})
+    save(path, Dict("items" => items));
+end
+
+"""
+    load_queue(path::String) -> Vector{MyComplianceQueueItem}
+
+Load the day's queue file. Returns an empty vector if the file does not
+exist (e.g., the cron has not yet flagged any trades).
+"""
+function load_queue(path::String)::Vector{MyComplianceQueueItem}
+    isfile(path) || return MyComplianceQueueItem[];
+    data = load(path);
+    return data["items"]::Vector{MyComplianceQueueItem};
+end
+
+"""
+    append_queue_item!(path::String, item::MyComplianceQueueItem)
+
+Append a single item to the day's queue file. Reads the existing list (if
+any), appends, and rewrites atomically. Convenience wrapper around
+[`save_queue!`](@ref) for use inside the intraday cron.
+"""
+function append_queue_item!(path::String, item::MyComplianceQueueItem)
+    items = load_queue(path);
+    push!(items, item);
+    save_queue!(path, items);
+end
+
+"""
+    save_signed_decisions!(path::String, decisions::Vector{MySignedDecision})
+
+Persist the class-adjudicated decisions for a day. Written by the
+EveningReview notebook once the queue has been worked through.
+"""
+function save_signed_decisions!(path::String, decisions::Vector{MySignedDecision})
+    save(path, Dict("decisions" => decisions));
+end
+
+"""
+    load_signed_decisions(path::String) -> Vector{MySignedDecision}
+
+Load the day's signed decisions. Empty vector if the file does not exist.
+"""
+function load_signed_decisions(path::String)::Vector{MySignedDecision}
+    isfile(path) || return MySignedDecision[];
+    data = load(path);
+    return data["decisions"]::Vector{MySignedDecision};
+end
+
+"""
+    save_ticket!(path::String, ticket::MyTomorrowsTicket)
+
+Write the engine-generated tomorrow's ticket. Produced by the 16:00
+close fire and consumed by the EveningReview / TomorrowsTicket notebooks.
+"""
+function save_ticket!(path::String, ticket::MyTomorrowsTicket)
+    save(path, Dict("ticket" => ticket));
+end
+
+"""
+    load_ticket(path::String) -> MyTomorrowsTicket
+
+Load the engine-generated tomorrow's ticket from disk.
+"""
+function load_ticket(path::String)::MyTomorrowsTicket
+    data = load(path);
+    return data["ticket"]::MyTomorrowsTicket;
+end
+
+"""
+    save_signed_ticket!(path::String, signed::MySignedTicket)
+
+Write the class-signed ticket. The next-morning 9:35am cron loads this
+file and submits the underlying trades to Alpaca paper, applying any
+recorded modifications.
+"""
+function save_signed_ticket!(path::String, signed::MySignedTicket)
+    save(path, Dict("signed" => signed));
+end
+
+"""
+    load_signed_ticket(path::String) -> MySignedTicket
+
+Load the signed ticket from disk for next-morning execution.
+"""
+function load_signed_ticket(path::String)::MySignedTicket
+    data = load(path);
+    return data["signed"]::MySignedTicket;
+end

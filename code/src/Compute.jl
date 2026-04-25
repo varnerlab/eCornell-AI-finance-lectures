@@ -3562,3 +3562,230 @@ function estimate_sim_with_news(growth_rates::Array{Float64,2},
 
     return (sim_params, nu_loadings);
 end
+
+# --- Session 4: intraday cadence helpers ----------------------------------------
+
+"""
+    bars_per_day(bar_minutes::Int) -> Int
+
+Number of regular-session bars per US equity trading day for a given
+bar interval. The regular session is 6.5 hours = 390 minutes.
+
+```julia
+bars_per_day(30)  # 13
+bars_per_day(15)  # 26
+bars_per_day(60)  # 6 (one short bar at the end is rolled into the prior bar in practice)
+```
+"""
+function bars_per_day(bar_minutes::Int)::Int
+    return div(390, bar_minutes);
+end
+
+"""
+    intraday_dt(bar_minutes::Int) -> Float64
+
+Annualized time step for one bar of the given interval. Caller passes
+this to [`compute_market_growth`](@ref) and similar functions in place
+of the daily default `1/252`.
+
+For 30-minute bars: `1 / (252 * 13) = 1 / 3276`.
+"""
+function intraday_dt(bar_minutes::Int)::Float64
+    return 1.0 / (252.0 * bars_per_day(bar_minutes));
+end
+
+"""
+    intraday_half_life(calendar_days::Real, bar_minutes::Int) -> Float64
+
+Convert an EWLS half-life expressed in calendar days into bar units for
+an intraday cadence. Use this to keep the EWLS calendar memory invariant
+when moving from daily to intraday bars: `intraday_half_life(63, 30) ≈ 819`
+bars (one quarter at 30-minute bars).
+
+Caller passes the result as `half_life` to [`ewls_init`](@ref).
+"""
+function intraday_half_life(calendar_days::Real, bar_minutes::Int)::Float64
+    return calendar_days * bars_per_day(bar_minutes);
+end
+
+# --- Session 4: compliance gates ------------------------------------------------
+
+"""
+    gate_check(trade::NamedTuple, snapshot::NamedTuple, gate_config::Dict{String,Float64}) -> Vector{Symbol}
+
+Evaluate per-trade compliance gates and return the list of violated gate
+names. An empty vector means the trade is cleared to auto-execute.
+
+### Trade fields
+- `ticker::String`
+- `qty::Int` (positive)
+- `side::Symbol` (`:buy` or `:sell`)
+- `dollar_value::Float64` (signed: `+` for buy, `-` for sell)
+- `post_trade_weight::Float64` (target weight in this ticker after the trade)
+
+### Snapshot fields
+- `news_severity::Float64` (0..1; defaults to 0.0 if absent)
+
+### Gate config keys
+- `concentration_cap`
+- `position_size_limit`
+- `news_severity_queue_threshold` (optional; queue if exceeded)
+"""
+function gate_check(trade::NamedTuple, snapshot::NamedTuple,
+        gate_config::Dict{String,Float64})::Vector{Symbol}
+
+    violations = Symbol[];
+
+    # concentration cap: post-trade weight in single ticker
+    if haskey(gate_config, "concentration_cap") &&
+            trade.post_trade_weight > gate_config["concentration_cap"]
+        push!(violations, :concentration_cap);
+    end
+
+    # position size limit: dollar value of this trade
+    if haskey(gate_config, "position_size_limit") &&
+            abs(trade.dollar_value) > gate_config["position_size_limit"]
+        push!(violations, :position_size_limit);
+    end
+
+    # news severity gate: news flag for this ticker exceeds threshold
+    severity = hasproperty(snapshot, :news_severity) ? snapshot.news_severity : 0.0;
+    if haskey(gate_config, "news_severity_queue_threshold") &&
+            severity > gate_config["news_severity_queue_threshold"]
+        push!(violations, :news_severity);
+    end
+
+    return violations;
+end
+
+"""
+    split_intraday_trades(proposed_trades, snapshots, gate_config, timestamp,
+        engine_snapshot) -> (auto, queued)
+
+Given a basket of proposed intraday trades, run [`gate_check`](@ref) on
+each and split into auto-executable trades (gates clear) and queued
+items (gates fail). Also applies the portfolio-level turnover gate: if
+the total dollar turnover exceeds `turnover_limit * portfolio_value`,
+all proposed trades route to the queue for review.
+
+### Arguments
+- `proposed_trades::Vector{<:NamedTuple}` — each entry: `(ticker, qty, side,
+  dollar_value, post_trade_weight)`
+- `snapshots::Dict{String,<:NamedTuple}` — per-ticker snapshot context
+  (e.g., `news_severity`); trades for a missing ticker get an empty snapshot
+- `gate_config::Dict{String,Float64}` — gate thresholds; may include
+  `turnover_limit` and `portfolio_value` for the portfolio-level check
+- `timestamp::DateTime` — engine fire time (stamped into queue ids)
+- `engine_snapshot::Dict{String,Any}` — captured engine state at this fire
+
+### Returns
+- `auto::Vector{NamedTuple}` — trades cleared for execution
+- `queued::Vector{MyComplianceQueueItem}` — flagged trades for review
+"""
+function split_intraday_trades(proposed_trades::Vector{<:NamedTuple},
+        snapshots::Dict{String,<:NamedTuple},
+        gate_config::Dict{String,Float64},
+        timestamp::DateTime,
+        engine_snapshot::Dict{String,Any})::Tuple{Vector{NamedTuple},Vector{MyComplianceQueueItem}}
+
+    # portfolio-level turnover check first
+    queue_all = false;
+    if haskey(gate_config, "turnover_limit") && haskey(gate_config, "portfolio_value")
+        total_turnover = sum(abs(t.dollar_value) for t in proposed_trades; init = 0.0);
+        portfolio_value = gate_config["portfolio_value"];
+        if portfolio_value > 0.0 &&
+                (total_turnover / portfolio_value) > gate_config["turnover_limit"]
+            queue_all = true;
+        end
+    end
+
+    auto = NamedTuple[];
+    queued = MyComplianceQueueItem[];
+
+    for (i, trade) in enumerate(proposed_trades)
+        snap = get(snapshots, trade.ticker, NamedTuple());
+        violations = gate_check(trade, snap, gate_config);
+        if queue_all && !(:turnover_limit in violations)
+            push!(violations, :turnover_limit);
+        end
+
+        if isempty(violations)
+            push!(auto, trade);
+        else
+            id = string(timestamp, "-", trade.ticker, "-", trade.side, "-", i);
+            push!(queued, build(MyComplianceQueueItem, (
+                id = id,
+                timestamp = timestamp,
+                ticker = trade.ticker,
+                qty = trade.qty,
+                side = trade.side,
+                proposed_weight = trade.post_trade_weight,
+                gate_violations = violations,
+                engine_snapshot = engine_snapshot,
+            )));
+        end
+    end
+
+    return (auto, queued);
+end
+
+# --- Session 4: tomorrow's ticket -----------------------------------------------
+
+"""
+    build_tomorrows_ticket(target_weights, tickers, current_shares, current_cash,
+        current_prices, sentiment, news_flags, eta_used, regime;
+        generated_at = now()) -> MyTomorrowsTicket
+
+Assemble the engine's proposed next-day opening ticket. Computes the
+trade list needed to move from `current_shares` (today's closing
+positions) to `target_weights` evaluated at `current_prices`. The
+resulting ticket is what the evening review notebook reads, optionally
+modifies, and signs into a [`MySignedTicket`](@ref).
+
+The returned `proposed_trades` are integer share counts per ticker with
+direction implied by sign of `target_shares - current_shares`.
+"""
+function build_tomorrows_ticket(target_weights::Vector{Float64},
+        tickers::Vector{String},
+        current_shares::Vector{Float64},
+        current_cash::Float64,
+        current_prices::Vector{Float64},
+        sentiment::MySentimentSignal,
+        news_flags::Vector{String},
+        eta_used::Float64,
+        regime::Symbol;
+        generated_at::DateTime = now())::MyTomorrowsTicket
+
+    K = length(tickers);
+    @assert length(target_weights) == K "target_weights/tickers length mismatch";
+    @assert length(current_shares) == K "current_shares/tickers length mismatch";
+    @assert length(current_prices) == K "current_prices/tickers length mismatch";
+
+    portfolio_value = sum(current_shares .* current_prices) + current_cash;
+    target_dollar = target_weights .* portfolio_value;
+    target_shares = target_dollar ./ current_prices;
+    delta_shares = round.(Int, target_shares .- current_shares);
+
+    proposed_trades = NamedTuple[];
+    for (k, ticker) in enumerate(tickers)
+        delta = delta_shares[k];
+        if delta != 0
+            push!(proposed_trades, (
+                ticker = ticker,
+                qty = abs(delta),
+                side = delta > 0 ? :buy : :sell,
+            ));
+        end
+    end
+
+    return build(MyTomorrowsTicket, (
+        target_weights = target_weights,
+        tickers = tickers,
+        proposed_trades = proposed_trades,
+        sentiment = sentiment,
+        news_flags = news_flags,
+        generated_at = generated_at,
+        eta_used = eta_used,
+        regime = regime,
+    ));
+end

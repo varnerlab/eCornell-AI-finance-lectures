@@ -3,6 +3,7 @@ using eCornellAIFinance
 using LinearAlgebra
 using Statistics
 using Random
+using Dates
 
 # ---------------------------------------------------------------------------
 # Test data shared across test sets
@@ -1297,6 +1298,191 @@ const SIM_PARAMS = Dict(
                 @test isapprox(r_baseline[d].shares, r_news_zero[d].shares; atol=1e-10)
                 @test isapprox(r_baseline[d].cash, r_news_zero[d].cash; atol=1e-6)
             end
+        end
+    end
+
+    @testset "Compute — Session 4 (Intraday Cadence)" begin
+
+        @testset "bars_per_day, intraday_dt, intraday_half_life" begin
+            @test bars_per_day(30) == 13
+            @test bars_per_day(60) == 6
+            @test bars_per_day(15) == 26
+            @test bars_per_day(5) == 78
+            @test isapprox(intraday_dt(30), 1.0 / (252.0 * 13))
+            @test isapprox(intraday_dt(60), 1.0 / (252.0 * 6))
+            # calendar invariance: half_life expressed in bars equals
+            # calendar_days * bars_per_day
+            @test intraday_half_life(63, 30) == 819.0
+            @test intraday_half_life(63, 60) == 378.0
+            @test intraday_half_life(1, 30) == 13.0
+        end
+
+        @testset "Types — intraday compliance + ticket construction" begin
+            ts = DateTime(2026, 5, 11, 11, 30);
+            q = build(MyComplianceQueueItem, (
+                id = "i1", timestamp = ts, ticker = "AAPL", qty = 5,
+                side = :buy, proposed_weight = 0.30,
+                gate_violations = [:concentration_cap],
+                engine_snapshot = Dict{String,Any}("eta" => 2.0)));
+            @test q.id == "i1"
+            @test q.gate_violations == [:concentration_cap]
+
+            d = build(MySignedDecision, (
+                queue_id = "i1", action = :modify, modified_qty = 3,
+                notes = "scaled down per Lou", signed_by = "Maya Chen",
+                signed_at = ts));
+            @test d.action == :modify
+            @test d.modified_qty == 3
+
+            sent = build(MySentimentSignal, (score = 0.0, source = "synthetic", day = 1));
+            t = build(MyTomorrowsTicket, (
+                target_weights = [0.5, 0.5], tickers = ["A", "B"],
+                proposed_trades = NamedTuple[(ticker = "A", qty = 1, side = :buy)],
+                sentiment = sent, news_flags = String[],
+                generated_at = ts, eta_used = 2.0, regime = :neutral));
+            @test t.eta_used == 2.0
+
+            s = build(MySignedTicket, (
+                ticket = t, modifications = NamedTuple[],
+                signed_by = "Maya Chen", signed_at = ts));
+            @test s.ticket.regime == :neutral
+        end
+
+        @testset "gate_check — single-trade gates" begin
+            gc = build_compliance_config(concentration_cap = 0.30,
+                position_size_limit = 1500.0, turnover_limit = 0.20);
+            gc["news_severity_queue_threshold"] = 0.7;
+
+            # clean trade
+            clean = (ticker = "AAPL", qty = 5, side = :buy,
+                dollar_value = 750.0, post_trade_weight = 0.20);
+            @test isempty(gate_check(clean, NamedTuple(), gc))
+
+            # concentration cap
+            big = (ticker = "AAPL", qty = 10, side = :buy,
+                dollar_value = 1200.0, post_trade_weight = 0.40);
+            @test :concentration_cap in gate_check(big, NamedTuple(), gc)
+
+            # position size
+            oversize = (ticker = "AAPL", qty = 20, side = :buy,
+                dollar_value = 2500.0, post_trade_weight = 0.25);
+            @test :position_size_limit in gate_check(oversize, NamedTuple(), gc)
+
+            # news severity
+            v = gate_check(clean, (news_severity = 0.85,), gc);
+            @test :news_severity in v
+
+            # multi-violation
+            v = gate_check(big, (news_severity = 0.90,), gc);
+            @test :concentration_cap in v && :news_severity in v
+        end
+
+        @testset "split_intraday_trades — auto/queue split + portfolio turnover" begin
+            ts = DateTime(2026, 5, 11, 11, 30);
+            snap_engine = Dict{String,Any}("eta" => 2.0, "regime" => :neutral);
+
+            # turnover OK; per-trade splits
+            gc = build_compliance_config(concentration_cap = 0.30,
+                position_size_limit = 1500.0, turnover_limit = 0.50);
+            gc["portfolio_value"] = 10_000.0;
+            proposals = [
+                (ticker = "AAPL", qty = 5, side = :buy,
+                    dollar_value = 750.0, post_trade_weight = 0.20),  # clears
+                (ticker = "MSFT", qty = 10, side = :buy,
+                    dollar_value = 1200.0, post_trade_weight = 0.40), # concentration
+            ];
+            auto, queued = split_intraday_trades(proposals, Dict{String,NamedTuple}(),
+                gc, ts, snap_engine);
+            @test length(auto) == 1 && auto[1].ticker == "AAPL"
+            @test length(queued) == 1
+            @test queued[1].ticker == "MSFT"
+            @test :concentration_cap in queued[1].gate_violations
+
+            # turnover violation routes everything to queue
+            gc2 = copy(gc);
+            gc2["turnover_limit"] = 0.10;  # 0.10 * 10000 = 1000; sum = 1950 > 1000
+            auto2, queued2 = split_intraday_trades(proposals, Dict{String,NamedTuple}(),
+                gc2, ts, snap_engine);
+            @test isempty(auto2)
+            @test length(queued2) == 2
+            @test all(:turnover_limit in q.gate_violations for q in queued2)
+        end
+
+        @testset "build_tomorrows_ticket — trade list from current to target" begin
+            ts = DateTime(2026, 5, 11, 16, 0);
+            sent = build(MySentimentSignal, (score = 0.05, source = "synthetic", day = 1));
+            # current: 10 AAPL @ 150, 5 MSFT @ 280, 3 NVDA @ 600 => $1500+$1400+$1800 = $4700
+            #   plus $1000 cash = $5700 portfolio
+            # target weights 0.4/0.3/0.3 -> $2280/$1710/$1710
+            #   target_shares: 15.2/6.1/2.85 -> rounded 15/6/3
+            #   delta: +5/+1/0
+            t = build_tomorrows_ticket([0.4, 0.3, 0.3], ["AAPL", "MSFT", "NVDA"],
+                [10.0, 5.0, 3.0], 1000.0, [150.0, 280.0, 600.0],
+                sent, String[], 2.0, :neutral; generated_at = ts);
+            @test t.tickers == ["AAPL", "MSFT", "NVDA"]
+            @test t.eta_used == 2.0
+            @test t.regime == :neutral
+            @test length(t.proposed_trades) == 2  # NVDA delta is 0
+            aapl = first(filter(x -> x.ticker == "AAPL", t.proposed_trades));
+            @test aapl.side == :buy
+            @test aapl.qty == 5
+        end
+
+        @testset "Files — queue, decisions, ticket roundtrip" begin
+            tmp = mktempdir();
+            ts = DateTime(2026, 5, 11, 11, 30);
+
+            # queue: empty load + append + reload
+            qpath = joinpath(tmp, "queue.jld2");
+            @test isempty(load_queue(qpath))
+            i1 = build(MyComplianceQueueItem, (
+                id = "i1", timestamp = ts, ticker = "AAPL", qty = 5, side = :buy,
+                proposed_weight = 0.30, gate_violations = [:concentration_cap],
+                engine_snapshot = Dict{String,Any}("eta" => 2.0)));
+            i2 = build(MyComplianceQueueItem, (
+                id = "i2", timestamp = ts + Hour(1), ticker = "MSFT", qty = 4,
+                side = :sell, proposed_weight = 0.0,
+                gate_violations = [:position_size_limit],
+                engine_snapshot = Dict{String,Any}("eta" => 1.5)));
+            append_queue_item!(qpath, i1);
+            append_queue_item!(qpath, i2);
+            items = load_queue(qpath);
+            @test length(items) == 2
+            @test items[1].id == "i1" && items[2].id == "i2"
+
+            # decisions
+            dpath = joinpath(tmp, "decisions.jld2");
+            @test isempty(load_signed_decisions(dpath))
+            d1 = build(MySignedDecision, (
+                queue_id = "i1", action = :approve, modified_qty = nothing,
+                notes = "ok", signed_by = "Maya Chen", signed_at = ts));
+            d2 = build(MySignedDecision, (
+                queue_id = "i2", action = :modify, modified_qty = 2,
+                notes = "halved", signed_by = "Maya Chen", signed_at = ts));
+            save_signed_decisions!(dpath, [d1, d2]);
+            decisions = load_signed_decisions(dpath);
+            @test length(decisions) == 2
+            @test decisions[2].modified_qty == 2
+
+            # ticket
+            sent = build(MySentimentSignal, (score = 0.05, source = "synthetic", day = 1));
+            ticket = build_tomorrows_ticket([0.5, 0.5], ["A", "B"],
+                [1.0, 1.0], 100.0, [50.0, 50.0],
+                sent, String[], 2.0, :neutral; generated_at = ts);
+            tpath = joinpath(tmp, "ticket.jld2");
+            save_ticket!(tpath, ticket);
+            loaded = load_ticket(tpath);
+            @test loaded.eta_used == 2.0
+
+            # signed ticket
+            spath = joinpath(tmp, "signed.jld2");
+            signed = build(MySignedTicket, (
+                ticket = ticket, modifications = NamedTuple[],
+                signed_by = "Maya Chen", signed_at = ts));
+            save_signed_ticket!(spath, signed);
+            loaded_signed = load_signed_ticket(spath);
+            @test loaded_signed.signed_by == "Maya Chen"
+            @test loaded_signed.ticket.regime == :neutral
         end
     end
 

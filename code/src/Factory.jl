@@ -348,3 +348,85 @@ function build(type::Type{MyNewsCorpus}, data::NamedTuple)::MyNewsCorpus
 
     return c;
 end
+
+# --- Session 4: intraday compliance queue + ticket builders ---------------------
+
+"""
+    build(type::Type{MyComplianceQueueItem}, data::NamedTuple) -> MyComplianceQueueItem
+
+Build a queued trade item from a named tuple with fields
+`id`, `timestamp`, `ticker`, `qty`, `side`, `proposed_weight`,
+`gate_violations`, `engine_snapshot`.
+"""
+function build(type::Type{MyComplianceQueueItem}, data::NamedTuple)::MyComplianceQueueItem
+
+    item = MyComplianceQueueItem();
+    item.id = data.id;
+    item.timestamp = data.timestamp;
+    item.ticker = data.ticker;
+    item.qty = data.qty;
+    item.side = data.side;
+    item.proposed_weight = data.proposed_weight;
+    item.gate_violations = data.gate_violations;
+    item.engine_snapshot = data.engine_snapshot;
+
+    return item;
+end
+
+"""
+    build(type::Type{MySignedDecision}, data::NamedTuple) -> MySignedDecision
+
+Build a signed adjudication record from a named tuple with fields
+`queue_id`, `action`, `modified_qty`, `notes`, `signed_by`, `signed_at`.
+"""
+function build(type::Type{MySignedDecision}, data::NamedTuple)::MySignedDecision
+
+    dec = MySignedDecision();
+    dec.queue_id = data.queue_id;
+    dec.action = data.action;
+    dec.modified_qty = data.modified_qty;
+    dec.notes = data.notes;
+    dec.signed_by = data.signed_by;
+    dec.signed_at = data.signed_at;
+
+    return dec;
+end
+
+"""
+    build(type::Type{MyTomorrowsTicket}, data::NamedTuple) -> MyTomorrowsTicket
+
+Build a proposed next-day ticket from a named tuple with fields
+`target_weights`, `tickers`, `proposed_trades`, `sentiment`, `news_flags`,
+`generated_at`, `eta_used`, `regime`.
+"""
+function build(type::Type{MyTomorrowsTicket}, data::NamedTuple)::MyTomorrowsTicket
+
+    t = MyTomorrowsTicket();
+    t.target_weights = data.target_weights;
+    t.tickers = data.tickers;
+    t.proposed_trades = data.proposed_trades;
+    t.sentiment = data.sentiment;
+    t.news_flags = data.news_flags;
+    t.generated_at = data.generated_at;
+    t.eta_used = data.eta_used;
+    t.regime = data.regime;
+
+    return t;
+end
+
+"""
+    build(type::Type{MySignedTicket}, data::NamedTuple) -> MySignedTicket
+
+Build a signed ticket from a named tuple with fields
+`ticket`, `modifications`, `signed_by`, `signed_at`.
+"""
+function build(type::Type{MySignedTicket}, data::NamedTuple)::MySignedTicket
+
+    s = MySignedTicket();
+    s.ticket = data.ticket;
+    s.modifications = data.modifications;
+    s.signed_by = data.signed_by;
+    s.signed_at = data.signed_at;
+
+    return s;
+end

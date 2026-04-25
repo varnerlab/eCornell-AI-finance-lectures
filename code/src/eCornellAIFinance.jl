@@ -4,6 +4,7 @@ module eCornellAIFinance
 using Clarabel
 using CSV
 using DataFrames
+using Dates
 using Distributions
 using FileIO
 using HTTP
@@ -48,6 +49,7 @@ export MyEtaBanditModel, MyEtaBanditResult
 export MySentimentSignal, MyEscalationEvent, MyProductionDayResult, MyProductionContext
 export MyLiveProductionDayResult, MyStressScenario, MyStressResult
 export MyNewsScenario, MyNewsItem, MyNewsCorpus
+export MyComplianceQueueItem, MySignedDecision, MyTomorrowsTicket, MySignedTicket
 
 # export factory -
 export build
@@ -81,10 +83,15 @@ export run_production_step, apply_stress_scenario
 export simulate_news_corpus, aggregate_news_factor
 export generate_news_text!, score_news_with_claude!
 export estimate_sim_with_news
+export bars_per_day, intraday_dt, intraday_half_life
+export gate_check, split_intraday_trades, build_tomorrows_ticket
 
 # export files -
 export load_price_data, save_results, load_results
 export save_production_results, load_production_results
+export save_queue!, load_queue, append_queue_item!
+export save_signed_decisions!, load_signed_decisions
+export save_ticket!, load_ticket, save_signed_ticket!, load_signed_ticket
 export MyTrainingMarketDataSet, MyTestingMarketDataSet, MyExtendedTestingMarketDataSet, MyDeploymentMarketDataSet
 export MyMarketSurrogateModel, MyPortfolioSurrogateModel, MySyntheticTrainingDataSet, MySIMCalibration, MyCurrentPrices
 
