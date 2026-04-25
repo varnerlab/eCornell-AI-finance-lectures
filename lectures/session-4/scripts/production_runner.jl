@@ -275,7 +275,7 @@ function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool
     sentiment = compute_live_sentiment(intraday_market_prices);
     ema_s = compute_ema(intraday_market_prices; window = cfg.N_short);
     ema_l = compute_ema(intraday_market_prices; window = cfg.N_long);
-    λ_t = compute_lambda(ema_s, ema_l; gain = cfg.GAIN);
+    λ_t = compute_lambda(ema_s, ema_l; G = cfg.GAIN);
     λ_eff = λ_t[end];
     if sentiment < cfg.sentiment_threshold
         λ_eff = λ_eff * cfg.sentiment_override_lambda;
@@ -329,7 +329,10 @@ function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool
     sim_params_current = Dict{String,Tuple{Float64,Float64,Float64}}(
         t => (ewls_states[t].α, ewls_states[t].β, ewls_states[t].σ_ε) for t in tickers
     );
-    γ = compute_preference_weights(sim_params_current, tickers, λ_eff);
+    gm_raw = compute_market_growth(intraday_market_prices; Δt = Δt);
+    gm_smoothed = compute_ema(gm_raw; window = cfg.N_growth);
+    gm_t = isempty(gm_smoothed) ? 0.0 : gm_smoothed[end];
+    γ = compute_preference_weights(sim_params_current, tickers, gm_t, λ_eff);
     γ_sum = sum(γ);
     γ_sum > 0 || (γ = ones(K) ./ K);
     target_weights = γ ./ sum(γ);
@@ -459,7 +462,7 @@ function run_engine_close(client, cfg, state, fire_time::DateTime)
     sentiment = compute_live_sentiment(intraday_market_prices);
     ema_s = compute_ema(intraday_market_prices; window = cfg.N_short);
     ema_l = compute_ema(intraday_market_prices; window = cfg.N_long);
-    λ_t = compute_lambda(ema_s, ema_l; gain = cfg.GAIN);
+    λ_t = compute_lambda(ema_s, ema_l; G = cfg.GAIN);
     λ_eff = λ_t[end];
     if sentiment < cfg.sentiment_threshold
         λ_eff = λ_eff * cfg.sentiment_override_lambda;
@@ -470,7 +473,10 @@ function run_engine_close(client, cfg, state, fire_time::DateTime)
     sim_params_current = Dict{String,Tuple{Float64,Float64,Float64}}(
         t => (ewls_states[t].α, ewls_states[t].β, ewls_states[t].σ_ε) for t in tickers
     );
-    γ = compute_preference_weights(sim_params_current, tickers, λ_eff);
+    gm_raw = compute_market_growth(intraday_market_prices; Δt = Δt);
+    gm_smoothed = compute_ema(gm_raw; window = cfg.N_growth);
+    gm_t = isempty(gm_smoothed) ? 0.0 : gm_smoothed[end];
+    γ = compute_preference_weights(sim_params_current, tickers, gm_t, λ_eff);
     γ_sum = sum(γ);
     γ_sum > 0 || (γ = ones(K) ./ K);
     target_weights = γ ./ sum(γ);
