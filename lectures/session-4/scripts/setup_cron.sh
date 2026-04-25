@@ -1,22 +1,35 @@
 #!/bin/bash
 #
-# setup_cron.sh — Install crontab entries for the production runner.
+# setup_cron.sh — Install crontab entries for the intraday production runner.
 #
 # Usage:
 #   cd lectures/session-4/scripts
 #   chmod +x setup_cron.sh
 #   ./setup_cron.sh
 #
-# This adds 4 cron entries (weekdays only, ET timezone):
-#   9:35  — production mode (full pipeline + trade)
-#   12:00 — monitor mode (safety check)
-#   14:00 — monitor mode (safety check)
-#   15:50 — monitor mode (end-of-day check)
+# This installs the intraday cadence (weekdays only, ET timezone):
 #
-# To remove: run `crontab -e` and delete the lines marked with [AI-FINANCE].
+#   Engine fires (decide + auto-execute small trades / queue exceptions):
+#     09:30 -- open fire (--mode=engine)
+#     10:00, 10:30, 11:00, 11:30, 12:00, 12:30,
+#     13:00, 13:30, 14:00, 14:30, 15:00, 15:30  -- intraday fires (--mode=engine)
+#     16:00 -- close fire (--mode=engine_close); writes EOD tape and tomorrow's ticket
+#
+#   News scoring fires (hourly during the session):
+#     10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00  (--mode=hourly)
+#
+#   Next-day execution of class-signed ticket:
+#     09:35 -- (--mode=execute_signed_ticket); submits the signed ticket
+#              from the prior session's TomorrowsTicket sign-off.
+#
+# Total fires per trading day: 14 engine + 7 news + 1 next-day = 22.
+#
+# To remove: run `crontab -e` and delete lines marked with [AI-FINANCE], or
+# run `crontab -l | grep -v '\[AI-FINANCE\]' | crontab -`.
 #
 
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
+SESSION_DIR="$(dirname "$SCRIPT_DIR")"
 JULIA="$(which julia)"
 
 if [ -z "$JULIA" ]; then
@@ -24,25 +37,35 @@ if [ -z "$JULIA" ]; then
     exit 1
 fi
 
+LOG="$SESSION_DIR/data/production-log.txt"
+
 echo "Script directory: $SCRIPT_DIR"
+echo "Session directory: $SESSION_DIR"
 echo "Julia binary: $JULIA"
+echo "Log file: $LOG"
 echo ""
 echo "Adding cron entries..."
 
-# Build the cron lines
-PROD_CMD="cd $SCRIPT_DIR && $JULIA --project=../.. production_runner.jl --mode=production >> ../data/production-log.txt 2>&1"
-MON_CMD="cd $SCRIPT_DIR && $JULIA --project=../.. production_runner.jl --mode=monitor >> ../data/production-log.txt 2>&1"
+# Build the cron commands -
+ENG_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR production_runner.jl --mode=engine >> $LOG 2>&1"
+CLOSE_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR production_runner.jl --mode=engine_close >> $LOG 2>&1"
+EXEC_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR production_runner.jl --mode=execute_signed_ticket >> $LOG 2>&1"
+NEWS_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR news_scorer.jl --mode=hourly >> $LOG 2>&1"
 
-# Append to existing crontab (preserving other entries)
+# Append to existing crontab (preserving non-AI-FINANCE entries) -
 (crontab -l 2>/dev/null | grep -v "\[AI-FINANCE\]"; cat <<EOF
-35 9  * * 1-5 $PROD_CMD  # [AI-FINANCE] production
-0  12 * * 1-5 $MON_CMD   # [AI-FINANCE] monitor-midday
-0  14 * * 1-5 $MON_CMD   # [AI-FINANCE] monitor-afternoon
-50 15 * * 1-5 $MON_CMD   # [AI-FINANCE] monitor-close
+# === Engine fires ===
+30 9     * * 1-5 $ENG_CMD    # [AI-FINANCE] engine-open
+0,30 10-15 * * 1-5 $ENG_CMD  # [AI-FINANCE] engine-intraday
+0  16    * * 1-5 $CLOSE_CMD  # [AI-FINANCE] engine-close
+# === News scoring (hourly) ===
+0  10-16 * * 1-5 $NEWS_CMD   # [AI-FINANCE] news-hourly
+# === Next-day execution of class-signed ticket ===
+35 9     * * 1-5 $EXEC_CMD   # [AI-FINANCE] execute-signed-ticket
 EOF
 ) | crontab -
 
-echo "Cron entries installed. Current crontab:"
+echo "Cron entries installed. Current AI-FINANCE crontab:"
 echo "---"
 crontab -l | grep "\[AI-FINANCE\]"
 echo "---"

@@ -1,6 +1,7 @@
-# Production Runner Configuration
+# Production Runner Configuration (intraday cadence)
 # Update tickers and risk parameters here. This file is tracked in git (no secrets).
 # Credentials are in credentials.toml (gitignored).
+# News-source toggle is in news-source.toml.
 
 [Tickers]
 # source = "session-1" (default): loads tickers from your S1 min-variance portfolio
@@ -10,19 +11,58 @@ universe = ["AAPL", "MSFT", "GOOG", "AMZN", "NVDA"]  # fallback / manual overrid
 
 [Engine]
 B0 = 10000.0
-half_life = 63.0
-offset = 63
+# Half-life conceptual semantics: calendar days. The runner converts to bar
+# units via intraday_half_life(half_life_calendar_days, bar_minutes).
+half_life_calendar_days = 63.0
+# Bar interval for the intraday cadence (minutes). 30 -> 13 bars/day.
+# Other supported values: 5, 15, 60.
+bar_minutes = 30
+# EWLS prior weight in bars-equivalent of the calendar-day prior.
+prior_weight_calendar_days = 63.0
+# Optional fast tracker for the EveningReview sensitivity tab. Calendar-days
+# value for the alternative half-life shown side-by-side; 0 disables.
+half_life_calendar_days_fast = 14.0
+# EMA windows are in *trading days*; the runner still computes a daily
+# market summary at each fire from the rolling intraday tape.
 N_short = 21
 N_long = 63
 GAIN = 10.0
 N_growth = 10
 cost_bps = 5.0
+# Bandit exploration rate (per regime).
 epsilon = 0.1
-
-[Risk]
-max_drawdown = 0.15
-max_turnover = 0.50
-sentiment_threshold = -0.5
-sentiment_override_lambda = 2.0
-max_bandit_churn = 2
 n_bandit_iters = 100
+# Bandit churn cap: max regime changes per trading day before queueing.
+max_bandit_churn = 2
+
+[Compliance]
+# Per-trade gates evaluated by gate_check inside the runner. Values are
+# tightened from the daily-cadence defaults so the queue is non-empty
+# most days at intraday cadence.
+concentration_cap = 0.30
+position_size_limit = 1500.0          # USD; against B0 = 10k -> 15% per trade
+turnover_limit = 0.20                 # per-fire turnover cap (sum |trade$| / portfolio_value)
+news_severity_queue_threshold = 0.7   # news severity score above which the trade auto-queues
+
+[CircuitBreakers]
+# Portfolio-level gates that override the queue and can de-risk to cash.
+max_drawdown = 0.15                   # if exceeded, close-all-positions
+sentiment_threshold = -0.5            # below this, override lambda
+sentiment_override_lambda = 2.0       # multiplier applied during sentiment override
+
+[News]
+# How often the news_scorer cron fires (minutes). Engine fires every
+# bar_minutes; news fires at this slower cadence and is cached between
+# updates.
+cadence_minutes = 60
+# Severity threshold above which a news flag is recorded on the tape and
+# the corresponding ticker's trade routes to the queue (see
+# Compliance.news_severity_queue_threshold).
+flag_severity_threshold = 0.6
+
+[Schedule]
+# Market hours (ET); used by the runner to gate intraday fires.
+market_open = "09:30"
+market_close = "16:00"
+# When the close-fire writes the ticket for the next trading day.
+ticket_generated_at = "16:00"

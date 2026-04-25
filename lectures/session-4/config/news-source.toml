@@ -1,0 +1,36 @@
+# News source configuration for the AI sentiment pipeline.
+# This file is tracked in git (no secrets). API keys live in environment
+# variables read by name below.
+
+[Source]
+# mode = "synthetic" — drive the pipeline from simulate_news_corpus
+#                      using the synthetic corpus on disk; no API calls.
+# mode = "newsapi"   — pull headlines from NewsAPI.org; requires
+#                      NEWSAPI_KEY in the environment. Hourly cadence.
+# mode = "anthropic_web" — use Anthropic's web fetch tool for headlines;
+#                      requires ANTHROPIC_API_KEY in the environment.
+mode = "synthetic"
+
+# Path to the synthetic news corpus JLD2 (relative to session-4/).
+# Used when mode = "synthetic" or as a fallback if a real-source fetch
+# fails at class time.
+synthetic_corpus_path = "data/news/synthetic-corpus-2026-05.jld2"
+
+# Environment variable name holding the API key for the active mode
+# (ignored when mode = "synthetic").
+api_key_env = "NEWSAPI_KEY"
+
+[Claude]
+# Model used to score headlines. The class-night demo runs this against
+# real headlines on May 11; for the rest of the week, scoring uses the
+# corpus's baked-in true_score plus cached_noise_sd to simulate Claude.
+scoring_model = "claude-sonnet-4-6"
+cached_noise_sd = 0.10
+# Required environment variable for live scoring.
+api_key_env = "ANTHROPIC_API_KEY"
+
+[Filter]
+# Per-fire headline cap (cost control on real-source mode).
+max_headlines_per_fire = 25
+# Tickers to track. Empty means "use the production-config universe."
+tickers = []
