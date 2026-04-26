@@ -14,24 +14,24 @@ risk_free_rate = 0.045
 #   Conservative Income  +2-3 pp  (~0.07)    Growth-Oriented    +7-9 pp   (~0.13)
 #   Conservative Growth  +4-5 pp  (~0.09)    Aggressive Growth  +11-13 pp (~0.16)
 #   Balanced             +5-6 pp  (~0.10)
-target_growth = 0.07
+target_growth = 0.16
 
 # Fraction of initial wealth held in cash (risk-free asset).
 # 0.0 = fully invested in the risky portfolio (RA notebook).
 # >0.0 = partial cash position (RRFA notebook, from CML/tangent theory).
 # The risky weights always sum to 1 regardless of cash_fraction.
-cash_fraction = 0.30
+cash_fraction = 0.00
 
 # Maximum weight on any single ticker in the risky portfolio (concentration cap).
 # Enforced as w_i <= max_weight in the min-variance QP.
 # Must satisfy max_weight >= 1/N for feasibility (N = number of tickers).
 # Typical ranges: 0.20-0.25 for concentrated books (<= 10 tickers),
 # 0.05-0.10 for diversified books. Use 1.0 to disable the cap.
-max_weight = 0.20
+max_weight = 0.10
 
 [profile]
 # Your questionnaire answers (informational, not used by the code)
-risk_tolerance = "risk-averse"       # risk-averse, balanced, risk-tolerant
-time_horizon = "medium"              # short, medium, long
-primary_objective = "income"         # preservation, income, growth, balanced
-archetype = "Conservative Income"    # one of the 5 archetypes
+risk_tolerance = "risk-tolerant"     # risk-averse, balanced, risk-tolerant
+time_horizon = "long"                # short, medium, long
+primary_objective = "growth"         # preservation, income, growth, balanced
+archetype = "Aggressive Growth"      # one of the 5 archetypes
