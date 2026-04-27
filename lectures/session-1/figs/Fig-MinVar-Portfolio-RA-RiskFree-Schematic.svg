@@ -46,26 +46,26 @@
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#FF0000">
             <tspan x="429.330078" y="477">σ</tspan>
-            <tspan x="441.546875" y="477">1</tspan>
+            <tspan font-size="14" x="441.546875" y="482.0">1</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#0068AC">
             <tspan x="277.330078" y="477">σ</tspan>
-            <tspan x="289.546875" y="477">2</tspan>
+            <tspan font-size="14" x="289.546875" y="482.0">2</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#0068AC">
             <tspan x="37.8867188" y="260">E[g</tspan>
-            <tspan x="72.3300781" y="260">2</tspan>
-            <tspan x="83.453125" y="260">]</tspan>
+            <tspan font-size="14" x="68" y="265.0">2</tspan>
+            <tspan x="76" y="260">]</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#FF0000">
             <tspan x="37.8867188" y="382">E[g</tspan>
-            <tspan x="72.3300781" y="382">3</tspan>
-            <tspan x="83.453125" y="382">]</tspan>
+            <tspan font-size="14" x="68" y="387.0">3</tspan>
+            <tspan x="76" y="382">]</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#FF0000">
             <tspan x="37.8867188" y="96">E[g</tspan>
-            <tspan x="72.3300781" y="96">1</tspan>
-            <tspan x="83.453125" y="96">]</tspan>
+            <tspan font-size="14" x="68" y="101.0">1</tspan>
+            <tspan x="76" y="96">]</tspan>
         </text>
         <line x1="277.5" y1="241.5" x2="264.5" y2="230.5" stroke="#0068AC" stroke-width="1" stroke-linecap="square"></line>
     </g>
@@ -102,6 +102,7 @@
         </text>
         <text font-family="Helvetica" font-size="18" font-weight="normal">
             <tspan x="208.43457" y="47" fill="#2F9FC4">Capital Allocation Line (CAL)</tspan>
+            <tspan x="208.43457" y="68" font-style="italic" fill="#2F9FC4">slope = SR(T)</tspan>
             <tspan x="437.56543" y="47" font-size="20" fill="#89CCE2">   </tspan>
         </text>
         <rect stroke="#0068AC" stroke-width="1" fill="#0068AC" fill-rule="evenodd" x="287.5" y="440.5" width="11" height="11"></rect>
@@ -114,35 +115,32 @@
         <line x1="308.951965" y1="255.401751" x2="440.5" y2="255.5" stroke="#0068AC" stroke-width="1" stroke-linecap="square"></line>
         <line x1="440.951965" y1="49.4017513" x2="464.5" y2="63.5" stroke="#89CCE2" stroke-width="1" stroke-linecap="square"></line>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#FF0000">
-            <tspan x="392.438477" y="109">T</tspan>
+            <tspan x="415" y="100">T</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#0068AC">
             <tspan x="268.938477" y="280">2</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#FF0000">
             <tspan x="386.330078" y="477">σ</tspan>
-            <tspan x="398.546875" y="477">1</tspan>
+            <tspan font-size="14" x="398.546875" y="482.0">1</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#0068AC">
             <tspan x="282.330078" y="477">σ</tspan>
-            <tspan x="294.546875" y="477">2</tspan>
+            <tspan font-size="14" x="294.546875" y="482.0">2</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#0068AC">
             <tspan x="42.8867188" y="260">E[g</tspan>
-            <tspan x="77.3300781" y="260">2</tspan>
-            <tspan x="88.453125" y="260">]</tspan>
+            <tspan font-size="14" x="73" y="265.0">2</tspan>
+            <tspan x="81" y="260">]</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#2F9FC4">
             <tspan x="76" y="358">g</tspan>
-            <tspan x="90.4433594" y="358">f</tspan>
+            <tspan font-size="14" x="86" y="363.0">f</tspan>
         </text>
         <text font-family="Helvetica" font-size="20" font-weight="normal" fill="#FF0000">
             <tspan x="42.8867188" y="130">E[g</tspan>
-            <tspan x="77.3300781" y="130">1</tspan>
-            <tspan x="88.453125" y="130">]</tspan>
-        </text>
-        <text font-family="Helvetica" font-size="18" font-weight="normal" font-style="italic" fill="#2F9FC4">
-            <tspan x="333" y="125">slope = SR(T)</tspan>
+            <tspan font-size="14" x="73" y="135.0">1</tspan>
+            <tspan x="81" y="130">]</tspan>
         </text>
     </g>
 </svg>
