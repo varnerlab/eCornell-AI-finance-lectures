@@ -23,3 +23,10 @@ code/docs/site/
 
 # tmp stuff -
 tmp/
+
+# LaTeX intermediate artifacts (we track .tex source, .log, .pdf, and .svg)
+**/figs/*.aux
+**/figs/*.out
+**/figs/*.synctex.gz
+**/figs/*.fdb_latexmk
+**/figs/*.fls
