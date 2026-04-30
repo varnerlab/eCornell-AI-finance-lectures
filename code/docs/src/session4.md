@@ -24,6 +24,15 @@ MyNewsItem
 MyNewsCorpus
 ```
 
+### Compliance and Tickets
+
+```@docs
+MyTomorrowsTicket
+MySignedTicket
+MySignedDecision
+MyComplianceQueueItem
+```
+
 ## Factory Methods
 
 ```@docs
@@ -32,6 +41,10 @@ build(::Type{MyProductionContext}, ::NamedTuple)
 build(::Type{MyNewsScenario}, ::NamedTuple)
 build(::Type{MyNewsItem}, ::NamedTuple)
 build(::Type{MyNewsCorpus}, ::NamedTuple)
+build(::Type{MyTomorrowsTicket}, ::NamedTuple)
+build(::Type{MySignedTicket}, ::NamedTuple)
+build(::Type{MySignedDecision}, ::NamedTuple)
+build(::Type{MyComplianceQueueItem}, ::NamedTuple)
 ```
 
 ## Functions
@@ -61,9 +74,34 @@ eCornellAIFinance._call_claude
 eCornellAIFinance._sentiment_bucket
 ```
 
+### Compliance Gate and Ticket Workflow
+
+```@docs
+gate_check
+build_tomorrows_ticket
+split_intraday_trades
+```
+
+### Intraday Helpers
+
+```@docs
+bars_per_day
+intraday_dt
+intraday_half_life
+```
+
 ## File I/O
 
 ```@docs
 save_production_results
 load_production_results
+save_ticket!
+load_ticket
+save_signed_ticket!
+load_signed_ticket
+save_signed_decisions!
+load_signed_decisions
+save_queue!
+load_queue
+append_queue_item!
 ```

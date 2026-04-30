@@ -1,113 +1,120 @@
-% Session 2 — Rebalancing engine as an OODA loop.
+% Session 2 - Rebalancing engine as a horizontal pipeline.
 % Build:  pdflatex Fig-RebalancingEngine-Architecture.tex
 %         pdf2svg Fig-RebalancingEngine-Architecture.pdf Fig-RebalancingEngine-Architecture.svg
-\documentclass[tikz,border=12pt]{standalone}
+\documentclass[tikz,border=10pt]{standalone}
 \usepackage{tikz}
 \usepackage{amsmath,amssymb}
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
-\usetikzlibrary{positioning,arrows.meta,shapes.geometric,calc,decorations.markings}
+\usepackage{microtype}
+\usetikzlibrary{positioning,arrows.meta,shapes.geometric,calc,decorations.markings,backgrounds,fit,shadows.blur}
 
-\definecolor{cornellred}{HTML}{B31B1B}
-\definecolor{cornellredpale}{HTML}{FEE2E2}
-\definecolor{calblue}{HTML}{2F9FC4}
-\definecolor{calbluepale}{HTML}{DBEAFE}
-\definecolor{cream}{HTML}{FFFAF0}
-\definecolor{darkgreen}{HTML}{15803D}
-\definecolor{palegreen}{HTML}{DCFCE7}
-\definecolor{rule}{HTML}{52525B}
+% --- Per-stage palette: saturated 800-weight border + 100-weight fill ---
+\definecolor{obsBorder}{HTML}{1E40AF}    \definecolor{obsFill}{HTML}{DBEAFE}
+\definecolor{oriBorder}{HTML}{B31B1B}    \definecolor{oriFill}{HTML}{FEE2E2}
+\definecolor{decBorder}{HTML}{5B21B6}    \definecolor{decFill}{HTML}{EDE9FE}
+\definecolor{actBorder}{HTML}{15803D}    \definecolor{actFill}{HTML}{DCFCE7}
+
+% --- Neutral typography colors ---
+\definecolor{ink}{HTML}{1F2937}
+\definecolor{rule}{HTML}{4B5563}
+\definecolor{rulesoft}{HTML}{9CA3AF}
+\definecolor{paper}{HTML}{FFFFFF}
+
+\newcommand{\stagehead}[2]{{\huge\bfseries\scshape\color{#1} #2}}
+\newcommand{\stagesublabel}[1]{{\itshape\large\color{rule} #1}}
+\newcommand{\aibadge}[1]{{\itshape\large\color{oriBorder} #1}}
+\newcommand{\stagerule}[1]{\par\vspace{4pt}\textcolor{#1}{\rule{\linewidth}{0.7pt}}\par\vspace{8pt}}
 
 \begin{document}
 \begin{tikzpicture}[
-    >={Latex[length=3mm,width=3mm]},
-    every node/.style={font=\large},
-    ooda/.style={
-        rectangle, rounded corners=8pt, line width=1.2pt,
-        minimum width=72mm, minimum height=46mm,
-        align=left, text width=64mm, inner sep=10pt,
+    >={Latex[length=3.4mm,width=3.2mm]},
+    every node/.style={font=\large, text=ink},
+    stage/.style={
+        rectangle, rounded corners=5pt, line width=1.0pt,
+        minimum width=76mm, minimum height=72mm,
+        align=left, text width=68mm, inner sep=10pt,
+        blur shadow={shadow xshift=1.4mm, shadow yshift=-1.4mm,
+                     shadow opacity=45, shadow blur radius=2.4mm},
     },
-    observe/.style={ooda, fill=cream,         draw=rule},
-    orient/.style ={ooda, fill=cornellredpale, draw=cornellred},
-    decide/.style ={ooda, fill=calbluepale,    draw=calblue},
-    act/.style    ={ooda, fill=palegreen,      draw=darkgreen},
-    arr/.style    ={->, line width=2pt, draw=cornellred, opacity=0.9},
-    tag/.style    ={font=\normalsize\itshape, text=rule!85, align=center},
-    badge/.style  ={font=\small\bfseries, text=cornellred},
+    obsbox/.style={stage, draw=obsBorder, fill=obsFill},
+    oribox/.style={stage, draw=oriBorder, fill=oriFill, line width=1.2pt},
+    decbox/.style={stage, draw=decBorder, fill=decFill},
+    actbox/.style={stage, draw=actBorder, fill=actFill},
+    arr/.style={->, line width=1.6pt, draw=rule, shorten >=2pt, shorten <=2pt},
+    feedback/.style={->, line width=1.2pt, draw=rule, dash pattern=on 5pt off 3pt,
+                     shorten >=2pt, shorten <=2pt},
 ]
 
-\def\R{72mm}
+\def\dx{90mm}
 
-% --- Cardinal-position OODA stages ---
-\node[observe] (observe) at (90:\R) {%
-    {\bfseries\sffamily\LARGE\textcolor{rule}{1.\ OBSERVE}}\\[2pt]
-    {\normalsize\itshape read the new bar}\\[5pt]
-    \textbullet\ Market prices $\{S_t\}$\\[1pt]
-    \textbullet\ SIM regression $\to (\alpha_i, \beta_i, \sigma_{\varepsilon,i})$\\[1pt]
-    \textbullet\ EMA crossover $\to \lambda_t$
-};
-
-\node[orient] (orient) at (0:\R) {%
-    {\bfseries\sffamily\LARGE\textcolor{cornellred}{2.\ ORIENT}}\quad\textcolor{cornellred}{\small\textbf{[AI step]}}\\[2pt]
-    {\normalsize\itshape map features to preferences}\\[5pt]
-    $\displaystyle \gamma_i = \tanh\!\Big(\tfrac{\alpha_i}{\beta_i^{\lambda_t}} + \beta_i^{1-\lambda_t}\,\mathbb{E}[g_{\mathrm{mkt}}]\Big)$\\[3pt]
-    \textbullet\ Per-asset preference\\
-    \phantom{\textbullet\ }$\gamma_i \in (-1, 1)$
+% --- Stage 1: OBSERVE ---
+\node[obsbox] (observe) at (0,0) {%
+    \stagehead{obsBorder}{1.\ Observe}\\[1pt]
+    \stagesublabel{read the new bar}
+    \stagerule{obsBorder}
+    \begin{itemize}\setlength\itemsep{4pt}\setlength\leftmargini{1.2em}
+        \item Market prices $\{S_t\}$
+        \item SIM regression $\to (\alpha_i, \beta_i, \sigma_{\varepsilon,i})$
+        \item EMA crossover $\to \lambda_t$
+    \end{itemize}
 };
 
-\node[decide] (decide) at (-90:\R) {%
-    {\bfseries\sffamily\LARGE\textcolor{calblue}{3.\ DECIDE}}\\[2pt]
-    {\normalsize\itshape allocate, then check guardrails}\\[5pt]
-    $\displaystyle n_i^{\star} = \tfrac{\gamma_i}{\sum_{j\in\mathcal{A}^+}\gamma_j} \cdot \tfrac{B_{\mathrm{adj}}}{P_i}$\\[3pt]
-    \textbullet\ Schedule $b_t \in \{0, 1\}$\\[1pt]
-    \textbullet\ Drawdown $d_{\max}$, turnover $\tau_{\max}$
+% --- Stage 2: ORIENT (AI step) ---
+\node[oribox] (orient) at (\dx,0) {%
+    \stagehead{oriBorder}{2.\ Orient}\enspace\aibadge{(AI step)}\\[2pt]
+    \stagesublabel{features $\to$ bounded preferences}
+    \stagerule{oriBorder}\vspace{4pt}
+    $\displaystyle \gamma_i = \tanh\!\Big(\tfrac{\alpha_i}{\beta_i^{\lambda_t}} + \beta_i^{1-\lambda_t}\,\mathbb{E}[g_{\mathrm{mkt}}]\Big)$
 };
 
-\node[act] (act) at (180:\R) {%
-    {\bfseries\sffamily\LARGE\textcolor{darkgreen}{4.\ ACT}}\\[2pt]
-    {\normalsize\itshape execute trades, update state}\\[5pt]
-    \textbullet\ Trade $\Delta n_i$ or hold\\[1pt]
-    \textbullet\ Realize transaction costs\\[1pt]
-    \textbullet\ Update $W_t = \sum_i n_i\, S_i(t)$
+% --- Stage 3: DECIDE ---
+\node[decbox] (decide) at (2*\dx,0) {%
+    \stagehead{decBorder}{3.\ Decide}\\[1pt]
+    \stagesublabel{allocate, then check guardrails}
+    \stagerule{decBorder}
+    $\displaystyle n_i^{\star} = \tfrac{\gamma_i}{\sum_{j\in\mathcal{A}^+}\gamma_j} \cdot \tfrac{B_{\mathrm{adj}}}{P_i}$\\[6pt]
+    \begin{itemize}\setlength\itemsep{4pt}\setlength\leftmargini{1.2em}
+        \item Schedule $b_t \in \{0, 1\}$
+        \item Triggers: $d_{\max}$, $\tau_{\max}$
+    \end{itemize}
 };
 
-% --- Center: the engine heartbeat (subtle outer ring + crisp inner circle) ---
-\node[circle, draw=cornellred!25, line width=4pt, fill=none,
-      minimum size=46mm] (heartouter) at (0,0) {};
-\node[circle, draw=cornellred, line width=1.5pt, fill=white,
-      minimum size=38mm, align=center, font=\sffamily]
-  (heart) at (0,0) {%
-    \textbf{\Large\textcolor{cornellred}{Engine}}\\[2pt]
-    {\normalsize\itshape fires every}\\[-1pt]
-    {\normalsize\itshape bar close}
-};
-% Decorative cycle glyph above the heart
-\node[font=\Huge, text=cornellred, anchor=south, yshift=-2mm] at (heart.north) {$\circlearrowright$};
-
-% --- Curved arrows around the ring (clockwise) ---
-\draw[arr] ($(observe.east) + (-3mm,-3mm)$) to[bend left=20] ($(orient.north) + (-3mm,3mm)$);
-\draw[arr] ($(orient.south) + (-3mm,-3mm)$) to[bend left=20] ($(decide.east) + (3mm,3mm)$);
-\draw[arr] ($(decide.west) + (3mm,-3mm)$) to[bend left=20] ($(act.south) + (3mm,-3mm)$);
-\draw[arr] ($(act.north) + (3mm,3mm)$) to[bend left=20] ($(observe.west) + (-3mm,-3mm)$);
-
-% --- Outer caption tags placed symmetrically OUTSIDE the ring ---
-\node[tag, above=4mm of observe.north, text width=60mm] {%
-    {\small\bfseries\color{rule!90}1 BAR OF DATA ARRIVES}\\
-    \small\itshape the loop starts every bar close
-};
-\node[tag, right=6mm of orient.east, anchor=west, text width=38mm] {%
-    {\small\bfseries\color{cornellred}AI STEP}\\
-    \small\itshape non-linear features\\$\to$ bounded preference $\gamma$
-};
-\node[tag, below=4mm of decide.south, text width=70mm] {%
-    {\small\bfseries\color{calblue}TARGET + GUARDRAILS}\\
-    \small\itshape closed-form shares, then committee-approved gates
-};
-\node[tag, left=6mm of act.west, anchor=east, text width=42mm] {%
-    {\small\bfseries\color{darkgreen}EXECUTE}\\
-    \small\itshape trade or hold,\\then portfolio state $W_t$
+% --- Stage 4: ACT ---
+\node[actbox] (act) at (3*\dx,0) {%
+    \stagehead{actBorder}{4.\ Act}\\[1pt]
+    \stagesublabel{execute trades, update state}
+    \stagerule{actBorder}
+    \begin{itemize}\setlength\itemsep{4pt}\setlength\leftmargini{1.2em}
+        \item Trade $\Delta n_i$ or hold
+        \item Realize transaction costs
+        \item Update $W_t = \sum_i n_i\, S_i(t)$
+    \end{itemize}
 };
 
-% (contrast-with-S1 prose moved to the figure caption in the lecture)
+% --- Forward arrows between stages ---
+\draw[arr] (observe.east)  -- (orient.west);
+\draw[arr] (orient.east)   -- (decide.west);
+\draw[arr] (decide.east)   -- (act.west);
+
+% --- Feedback loop: Act -> Observe (next bar) ---
+\draw[feedback]
+    (act.south) -- ++(0,-9mm) -| (observe.south);
+
+% --- Feedback label sits on the horizontal stretch of the loop ---
+\node[font=\itshape\large, text=rule, fill=paper, inner xsep=4pt, inner ysep=1pt]
+  at ($(observe.south)!0.5!(act.south) + (0,-9mm)$)
+  {next bar close};
+
+% --- Bar-of-data inflow indicator on the left ---
+\draw[arr] ($(observe.west) + (-12mm,0)$) -- (observe.west);
+\node[font=\itshape\large, text=rule, anchor=east]
+  at ($(observe.west) + (-13mm,0)$) {bar $t$};
+
+% --- Trade outflow indicator on the right ---
+\draw[arr] (act.east) -- ++(12mm,0);
+\node[font=\itshape\large, text=rule, anchor=west]
+  at ($(act.east) + (13mm,0)$) {to market};
 
 \end{tikzpicture}
 \end{document}

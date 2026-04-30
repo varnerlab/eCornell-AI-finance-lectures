@@ -3396,7 +3396,7 @@ This lets the notebook execute end-to-end without an API key.
 
 In live mode, makes one HTTP call per item to the Anthropic Messages API. For
 ~400 items at the default 0-second rate limit, regeneration takes
-2-3 minutes and costs roughly \$1 on Sonnet 4.6.
+2-3 minutes and costs roughly one US dollar on Sonnet 4.6.
 
 ### Arguments
 - `corpus::MyNewsCorpus` — corpus to populate (mutated in place)

@@ -19,7 +19,10 @@
       "Bash(git -C /Users/jeffreyvarner/Desktop/julia_work/eCornell-AI-finance-lectures status --short)",
       "Bash(git add *)",
       "Bash(git commit -m ' *)",
-      "Bash(git push *)"
+      "Bash(git push *)",
+      "Bash(pdflatex -interaction=nonstopmode Fig-RebalancingEngine-Architecture.tex)",
+      "Bash(pdf2svg Fig-RebalancingEngine-Architecture.pdf Fig-RebalancingEngine-Architecture.svg)",
+      "Bash(rm -f Fig-RebalancingEngine-Architecture.aux Fig-RebalancingEngine-Architecture.log)"
     ]
   }
 }
