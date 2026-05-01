@@ -72,7 +72,7 @@ export backtest_engine, backtest_buyhold, backtest_buyhold_market
 export compute_cvar
 export bandit_world, solve_bandit, compute_regret, backtest_bandit
 export ewls_init, ewls_update!, replay_engine_ewls
-export classify_regime, eta_bandit_world, solve_eta_bandit
+export classify_regime, eta_bandit_world, solve_eta_bandit, solve_eta_bandit_multipath
 export backtest_eta_bandit, build_compliance_config
 
 # export compute — Session 4 -

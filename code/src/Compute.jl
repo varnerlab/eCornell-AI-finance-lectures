@@ -2017,8 +2017,11 @@ end
     eta_bandit_world(η::Float64, context::MyRebalancingContextModel, t::Int) -> Float64
 
 The "world" function for the eta-bandit. Given a candidate CES elasticity η,
-computes the CES utility-maximizing allocation at time step t using the context's
-current preference weights and prices. Returns the CES utility as the reward signal.
+computes the CES allocation at time step t using the context's preference
+weights and prices, then returns the realized one-period log-wealth growth
+log(W_{t+1} / W_t) of holding that allocation through the next step. Using a
+realized-return reward (rather than raw CES utility) keeps the reward signal
+comparable across η values and well-behaved at the Cobb-Douglas limit ρ → 0.
 """
 function eta_bandit_world(η::Float64, context::MyRebalancingContextModel, t::Int)::Float64
 
@@ -2027,21 +2030,26 @@ function eta_bandit_world(η::Float64, context::MyRebalancingContextModel, t::In
     gamma = compute_preference_weights(context.sim_parameters, context.tickers, gm_t, context.lambda);
 
     K = length(context.tickers);
-    prices = [context.marketdata[t, i + 1] for i in 1:K];
+    prices_t = [context.marketdata[t, i + 1] for i in 1:K];
 
-    # solve CES allocation -
+    # solve CES allocation at time t -
     problem = MyCESChoiceProblem();
     problem.gamma = gamma;
-    problem.prices = prices;
+    problem.prices = prices_t;
     problem.B = context.B;
     problem.epsilon = context.epsilon;
     problem.eta = η;
-    (shares, _) = allocate_ces(problem);
+    (shares, cash) = allocate_ces(problem);
 
-    # evaluate CES utility as reward -
-    utility = evaluate_ces(shares, gamma; eta = η);
-
-    return utility;
+    # realized one-period log-wealth growth (reward signal) -
+    n_rows = size(context.marketdata, 1);
+    if t >= n_rows
+        return 0.0;
+    end
+    prices_next = [context.marketdata[t + 1, i + 1] for i in 1:K];
+    W_t    = sum(shares[i] * prices_t[i]    for i in 1:K) + cash;
+    W_next = sum(shares[i] * prices_next[i] for i in 1:K) + cash;
+    return (W_t > 0 && W_next > 0) ? log(W_next / W_t) : 0.0;
 end
 
 """
@@ -2120,6 +2128,94 @@ function solve_eta_bandit(bandit::MyEtaBanditModel, context::MyRebalancingContex
     end
 
     # package result -
+    result = MyEtaBanditResult();
+    result.best_eta_per_regime = best_eta;
+    result.arm_means_per_regime = arm_means;
+    result.arm_counts_per_regime = arm_counts;
+    result.reward_history = reward_history;
+    result.exploration_history = exploration_history;
+
+    return result;
+end
+
+"""
+    solve_eta_bandit_multipath(bandit, contexts, lambda_series_per_path, time_indices_per_path) -> MyEtaBanditResult
+
+Multi-path training variant of `solve_eta_bandit`. Walks each path in `contexts`
+in sequence, accumulating per-regime arm means and counts in a single shared
+state across all paths. Useful when a single 252-day path rarely visits all
+three regimes; multi-path training populates bear / neutral / bull bins
+together. Returns a `MyEtaBanditResult` whose `reward_history` and
+`exploration_history` are concatenated across paths in input order.
+"""
+function solve_eta_bandit_multipath(bandit::MyEtaBanditModel,
+    contexts::Vector{MyRebalancingContextModel},
+    lambda_series_per_path::Vector{Vector{Float64}},
+    time_indices_per_path::Vector{Vector{Int}})::MyEtaBanditResult
+
+    @assert length(contexts) == length(lambda_series_per_path) == length(time_indices_per_path) "contexts, lambdas, and time-indices must have equal length"
+
+    η_grid = bandit.eta_grid;
+    K_arms = length(η_grid);
+    θ = bandit.lambda_threshold;
+
+    T_total = sum(length(t) for t in time_indices_per_path);
+
+    regimes = [:bearish, :neutral, :bullish];
+    arm_means = Dict(r => zeros(K_arms) for r in regimes);
+    arm_counts = Dict(r => zeros(Int, K_arms) for r in regimes);
+    regime_rounds = Dict(r => 0 for r in regimes);
+
+    reward_history = zeros(T_total);
+    exploration_history = zeros(T_total);
+
+    iter = 0;
+    n_paths_train = length(contexts);
+    for p in 1:n_paths_train
+        ctx_path = contexts[p];
+        λ_path   = lambda_series_per_path[p];
+        t_idx    = time_indices_per_path[p];
+        for t in t_idx
+            iter += 1;
+            λ_t = λ_path[min(t, length(λ_path))];
+            regime = classify_regime(λ_t; θ = θ);
+
+            ctx = deepcopy(ctx_path);
+            ctx.lambda = λ_t;
+
+            regime_rounds[regime] += 1;
+            t_local = regime_rounds[regime];
+
+            ε_t = t_local > 1 ? t_local^(-1.0/3.0) * (K_arms * log(t_local))^(1.0/3.0) : 1.0;
+            ε_t = clamp(ε_t, 0.0, 1.0);
+            exploration_history[iter] = ε_t;
+
+            if rand() < ε_t
+                arm = rand(1:K_arms);
+            else
+                arm = argmax(arm_means[regime]);
+            end
+
+            η_chosen = η_grid[arm];
+            utility = eta_bandit_world(η_chosen, ctx, t);
+
+            arm_counts[regime][arm] += 1;
+            lr = bandit.alpha > 0 ? bandit.alpha : 1.0 / arm_counts[regime][arm];
+            arm_means[regime][arm] += lr * (utility - arm_means[regime][arm]);
+
+            reward_history[iter] = utility;
+        end
+    end
+
+    best_eta = Dict{Symbol,Float64}();
+    for r in regimes
+        if sum(arm_counts[r]) > 0
+            best_eta[r] = η_grid[argmax(arm_means[r])];
+        else
+            best_eta[r] = η_grid[div(K_arms, 2) + 1];
+        end
+    end
+
     result = MyEtaBanditResult();
     result.best_eta_per_regime = best_eta;
     result.arm_means_per_regime = arm_means;
