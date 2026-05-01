@@ -1,0 +1,266 @@
+# Session 2: From Static to Adaptive Allocation
+
+In Session 1, we built a classical minimum-variance portfolio and watched it fail under stress; the core problem is that a static allocation can't respond to a changing world. In the introduction, Maya contacted Dr. Sara Kim, a behavioral economist and expert in utility theory, to help design an adaptive allocation engine that can adjust to market conditions and investor preferences. 
+
+In this session, we take humans _partially_ out of the loop and start to explore the utility framework: an AI rebalancing engine that uses **utility maximization** to allocate capital, reads market sentiment to adjust risk preferences dynamically, and enforces explicit safety rules. Sara's pitch reduces to three operational claims, a signal, a utility function, and a set of trigger rules. 
+
+> __Learning Objectives:__
+>
+> By the end of this session, you will be able to:
+> * __Cobb-Douglas Utility Maximization:__ Formulate portfolio allocation as a budget-constrained Cobb-Douglas utility problem and derive the closed-form analytical solution. Compare the allocation behavior of Cobb-Douglas to constant elasticity of substitution (CES) and log-linear alternatives under the same preference weights.
+> * __Sentiment-Driven Preference Weights:__ Construct a sentiment signal from exponential moving average (EMA) crossover and map it to a risk-aversion parameter that modulates preference weights. Feed the signal into Single Index Model (SIM) preference weights so the allocator adapts dynamically to changing market conditions.
+> * __Rebalancing Engine with Safety Rules:__ Implement a daily rebalancing loop that computes allocations via utility maximization and enforces trigger rules. Configure drawdown limits, turnover caps, and reallocation schedules that encode human safety judgment into the engine.
+
+Let's build a machine that adapts!
+
+___
+
+## Examples
+
+The example notebooks below accompany this lecture. They split into __core__ examples that we should run live alongside the lecture, and __optional__ examples that extend the core material and can be studied afterward at our own pace.
+
+### Core (tonight)
+
+These three notebooks form the session's deliverable chain: build the allocator, wire it into an engine on a single path, then stress-test the engine across many synthetic (and real) futures.
+
+> __Run live with the lecture:__
+>
+> * [▶ Let's build the Cobb-Douglas allocator](eCornell-AI-Finance-S2-Example-Core-BuildCobbDouglasAllocator-May-2026.ipynb). Generate a synthetic market path, compute SIM parameters and the EMA-crossover sentiment signal, build the Cobb-Douglas utility allocator, and compare its allocation behavior to CES and log-linear alternatives.
+> * [▶ Let's wire the allocator into a rebalancing engine and produce a scorecard](eCornell-AI-Finance-S2-Example-Core-RebalancingEngineScorecard-May-2026.ipynb). Run the Cobb-Douglas engine with trigger rules on a synthetic market path, compare it head-to-head against the Session 1 min-var and equal-weight baselines, and sweep the CES elasticity parameter to see how concentration tunes engine behavior.
+> * [▶ Let's evaluate the engine across many Monte Carlo futures](eCornell-AI-Finance-S2-Example-Core-MonteCarloEvaluation-May-2026.ipynb). Generate the full Monte Carlo ensemble, run seven strategies, and compute the tail-risk scorecard (VaR, CVaR, drawdown, NPV) plus a paired static-vs-adaptive comparison and a regime-dependence diagnostic. Produces the `stress-test-engine.jld2` hand-off that Sessions 3 and 4 consume.
+>
+
+### Optional (self-study)
+
+These two notebooks extend the core material. One swaps the EMA-crossover sentiment signal for the regime-switching model regime posterior; the other diagnoses trading cost, attribution, and rebalance dynamics. Neither is required to reach the Session 3 hand-off.
+
+> __Extension material (self-study):__
+>
+> * [▶ Let's replace EMA crossover with the regime posterior](eCornell-AI-Finance-S2-Example-Optional-RegimeAwareSentiment-May-2026.ipynb). Build a regime-aware $\lambda$ signal from the generative model posterior, run the engine with both EMA and regime-based sentiment on the same path, and compare their distributional performance across many synthetic futures.
+> * [▶ Let's diagnose turnover cost and attribution](eCornell-AI-Finance-S2-Example-Optional-TurnoverAttributionDiagnostics-May-2026.ipynb). Measure transaction cost sensitivity, decompose performance via a 3-way attribution (utility choice, dynamic reallocation, trigger rules), and visualize the rebalance-event timeline.
+>
+> Study either when we want to understand where the core engine's sentiment signal or performance edge really comes from.
+
+___
+
+## Notation
+
+This lecture extends the SIM and growth-rate framework from Session 1. The symbols below are inherited as-defined; we restate only the role each plays in the adaptive engine.
+
+> __Inherited from Session 1:__
+>
+> * $g_i, g_{\mathrm{mkt}}, \varepsilon_i$: asset and market continuously compounded growth rates and SIM residuals; defined in [S1 § From Prices to Growth Rates](../session-1/eCornell-AI-Finance-S1-Lecture-StressTestingMinVariancePortfolios-May-2026.ipynb#from-prices-to-growth-rates) and [S1 § Notation conventions](../session-1/eCornell-AI-Finance-S1-Lecture-StressTestingMinVariancePortfolios-May-2026.ipynb#notation-conventions).
+> * $\alpha_i, \beta_i, \sigma_{\varepsilon,i}$: SIM intercept, slope, and residual standard deviation for asset $i$; this session uses the historical-calibration values throughout. Defined in [S1 § Capital Allocation Line and Tangent Portfolio](../session-1/eCornell-AI-Finance-S1-Lecture-StressTestingMinVariancePortfolios-May-2026.ipynb#the-capital-allocation-line-and-tangent-portfolio).
+> * $\mathbf{w}, w_i$: portfolio weight vector and asset $i$ weight ([S1 § Modern Portfolio Theory](../session-1/eCornell-AI-Finance-S1-Lecture-StressTestingMinVariancePortfolios-May-2026.ipynb#modern-portfolio-theory-mpt)). Note: $w_s$ inside the EMA recursion below is a separate scalar smoothing weight, locally scoped.
+> * $\boldsymbol{\Sigma}_g, \mathbb{E}[\mathbf{g}]$: covariance matrix and expected-growth-rate vector (S1 § Modern Portfolio Theory).
+
+__New in this session:__ $\gamma_i$ (preference weight, $\gamma_i \in (-1, 1)$), $\lambda_t$ (sentiment signal), $\eta$ (CES elasticity), $\omega = 2/(L+1)$ (EMA smoothing weight), $G$ (sentiment gain), and the trigger parameters $(d_{\max}, \tau_{\max})$. Each is defined at first use below.
+___
+
+## Why Static Allocation Fails
+
+The minimum-variance optimizer (session 1) treats its inputs, the expected growth-rate vector $\mathbb{E}[\mathbf{g}]$ and the covariance matrix $\boldsymbol{\Sigma}_g$, as fixed constants. But markets are not stationary. Correlations spike during crises, volatilities cluster, and expected growth rates shift with economic regimes. A portfolio computed from last year's data has no mechanism to react when the world changes _today_.
+
+* __The core limitation:__ Static portfolio construction is a _one-shot_ decision: estimate, optimize, deploy. Share counts are fixed at inception. Dollar weights drift passively as prices move, but the allocator never re-estimates its inputs, never re-optimizes, and cannot respond to a regime shift in correlation or volatility until a human intervenes. This is not a flaw in the math; it is a flaw in the _architecture_. How do we fix the portfolio construction architecture so that it can adapt to a changing world?
+
+The fix is straightforward in concept: replace the one-shot decision with a _loop_ that continuously reads market conditions and adjusts the portfolio accordingly. But we need a principled framework for making those allocation decisions. That framework is **utility maximization**.
+
+___
+
+## Utility Maximization: A Framework for Allocation
+
+Instead of asking _what portfolio minimizes variance?_ we ask a different question: **given a budget and current market conditions, what portfolio maximizes the investor's utility (happiness)?**
+
+* __Background__: Utility maximization did not start in finance. It has been the workhorse of consumer choice theory since [Daniel Bernoulli's 1738 treatment of the St. Petersburg paradox](https://en.wikipedia.org/wiki/Expected_utility_hypothesis), was placed on an axiomatic footing by [von Neumann and Morgenstern in 1944](https://en.wikipedia.org/wiki/Von_Neumann%E2%80%93Morgenstern_utility_theorem), and extended into modern equilibrium theory by [Samuelson](https://en.wikipedia.org/wiki/Paul_Samuelson) and [Debreu](https://en.wikipedia.org/wiki/G%C3%A9rard_Debreu). Think of a utility function as a mathematical representation of satisfaction or happiness. It assigns a real number to each possible portfolio, with higher numbers corresponding to more preferred portfolios. The investor's goal is to choose the portfolio that maximizes their utility (happiness), subject to constraints like their budget.
+
+Sara's pitch is to apply classical consumer choice machinery to portfolio allocation, with the AI layer showing up only in how preferences are computed each trading period, e.g., seconds, minutes, days, etc. Let's look at the general problem that are trying to solve:
+
+> __The general problem:__
+>
+> At time $t$, given $N$ assets with current prices $P_i \equiv S_i(t)$ for $i=1,\ldots,N$ and a total investment budget $B \equiv W_{\mathcal{P}}(t)$, choose the number of shares $n_1, \ldots, n_N$ that __maximizes the investor's utility__ subject to the __budget constraint__ that the total cost of the portfolio equals the budget:
+>
+> $$\operatorname*{maximize}_{n_1, \ldots, n_N} \quad U(n_1, \ldots, n_N) \qquad \text{subject to} \quad \sum_{i=1}^{N} n_i \cdot P_i = B$$
+>
+> The utility function $U: \mathbb{R}^N \to \mathbb{R}$ encodes the investor's preferences. Different allocation strategies, i.e., different values for $n_1, \ldots, n_N$, correspond to different values of the utility function. Higher utility corresponds to more preferred portfolios. The budget constraint ensures that the total cost of the portfolio does not exceed the available wealth.
+
+Let's unpack this by looking at some specific utility functions and their corresponding allocation behavior.
+
+### Cobb-Douglas Utility
+The **Cobb-Douglas utility function** is the workhorse of this course. It has a clean analytical solution, encodes preferences naturally through exponents, and separates assets into _preferred_ and _non-preferred_ categories.
+
+> __Cobb-Douglas Utility__
+>
+> Given $N$ assets with preference weights $\gamma_i\in\mathbb{R}$, the Cobb-Douglas utility function is given by:
+> $$U(n_1, \ldots, n_N) = \kappa(\boldsymbol{\gamma}) \prod_{i=1}^{N} n_i^{\gamma_i}$$
+>
+> where $\gamma_i \in (-1, 1)$ is the preference exponent for asset $i$, $n_i$ is the number of shares of asset $i$, and $\kappa = +1$ if all $\gamma_i \geq 0$, else $\kappa = -1$. The preference exponents do all the work:
+> * $\gamma_i > 0$ **preferred**: higher $\gamma_i$ means stronger preference for asset $i$.
+> * $\gamma_i \leq 0$ **non-preferred**: asset $i$ receives the minimum position $\epsilon$.
+>
+> The product-of-powers structure yields a clean result under budget constraint: the optimal _budget share_ of each preferred asset is proportional to its exponent $\gamma_i$ directly (not raised to a power). The budget-constrained Cobb-Douglas problem has a closed-form analytical solution. Partition assets into preferred $\mathcal{A}^+ = \{i : \gamma_i > 0\}$ and non-preferred $\mathcal{A}^- = \{i : \gamma_i \leq 0\}$ sets. The optimal number of shares is given by:
+> $$n_i^{\star} = \underbrace{\left(\frac{\gamma_i}{\sum_{j \in \mathcal{A}^+} \gamma_j}\right)}_{\text{preference share}} \cdot \frac{B_{\text{adj}}}{P_i} \quad \text{for } i \in \mathcal{A}^+, \qquad n_i^{\star} = \epsilon \quad \text{for } i \in \mathcal{A}^-$$
+>
+> where $B_{\text{adj}} = B - \epsilon \sum_{k \in \mathcal{A}^-} P_k$ is the budget remaining after funding minimum positions. The allocation responds immediately to changes in $\gamma_i$; no matrix inversion, no quadratic program, no numerical solver.
+
+The Cobb-Douglas allocator needs preference weights $\gamma_i$ as input. Where do they come from? From a combination of **fundamental signals** (the Single Index Model) and a **sentiment signal** $\lambda_t$. There are many ways to compute the preference weights, and the sentiment signal. However, let's look at one specific formulation that captures the intuition.
+
+> __Preference Weight Computation:__
+>
+> We propose a preference model of the form:
+>
+> $$\gamma_i = \sigma\!\left(\boldsymbol{\theta}_{i}^{\top}\mathbf{x}_{t}\right)\quad\text{for } i=1,\ldots,N$$
+>
+> where $\sigma$ is a link function, $\boldsymbol{\theta}_i$ are per-asset parameters (estimated from data or set by hand), and $\mathbf{x}_{t}$ are time-dependent features (fundamental signals, technical indicators, macroeconomic variables).
+>
+> For this course, let the **SIM parameters** for asset $i$ be $(\alpha_i, \beta_i, \sigma_{\varepsilon,i})$ from Session 1, so $\mathbb{E}[g_i] = \alpha_i + \beta_i\,\mathbb{E}[g_{\mathrm{mkt}}]$. We take $\sigma = \tanh$ modulated by a sentiment scalar $\lambda_t$ that penalizes high-beta names in bearish regimes ($\lambda_t > 0$) and amplifies them in bullish ones ($\lambda_t < 0$). Dividing each SIM term by $\beta_i^{\lambda_t}$ gives:
+>
+> $$\boxed{\gamma_i = \tanh\!\left(\frac{\alpha_i}{\beta_i^{\lambda_t}} + \beta_i^{1-\lambda_t} \cdot \mathbb{E}[g_{\mathrm{mkt}}]\right)\quad\blacksquare}$$
+>
+> so $\boldsymbol{\theta}_i = (\alpha_i, \beta_i)$ and $\mathbf{x}_t = (1,\ \mathbb{E}[g_{\mathrm{mkt}}])$, with $\beta_i^{\lambda_t}$ as a *regime lens* on those coefficients rather than extra parameters. Adding a news feature $\text{news}_i$ (a per-period LLM-aggregated sentiment scalar per ticker) with loading $\nu_i$ extends the design as follows:
+>
+> $$\gamma_i = \tanh\!\left(\frac{\alpha_i}{\beta_i^{\lambda_t}} + \beta_i^{1-\lambda_t}\,\mathbb{E}[g_{\mathrm{mkt}}] + \nu_i\,\text{news}_i\right)$$
+>
+> The news term sits outside the regime-lens wrapper: $\lambda_t$ interprets market exposure, while $\nu_i\,\text{news}_i$ adds idiosyncratic information that did not enter the SIM regression.
+
+How do we compute the sentiment signal $\lambda_t$? Many approaches work. We propose a simple exponential moving average (EMA) crossover signal that captures short-term momentum as a proxy for market sentiment. Let's take a look at how that works.
+
+> __The Lambda Signal:__
+>
+> The exponential moving average (EMA) of a market index, e.g., SPY, QQQ, IWM, etc price series $S_t$ (USD/share, e.g., SPY) with window-size $L$ (days) is given by:
+>
+> $$\bar{S}_{t} = \omega\, S_{t} + (1 - \omega)\,\bar{S}_{t-1}, \qquad \omega = \frac{2}{L + 1}$$
+>
+> For this strategy we compute two EMAs: a **short-term** ($L_{\mathrm{short}} = 21$ days) that tracks recent momentum, and a **long-term** ($L_{\mathrm{long}} = 63$ days) that tracks the underlying trend. The crossover between short and long EMAs produces the sentiment signal:
+>
+> $$\lambda_t = -G \cdot \left(\frac{\bar{S}^{\text{short}}_t}{\bar{S}^{\text{long}}_t} - 1\right)$$
+>
+> where $G > 0$ is a gain constant that controls sensitivity (hyperparameter). The interpretation of $\lambda_t$ is given by:
+> * $\lambda_t > 0$: **bearish** (short EMA below long EMA). The engine becomes risk-averse.
+> * $\lambda_t < 0$: **bullish** (short EMA above long EMA). The engine takes on more risk.
+> * $\lambda_t \approx 0$: **neutral** (no strong signal).
+>
+> The EMA crossover is one choice of sentiment signal. Other sources, such as natural language processing (NLP) derived scores from news articles, earnings calls, or regulatory filings, can also drive $\lambda_t$.
+
+___
+
+### CES (Constant Elasticity of Substitution)
+Cobb-Douglas is not the only choice of utility function. Different utility functions encode different assumptions about how investors trade off between assets. Here we introduce two alternatives that we compare in the examples.
+
+> __CES Utility:__
+>
+> The Constant Elasticity of Substitution (CES) utility function generalizes Cobb-Douglas by introducing an elasticity parameter $\eta$ that controls how willingly the investor substitutes between assets:
+>
+> $$U_{\text{CES}}(\mathbf{n}) = \left(\sum_{i \in \mathcal{A}^+} \gamma_i \cdot n_i^{\rho}\right)^{1/\rho}, \qquad \rho = \frac{\eta - 1}{\eta}$$
+>
+> where $\eta > 0$ is the **elasticity of substitution** and $n_i$ is the share count for asset $i$. Unlike in Cobb-Douglas, here $\gamma_i$ acts as a **coefficient** on $n_i^{\rho}$ rather than an exponent; only positive preference weights $\gamma_i \in (0, 1)$ enter the sum (non-preferred names with $\gamma_i \le 0$ still receive the $\varepsilon$-floor). CES has no closed-form solution, so we solve numerically.
+>
+> Three limits frame the family. The ratio $\gamma_i / P_i$ is the **bang-for-the-buck** criterion from consumer theory, and $\eta$ sets how aggressively the allocator exploits it:
+> * $\eta \to 1$: CES collapses to Cobb-Douglas; dollar weights track preference weights, $w_i^{\star} = \gamma_i / \sum_{j} \gamma_j$, independent of prices.
+> * $\eta \to \infty$: linear utility; the allocator concentrates on the single asset with the highest $\gamma_i / P_i$.
+> * $\eta \to 0^{+}$: Leontief (perfect complements); equal share counts across preferred assets, independent of $\gamma_i$ or $P_i$.
+>
+> The proofs of all three limits are in the companion [CES limits derivation](deeper/eCornell-AI-Finance-S2-Derivation-CES-Limits-May-2026.ipynb).
+>
+> A fixed $\eta$ ignores the market environment. We can do better by linking $\eta$ to the same sentiment signal $\lambda_t$ that drives the preference weights:
+>
+> $$\boxed{\eta(\lambda_t) = \eta_{\min} + \frac{\eta_{\max} - \eta_{\min}}{1 + |\lambda_t|}\quad\blacksquare}$$
+>
+> The denominator's $|\lambda_t|$ makes the response symmetric: at $\lambda_t \approx 0$ (no warning) $\eta \to \eta_{\max}$ and the allocator concentrates on the highest-$\gamma_i / P_i$ asset; at $|\lambda_t|$ large (extreme conviction in either direction) $\eta \to \eta_{\min}$ and the allocator diversifies, hedging against the chance the strong signal is noise.
+>
+> **Default bounds** $\eta_{\min} = 0.5$ and $\eta_{\max} = 5.0$ keep the allocator preference-responsive on one end (below $\eta \approx 0.3$ the CES demand flattens and $\gamma_i$ stops mattering) and concentration-capped on the other (above $\eta \approx 5$ the portfolio collapses to a single-stock bet). The result: $\gamma_i$ decides *which* assets to favor, $\eta(\lambda_t)$ decides *how aggressively* to concentrate on them.
+
+
+
+### Log-Linear Utility
+Finally, we can take the logarithm of the Cobb-Douglas utility to get a log-linear utility function. The log transform preserves the optimal allocation but changes the utility values, which can be useful when feeding into learning algorithms.
+
+> __Log-Linear Utility:__
+>
+> Log-linear utility is the logarithmic transform of Cobb-Douglas. It produces the **same optimal allocation** (the log transform preserves the optimum), but the utility _values_ differ. The log-linear utility function is given by:
+>
+> $$U_{\text{log}}(\mathbf{n}) = \sum_{i \in \mathcal{A}^+} \gamma_i \cdot \log(n_i)$$
+>
+> This matters when utility is used as a reward signal, for example in the bandit algorithms we introduce in Session 3.
+>
+> **When to use log-linear:** When we want the same allocation as Cobb-Douglas but need utility values that are additive (useful for averaging across scenarios or feeding into learning algorithms).
+>
+Now that we have three utility functions and a way to compute preference weights from market conditions, we can build an AI-rebalancing engine that uses utility to make allocation decisions, and then stress-test that engine across thousands of synthetic market paths.
+
+> __Example__
+>
+> [▶ Let's build the Cobb-Douglas allocator and compare utility functions](eCornell-AI-Finance-S2-Example-Core-BuildCobbDouglasAllocator-May-2026.ipynb). We generate a synthetic market path, compute SIM parameters and the sentiment signal, build the Cobb-Douglas utility allocator, and compare its allocation behavior to CES and log-linear alternatives.
+___
+
+## The Rebalancing Engine
+
+The utility allocator gives us a principled way to compute positions at any point in time, i.e., in any market condition. The rebalancing engine wraps this allocator in a daily loop with explicit **safety rules** (trigger rules) that encode human judgment about acceptable risk into the machine's decision loop. 
+
+The three trigger rules are the guardrails that constrain the daily loop. Each rule encodes a specific piece of human judgment about acceptable behavior:
+
+| Rule | Parameter | What It Does |
+|------|-----------|-------------|
+| **Drawdown Limit** | $d_{\max}$ (e.g., 10%) | If portfolio wealth drops more than $d_{\max}$ from its peak, the engine de-risks to 100% cash. This is a circuit breaker. |
+| **Turnover Cap** | $\tau_{\max}$ (e.g., 50%) | If the proposed rebalance would trade more than $\tau_{\max}$ of portfolio value, the trades are scaled down proportionally. This controls transaction costs. |
+| **Reallocation Schedule** | $b_t \in \{0, 1\}$ | The binary schedule determines _which days_ the engine is allowed to rebalance. Daily, weekly, or event-driven. |
+
+Without these rules the engine is unconstrained: it could rebalance every day (expensive), ignore a crash (catastrophic), or flip positions on noise in the $\lambda$ sentiment signal. The rules are the bridge between autonomous operation and investment-committee oversight.
+
+In Session 4, we extend these rules with human override protocols and escalation procedures for production deployment. For now, we implement this engine and evaluate it against the Session 1 baselines.
+
+This is a *backtest* algorithm: it assumes the complete market history (either a single realized path or one draw from a synthetic Monte Carlo ensemble) is available in advance. [Session 3](../session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb) lifts this assumption to an *online* setting where data arrives one day at a time and the allocator must update on the fly.
+
+
+<div>
+    <center>
+        <img src="figs/Fig-RebalancingEngine-Architecture.svg" width="1200" alt="Closed-loop architecture of the Session 2 rebalancing engine"/>
+    </center>
+</div>
+
+**Figure 1:** The Session 2 rebalancing engine as a closed-loop OODA cycle (Observe / Orient / Decide / Act). Each bar close triggers one full traversal of the cycle. **1. Observe** reads the new bar's prices and refreshes the SIM regression and the EMA-crossover sentiment signal $\lambda_t$. **2. Orient** is the AI step: a `tanh`-bounded non-linear map turns features $(\alpha_i, \beta_i, \lambda_t)$ into per-asset preferences $\gamma_i \in (-1, 1)$. **3. Decide** computes target shares $n_i^{\star}$ from the Cobb-Douglas closed form, then checks the committee-approved guardrails (rebalance schedule $b_t$, drawdown gate $d_{\max}$, turnover cap $\tau_{\max}$). **4. Act** trades or holds, realizes transaction costs, and updates the portfolio state $W_t$. The Session 1 minimum-variance allocation is one shot of Observe + Decide at $t=0$ followed by frozen shares forever; the Session 2 engine re-fires this loop on every bar close, which is what gives it the ability to respond to a regime shift the static optimizer cannot.
+
+### Algorithm: Rebalancing Engine (Backtest)
+
+__Initialize__: Given a **complete** market price path $\{S_t\}_{t=1}^{T}$ for a broad index, a ticker universe of $K$ assets with price matrix $\mathbf{P} \in \mathbb{R}^{T \times K}$ where $P_{t,i}$ is the close price of ticker $i$ on day $t$, SIM parameters $\{\alpha_i, \beta_i, \sigma_{\varepsilon,i}\}$, budget $B$, risk floor $\epsilon$, trigger parameters $(d_{\max}, \tau_{\max})$, and a reallocation schedule $\{b_t\}_{t=1}^{T}$ with $b_t \in \{0, 1\}$ ($b_t = 1$ marks a rebalance day; we use $b$ here so the symbol does not collide with the bandit-arm $a_t$ in [Session 3](../session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb#multi-armed-bandits-for-eta-learning)). 
+
+Compute the short-term EMA ($L_{\text{short}} = 21$) and long-term EMA ($L_{\text{long}} = 63$) of $S_t$; define the warmup offset $t_0 \gets L_{\text{short}} + L_{\text{long}}$. Build the sentiment series $\lambda_t \gets -G \cdot (\bar{S}^{\text{short}}_t / \bar{S}^{\text{long}}_t - 1)$ and smooth the market log-growth into $g_{m,t}$ via an EMA with window $L_{\text{growth}} = 10$ (which warms up well inside $t_0$, so it does not need to enter the offset). Assemble the context model containing $B$, the ticker universe, $\mathbf{P}$, the SIM parameters, $\epsilon$, and $g_{m,t}$. Compute the initial allocation via Cobb-Douglas utility maximization.
+
+__Daily Loop__: For $t = t_0 + 1, \ldots, t_0 + T$ __do__:
+
+1. Read the reallocation flag $b_t$ from the schedule.
+2. If $b_t = 1$ (rebalance day), mark the portfolio to market at today's prices to set the budget $B \gets W_{\mathcal{P}}(t) = \text{cash} + \sum_i n_{i,t-1}\,P_{i,t}$ (no shares sold yet), then:
+    - Check the drawdown trigger: if the running drawdown exceeds $d_{\max}$, de-risk to 100% cash and skip to the next day.
+    - Otherwise, update $\lambda_t$, compute new preference weights $\gamma_{i,t}$, and solve the Cobb-Douglas allocation for the target shares $n_{i,t}^{\star}$.
+    - Trade only the delta $\Delta n_i = n_{i,t}^{\star} - n_{i,t-1}$ and pay a transaction cost $c\,\sum_i |\Delta n_i|\,P_{i,t}$ debited from cash, where $c$ is a dimensionless per-trade rate (USD of cost per USD of notional traded). Our examples use $c = 5\times 10^{-4}$ (5 bps).
+    - Check the turnover cap: if $\sum_i |\Delta n_i|\,P_{i,t} > \tau_{\max}\,W_{\mathcal{P}}(t)$, scale every leg by $s = \tau_{\max}\,W_{\mathcal{P}}(t) \,/\, \sum_i |\Delta n_i|\,P_{i,t} \in (0, 1)$, applying $s$ to both the share deltas $\Delta n_i$ and the cash delta so the budget invariant $\text{cash} + \sum_i n_i\,P_{i,t} = W_{\mathcal{P}}(t)$ holds. The realized turnover after scaling is exactly $\tau_{\max}\,W_{\mathcal{P}}(t)$.
+3. If $b_t = 0$ (hold day), propagate the prior allocation unchanged.
+
+__Output__: Return the history indexed by trading day: positions, preference weights, cash, and total wealth.
+
+The output history is what every scorecard and diagnostic example in this session consumes.
+
+> __Example__
+>
+> [▶ Let's wire the allocator into a rebalancing engine and produce a scorecard](eCornell-AI-Finance-S2-Example-Core-RebalancingEngineScorecard-May-2026.ipynb). We run the Cobb-Douglas engine with trigger rules on a synthetic market path, compare it head-to-head against the Session 1 baselines, and sweep the CES elasticity parameter to see how concentration tunes engine behavior.
+>
+> [▶ Let's evaluate the engine across many Monte Carlo futures](eCornell-AI-Finance-S2-Example-Core-MonteCarloEvaluation-May-2026.ipynb). We generate the full Monte Carlo ensemble, compute the tail-risk scorecard (VaR, CVaR, drawdown, NPV), pair the engine path-by-path against the Session 1 min-var baseline, and diagnose whether the engine's edge concentrates in bull regimes, bear regimes, or across the distribution uniformly.
+
+___
+
+## Summary
+
+In this session, we replaced the static minimum-variance allocation from Session 1 with an adaptive rebalancing engine that reads market conditions and adjusts the portfolio daily within explicit safety constraints.
+
+> __Key Takeaways:__
+>
+> * __Utility maximization replaces variance minimization:__ The Cobb-Douglas utility function allocates budget proportionally to preference weights via a closed-form analytical solution. CES and log-linear alternatives offer different concentration and diversification trade-offs using the same preference inputs.
+> * __Preferences adapt dynamically to market conditions:__ Preference weights combine SIM fundamentals with a sentiment signal derived from EMA crossover, so the allocator shifts risk appetite as conditions change. When sentiment turns bearish, high-beta assets are penalized; when bullish, they are amplified.
+> * __Trigger rules encode human judgment:__ Drawdown limits, turnover caps, and reallocation schedules act as safety guardrails that constrain the engine's behavior. These rules ensure the engine operates within bounds that a human investment committee would approve.
+
+These three takeaways map directly to the three claims Sara presents in the [Session 2 introduction](eCornell-AI-Finance-S2-Introduction-MayasAdaptiveEngine-May-2026.ipynb). Maya walks into Thursday's risk committee with the [Scorecard notebook's](eCornell-AI-Finance-S2-Example-Core-RebalancingEngineScorecard-May-2026.ipynb) real-2025 numbers (Sharpe around 1.17, max drawdown under 4%, growth well above the risk-free rate) and the [Monte Carlo evaluation](eCornell-AI-Finance-S2-Example-Core-MonteCarloEvaluation-May-2026.ipynb) as the tail-risk envelope around that point estimate, with per-path α/β bootstrap noise and trading costs baked in so the synthetic band is honest.
+
+__What comes next?__ In [Session 3](../session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb), we make the α, β estimates themselves adaptive: exponentially weighted least squares (EWLS) updates SIM parameters online as new data arrives, a multi-armed bandit discovers the best CES elasticity per regime, and a formal validation report gates deployment. Session 4 then promotes the engine to production operations, including an [AI-driven sentiment factor](../session-4/eCornell-AI-Finance-S4-Example-AISentimentIngestion-May-2026.ipynb) that ingests synthetic news through Claude and folds it into $\gamma$ as a third feature alongside the SIM.
+
+### Disclaimer
+This content is for educational purposes only and does not constitute investment advice. The rebalancing engine described here is a pedagogical tool using synthetic data and simplified models. Real-world algorithmic trading involves regulatory requirements, execution risk, and operational considerations beyond the scope of this session.
+
+___

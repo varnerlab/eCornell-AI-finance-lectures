@@ -7,6 +7,7 @@
 \usepackage[T1]{fontenc}
 \usepackage{lmodern}
 \usepackage{microtype}
+\usepackage{enumitem}
 \usetikzlibrary{positioning,arrows.meta,shapes.geometric,calc,decorations.markings,backgrounds,fit,shadows.blur}
 
 % --- Per-stage palette: saturated 800-weight border + 100-weight fill ---
@@ -21,10 +22,24 @@
 \definecolor{rulesoft}{HTML}{9CA3AF}
 \definecolor{paper}{HTML}{FFFFFF}
 
+% --- Typography helpers ---
 \newcommand{\stagehead}[2]{{\huge\bfseries\scshape\color{#1} #2}}
-\newcommand{\stagesublabel}[1]{{\itshape\large\color{rule} #1}}
+\newcommand{\stagesublabel}[1]{{\scshape\large\color{rule} #1}}
 \newcommand{\aibadge}[1]{{\itshape\large\color{oriBorder} #1}}
-\newcommand{\stagerule}[1]{\par\vspace{4pt}\textcolor{#1}{\rule{\linewidth}{0.7pt}}\par\vspace{8pt}}
+\newcommand{\stagerule}[1]{\par\vspace{6pt}\textcolor{#1}{\rule{\linewidth}{0.7pt}}\par\vspace{10pt}}
+
+% --- Stage-colored square bullet list ---
+\newenvironment{stagelist}[1]
+  {\begin{itemize}[leftmargin=1.4em, itemsep=7pt, topsep=2pt, parsep=0pt,
+     label=\textcolor{#1}{\rule[1.5pt]{4.5pt}{4.5pt}}]}
+  {\end{itemize}}
+
+% --- Centered, scaled display equation ---
+\newcommand{\stageeq}[1]{%
+  \par\vspace{4pt}%
+  {\centering\Large$\displaystyle #1$\par}%
+  \vspace{8pt}%
+}
 
 \begin{document}
 \begin{tikzpicture}[
@@ -32,8 +47,8 @@
     every node/.style={font=\large, text=ink},
     stage/.style={
         rectangle, rounded corners=5pt, line width=1.0pt,
-        minimum width=76mm, minimum height=72mm,
-        align=left, text width=68mm, inner sep=10pt,
+        minimum width=84mm, minimum height=86mm,
+        align=left, text width=76mm, inner sep=12pt,
         blur shadow={shadow xshift=1.4mm, shadow yshift=-1.4mm,
                      shadow opacity=45, shadow blur radius=2.4mm},
     },
@@ -46,50 +61,52 @@
                      shorten >=2pt, shorten <=2pt},
 ]
 
-\def\dx{90mm}
+\def\dx{98mm}
 
 % --- Stage 1: OBSERVE ---
 \node[obsbox] (observe) at (0,0) {%
-    \stagehead{obsBorder}{1.\ Observe}\\[1pt]
+    \stagehead{obsBorder}{1.\ Observe}\\[2pt]
     \stagesublabel{read the new bar}
     \stagerule{obsBorder}
-    \begin{itemize}\setlength\itemsep{4pt}\setlength\leftmargini{1.2em}
+    \begin{stagelist}{obsBorder}
         \item Market prices $\{S_t\}$
         \item SIM regression $\to (\alpha_i, \beta_i, \sigma_{\varepsilon,i})$
         \item EMA crossover $\to \lambda_t$
-    \end{itemize}
+    \end{stagelist}
 };
 
 % --- Stage 2: ORIENT (AI step) ---
 \node[oribox] (orient) at (\dx,0) {%
     \stagehead{oriBorder}{2.\ Orient}\enspace\aibadge{(AI step)}\\[2pt]
     \stagesublabel{features $\to$ bounded preferences}
-    \stagerule{oriBorder}\vspace{4pt}
-    $\displaystyle \gamma_i = \tanh\!\Big(\tfrac{\alpha_i}{\beta_i^{\lambda_t}} + \beta_i^{1-\lambda_t}\,\mathbb{E}[g_{\mathrm{mkt}}]\Big)$
+    \stagerule{oriBorder}
+    \vspace*{4mm}
+    \stageeq{\gamma_i \;=\; \tanh\!\left(\underbrace{\frac{\alpha_i}{\beta_i^{\,\lambda_t}} + \beta_i^{\,1-\lambda_t}\,\mathbb{E}[g_{\mathrm{mkt}}]}_{\mathbf{x}_{i}^{\top}\boldsymbol{\theta}_i}\right)}
 };
 
 % --- Stage 3: DECIDE ---
 \node[decbox] (decide) at (2*\dx,0) {%
-    \stagehead{decBorder}{3.\ Decide}\\[1pt]
+    \stagehead{decBorder}{3.\ Decide}\\[2pt]
     \stagesublabel{allocate, then check guardrails}
     \stagerule{decBorder}
-    $\displaystyle n_i^{\star} = \tfrac{\gamma_i}{\sum_{j\in\mathcal{A}^+}\gamma_j} \cdot \tfrac{B_{\mathrm{adj}}}{P_i}$\\[6pt]
-    \begin{itemize}\setlength\itemsep{4pt}\setlength\leftmargini{1.2em}
+    \stageeq{n_i^{\star} \;=\; \frac{\gamma_i}{\sum_{j\in\mathcal{A}^+}\gamma_j}\cdot\frac{B_{\mathrm{adj}}}{P_i}}
+    \vspace{6pt}
+    \begin{stagelist}{decBorder}
         \item Schedule $b_t \in \{0, 1\}$
         \item Triggers: $d_{\max}$, $\tau_{\max}$
-    \end{itemize}
+    \end{stagelist}
 };
 
 % --- Stage 4: ACT ---
 \node[actbox] (act) at (3*\dx,0) {%
-    \stagehead{actBorder}{4.\ Act}\\[1pt]
+    \stagehead{actBorder}{4.\ Act}\\[2pt]
     \stagesublabel{execute trades, update state}
     \stagerule{actBorder}
-    \begin{itemize}\setlength\itemsep{4pt}\setlength\leftmargini{1.2em}
+    \begin{stagelist}{actBorder}
         \item Trade $\Delta n_i$ or hold
         \item Realize transaction costs
         \item Update $W_t = \sum_i n_i\, S_i(t)$
-    \end{itemize}
+    \end{stagelist}
 };
 
 % --- Forward arrows between stages ---
