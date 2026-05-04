@@ -71,6 +71,7 @@ score_news_with_claude!
 aggregate_news_factor
 estimate_sim_with_news
 eCornellAIFinance._call_claude
+eCornellAIFinance._call_claude_with_web_search
 eCornellAIFinance._sentiment_bucket
 ```
 
