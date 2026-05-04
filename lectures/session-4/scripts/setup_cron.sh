@@ -31,9 +31,15 @@
 SCRIPT_DIR="$(cd "$(dirname "$0")" && pwd)"
 SESSION_DIR="$(dirname "$SCRIPT_DIR")"
 JULIA="$(which julia)"
+ENV_FILE="$HOME/.ecornell-s4-env"
 
 if [ -z "$JULIA" ]; then
     echo "Error: julia not found in PATH."
+    exit 1
+fi
+
+if [ ! -f "$ENV_FILE" ]; then
+    echo "Error: $ENV_FILE not found. See cron_setup_instructions.md."
     exit 1
 fi
 
@@ -42,15 +48,19 @@ LOG="$SESSION_DIR/data/production-log.txt"
 echo "Script directory: $SCRIPT_DIR"
 echo "Session directory: $SESSION_DIR"
 echo "Julia binary: $JULIA"
+echo "Env file: $ENV_FILE"
 echo "Log file: $LOG"
 echo ""
 echo "Adding cron entries..."
 
-# Build the cron commands -
-ENG_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR production_runner.jl --mode=engine >> $LOG 2>&1"
-CLOSE_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR production_runner.jl --mode=engine_close >> $LOG 2>&1"
-EXEC_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR production_runner.jl --mode=execute_signed_ticket >> $LOG 2>&1"
-NEWS_CMD="cd $SCRIPT_DIR && $JULIA --project=$SESSION_DIR news_scorer.jl --mode=hourly >> $LOG 2>&1"
+# Each cron entry runs under /bin/bash so it can source the env file.
+# The env file exports ANTHROPIC_API_KEY (and any other secrets cron needs).
+PREFIX="/bin/bash -c 'source $ENV_FILE && cd $SCRIPT_DIR &&"
+SUFFIX="'"
+ENG_CMD="$PREFIX $JULIA --project=$SESSION_DIR production_runner.jl --mode=engine >> $LOG 2>&1$SUFFIX"
+CLOSE_CMD="$PREFIX $JULIA --project=$SESSION_DIR production_runner.jl --mode=engine_close >> $LOG 2>&1$SUFFIX"
+EXEC_CMD="$PREFIX $JULIA --project=$SESSION_DIR production_runner.jl --mode=execute_signed_ticket >> $LOG 2>&1$SUFFIX"
+NEWS_CMD="$PREFIX $JULIA --project=$SESSION_DIR news_scorer.jl --mode=hourly >> $LOG 2>&1$SUFFIX"
 
 # Append to existing crontab (preserving non-AI-FINANCE entries) -
 (crontab -l 2>/dev/null | grep -v "\[AI-FINANCE\]"; cat <<EOF
