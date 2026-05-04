@@ -40,7 +40,7 @@ function parse_args()
     mode = "hourly";
     for arg in ARGS
         if startswith(arg, "--mode=")
-            mode = split(arg, "=")[2];
+            mode = String(split(arg, "=")[2]);
         end
     end
     return mode;

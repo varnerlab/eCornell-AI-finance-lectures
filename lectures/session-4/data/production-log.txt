@@ -3,3 +3,5 @@
 2026-04-13 11:08:26 [INIT] State initialized: 250 bars, 5 tickers, peak=$10018.34
 2026-04-13 11:08:32 [PRODUCTION] equity=$10019.0 sentiment=0.309 lambda=0.096 bandit=5/5 rebalanced=true orders=4 escalated=false
 2026-04-13 11:08:46 [MONITOR] equity=$10017.87 drawdown=0.0% sentiment=0.301 triggers=OK
+2026-05-04 06:07:49 [NEWS-HOURLY] fire at 2026-05-04T06:07:49.016 source=synthetic tickers=5
+2026-05-04 06:07:51 [NEWS-SYNTHETIC] Out-of-session fire at hour=6; skipping.
