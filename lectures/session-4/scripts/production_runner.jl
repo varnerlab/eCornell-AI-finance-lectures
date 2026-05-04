@@ -208,11 +208,11 @@ function fetch_latest_bars(client, tickers::Vector{String}, bar_minutes::Int,
         last_seen::DateTime, fire_time::DateTime)
     interval = bar_interval_string(bar_minutes);
     # Look back up to one trading day so we always capture today's bars.
+    # Pass DateTime directly: the SDK formats it as RFC3339 (yyyy-mm-ddTHH:MM:SSZ);
+    # pre-formatting without a timezone returns HTTP 400.
     start_dt = max(last_seen, fire_time - Day(1));
-    start_str = Dates.format(start_dt, "yyyy-mm-ddTHH:MM:SS");
-    finish_str = Dates.format(fire_time, "yyyy-mm-ddTHH:MM:SS");
     return Alpaca.get_bars(client, vcat(tickers, ["SPY"]), interval;
-        start = start_str, finish = finish_str);
+        start = start_dt, finish = fire_time);
 end
 
 # ──────────────────────────────────────────────────────────────────────────────
