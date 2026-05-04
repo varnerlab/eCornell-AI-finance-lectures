@@ -9,7 +9,7 @@
 #                      NEWSAPI_KEY in the environment. Hourly cadence.
 # mode = "anthropic_web" — use Anthropic's web fetch tool for headlines;
 #                      requires ANTHROPIC_API_KEY in the environment.
-mode = "synthetic"
+mode = "anthropic_web"
 
 # Path to the synthetic news corpus JLD2 (relative to session-4/).
 # Used when mode = "synthetic" or as a fallback if a real-source fetch

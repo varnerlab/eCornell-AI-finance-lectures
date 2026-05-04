@@ -5,3 +5,421 @@
 2026-04-13 11:08:46 [MONITOR] equity=$10017.87 drawdown=0.0% sentiment=0.301 triggers=OK
 2026-05-04 06:07:49 [NEWS-HOURLY] fire at 2026-05-04T06:07:49.016 source=synthetic tickers=5
 2026-05-04 06:07:51 [NEWS-SYNTHETIC] Out-of-session fire at hour=6; skipping.
+2026-05-04 06:41:25 [NEWS-HOURLY] fire at 2026-05-04T06:41:25.575 source=anthropic_web tickers=5
+2026-05-04 06:41:33 [NEWS-ANTHROPIC_WEB] fetch failed for MSFT: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 10:41:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T10:42:56Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T10:41:51Z
+retry-after: 33
+request-id: req_011CahPUHURuWudiKz1QCRE4
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-befdb63a37592e2697a4c8f4a1f20e99-43bf604359806834-01
+Server: cloudflare
+x-envoy-upstream-service-time: 115
+Content-Encoding: gzip
+vary: Accept-Encoding
+server-timing: x-originResponse;dur=118
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f66e4c75d13fbf2-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahPUHURuWudiKz1QCRE4"}"""); skipping ticker.
+2026-05-04 06:41:33 [NEWS-ANTHROPIC_WEB] fetch failed for GOOG: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 10:41:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T10:42:56Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 2
+anthropic-ratelimit-requests-reset: 2026-05-04T10:42:03Z
+retry-after: 32
+request-id: req_011CahPUJtmLd5tEn7oV7ABv
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-5d296b16289870bafe71ff7c5cf966f2-a26da1864fc1192f-01
+Server: cloudflare
+x-envoy-upstream-service-time: 62
+Content-Encoding: gzip
+vary: Accept-Encoding
+server-timing: x-originResponse;dur=64
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f66e4c97ea8d2b1-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahPUJtmLd5tEn7oV7ABv"}"""); skipping ticker.
+2026-05-04 06:41:34 [NEWS-ANTHROPIC_WEB] fetch failed for AMZN: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 10:41:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T10:42:56Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 1
+anthropic-ratelimit-requests-reset: 2026-05-04T10:42:15Z
+retry-after: 32
+request-id: req_011CahPUKppiuXwxnDxKczBT
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-09c8606fc94bdd37eeb22aa4febb071a-85dfcf305b1b7f9a-01
+Server: cloudflare
+x-envoy-upstream-service-time: 148
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f66e4caaf04cb4e-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahPUKppiuXwxnDxKczBT"}"""); skipping ticker.
+2026-05-04 06:41:34 [NEWS-ANTHROPIC_WEB] fetch failed for NVDA: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 10:41:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T10:42:56Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 0
+anthropic-ratelimit-requests-reset: 2026-05-04T10:42:27Z
+retry-after: 34
+request-id: req_011CahPUMCB2gwUtoUdUcaV2
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-3beb68c3e05fa6bff4c827910820a802-b3e6f155c9c368ae-01
+Server: cloudflare
+x-envoy-upstream-service-time: 186
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f66e4cc8bece640-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahPUMCB2gwUtoUdUcaV2"}"""); skipping ticker.
+2026-05-04 06:41:34 [NEWS-ANTHROPIC_WEB] fetched 3 items via 1 searches (today 1/100).
+2026-05-04 07:30:00 [NEWS-HOURLY] fire at 2026-05-04T07:30:00.265 source=anthropic_web tickers=5
+2026-05-04 07:33:23 [NEWS-ANTHROPIC_WEB] fetch failed for AMZN: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:33:23 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:34:33Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 4
+anthropic-ratelimit-requests-reset: 2026-05-04T11:33:35Z
+retry-after: 19
+request-id: req_011CahTRZ5BPoeuZA2tiKdUB
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-8f3b59b13a43fc0f8bd1c1ab47c63030-347c39e022b6135a-01
+Server: cloudflare
+x-envoy-upstream-service-time: 76
+Content-Encoding: gzip
+vary: Accept-Encoding
+server-timing: x-originResponse;dur=81
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f6730b64ba32e74-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahTRZ5BPoeuZA2tiKdUB"}"""); skipping ticker.
+2026-05-04 07:34:30 [NEWS-ANTHROPIC_WEB] fetched 12 items via 4 searches (today 5/100).
+2026-05-04 07:36:22 [NEWS-HOURLY] fire at 2026-05-04T07:36:22.196 source=anthropic_web tickers=5
+2026-05-04 07:36:29 [NEWS-ANTHROPIC_WEB] score failed for AAPL item 1: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:36:29 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:37:53Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:36:48Z
+retry-after: 27
+request-id: req_011CahTfGgLAoE52ikZUT7sY
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-da4bddd27d0c1b513e0ca64acc4cddda-4933e13a4106a541-01
+Server: cloudflare
+x-envoy-upstream-service-time: 66
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f67354139b24153-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahTfGgLAoE52ikZUT7sY"}"""); leaving NaN.
+2026-05-04 07:36:44 [NEWS-ANTHROPIC_WEB] score failed for AAPL item 2: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:36:44 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:37:53Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:37:00Z
+retry-after: 10
+request-id: req_011CahTgKu5tQMQfF7QpTtVe
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d500dba216200150f7c2529a788fa21e-1f0b3be29547b779-01
+Server: cloudflare
+x-envoy-upstream-service-time: 65
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f67359abd0fc466-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahTgKu5tQMQfF7QpTtVe"}"""); leaving NaN.
+2026-05-04 07:38:07 [NEWS-ANTHROPIC_WEB] score failed for MSFT item 1: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:38:07 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:39:30Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:38:23Z
+retry-after: 24
+request-id: req_011CahTnTm2djy1HR1SeURzk
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-8676530411f11630e1d229b117202c1f-865c2758e64f181f-01
+Server: cloudflare
+x-envoy-upstream-service-time: 80
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f6737a2ec9cc794-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahTnTm2djy1HR1SeURzk"}"""); leaving NaN.
+2026-05-04 07:38:21 [NEWS-ANTHROPIC_WEB] score failed for MSFT item 2: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:38:21 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:39:30Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:38:35Z
+retry-after: 10
+request-id: req_011CahToWbDibcPkgmpgSUrf
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d1a2728e3519b5f2d630e1c639bc35d7-c3a694437f23d356-01
+Server: cloudflare
+x-envoy-upstream-service-time: 66
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f6737fbdb994fb3-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahToWbDibcPkgmpgSUrf"}"""); leaving NaN.
+2026-05-04 07:39:43 [NEWS-ANTHROPIC_WEB] score failed for GOOG item 1: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:39:43 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:41:07Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:40:00Z
+retry-after: 25
+request-id: req_011CahTuWzCPPCTXv8AAYTf8
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-e56127f4dd673b7c0f8ef2773c01693f-086049012f4af5ff-01
+Server: cloudflare
+x-envoy-upstream-service-time: 61
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f6739f92db45f74-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahTuWzCPPCTXv8AAYTf8"}"""); leaving NaN.
+2026-05-04 07:39:57 [NEWS-ANTHROPIC_WEB] score failed for GOOG item 2: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:39:57 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:41:07Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:40:12Z
+retry-after: 11
+request-id: req_011CahTvZcykWQXzyGj83cCg
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-2d71464c01974a8be82034e206388432-ca8cfe2f6b883360-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+server-timing: x-originResponse;dur=32
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f673a51f8928abe-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahTvZcykWQXzyGj83cCg"}"""); leaving NaN.
+2026-05-04 07:41:21 [NEWS-ANTHROPIC_WEB] score failed for AMZN item 1: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:41:21 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:42:34Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:41:38Z
+retry-after: 15
+request-id: req_011CahU2ivjVLxjYtoSdEMaX
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-9186c45f37849a20be4912f87d1ff188-73ba194c527d4825-01
+Server: cloudflare
+x-envoy-upstream-service-time: 353
+Content-Encoding: gzip
+vary: Accept-Encoding
+server-timing: x-originResponse;dur=356
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f673c5c1b67269c-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahU2ivjVLxjYtoSdEMaX"}"""); leaving NaN.
+2026-05-04 07:42:57 [NEWS-ANTHROPIC_WEB] score failed for NVDA item 1: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:42:57 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:44:19Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:43:15Z
+retry-after: 23
+request-id: req_011CahU9sUdieNBeHrvQaxvP
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1f962cdedcf3c687651d41a4a312ee8e-149da04f8797adf8-01
+Server: cloudflare
+x-envoy-upstream-service-time: 68
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f673eba1f199d36-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahU9sUdieNBeHrvQaxvP"}"""); leaving NaN.
+2026-05-04 07:43:11 [NEWS-ANTHROPIC_WEB] score failed for NVDA item 2: HTTP.Exceptions.StatusError(429, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 429 Too Many Requests
+Date: Mon, 04 May 2026 11:43:11 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+anthropic-ratelimit-input-tokens-limit: 10000
+anthropic-ratelimit-input-tokens-remaining: 0
+anthropic-ratelimit-input-tokens-reset: 2026-05-04T11:44:19Z
+anthropic-ratelimit-requests-limit: 5
+anthropic-ratelimit-requests-remaining: 3
+anthropic-ratelimit-requests-reset: 2026-05-04T11:43:27Z
+retry-after: 9
+request-id: req_011CahUAvLYsKAM6AitPGyZK
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-14631fc620519bab0634c9dc408255af-f909fa9f0f5e5cfd-01
+Server: cloudflare
+x-envoy-upstream-service-time: 68
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f673f130ceedcde-EWR
+
+{"type":"error","error":{"type":"rate_limit_error","message":"This request would exceed your organization's rate limit of 10,000 input tokens per minute (org: 980ee1de-4e7e-4a75-9d30-90c655ec7620, model: claude-sonnet-4-6). For details, refer to: https://docs.claude.com/en/api/rate-limits. You can see the response headers for current usage. Please reduce the prompt length or the maximum tokens requested, or try again later. You may also contact sales at https://claude.com/contact-sales to discuss your options for a rate limit increase."},"request_id":"req_011CahUAvLYsKAM6AitPGyZK"}"""); leaving NaN.
+2026-05-04 07:43:26 [NEWS-ANTHROPIC_WEB] 15 items, 6 scored, 5 searches (today 10/100).
+2026-05-04 07:43:28 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-04-07.jld2 -- 15 items, 2 tickers flagged

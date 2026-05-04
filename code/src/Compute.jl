@@ -3478,6 +3478,50 @@ function _call_claude(prompt::String; api_key::String, model::String,
 end
 
 """
+    _call_claude_with_web_search(prompt; api_key, model, max_tokens, max_uses)
+        -> (text, n_searches)
+
+POST to the Messages API with the `web_search_20250305` server tool enabled,
+return the concatenated text from all `text` content blocks and the number of
+search invocations Claude actually performed. Use the search count to track
+billed usage (Anthropic charges per search, separate from tokens).
+"""
+function _call_claude_with_web_search(prompt::String; api_key::String,
+    model::String, max_tokens::Int, max_uses::Int = 2)::Tuple{String,Int}
+
+    url = "https://api.anthropic.com/v1/messages";
+    headers = [
+        "x-api-key" => api_key,
+        "anthropic-version" => "2023-06-01",
+        "content-type" => "application/json",
+    ];
+    body = JSON.json(Dict(
+        "model" => model,
+        "max_tokens" => max_tokens,
+        "tools" => [Dict(
+            "type" => "web_search_20250305",
+            "name" => "web_search",
+            "max_uses" => max_uses,
+        )],
+        "messages" => [Dict("role" => "user", "content" => prompt)],
+    ));
+    response = HTTP.request("POST", url, headers, body);
+    parsed = JSON.parse(String(response.body));
+
+    text_buf = IOBuffer();
+    n_searches = 0;
+    for block in parsed["content"]
+        btype = String(block["type"]);
+        if btype == "text"
+            print(text_buf, String(block["text"]));
+        elseif btype == "server_tool_use" && get(block, "name", "") == "web_search"
+            n_searches += 1;
+        end
+    end
+    return (String(take!(text_buf)), n_searches);
+end
+
+"""
     generate_news_text!(corpus; live, api_key, model, rate_limit_seconds) -> MyNewsCorpus
 
 Replace each item's templated stub text with a Claude-generated single-line

@@ -16,7 +16,7 @@
 # loads the latest news-* file at sign-off time.
 #
 
-using Dates, TOML
+using Dates, TOML, JSON
 
 const SCRIPT_DIR = @__DIR__;
 const SESSION_DIR = dirname(SCRIPT_DIR);
@@ -165,14 +165,170 @@ function score_newsapi_hour(news_cfg, fire_time::DateTime, tickers::Vector{Strin
     score_synthetic_hour(news_cfg, fire_time, tickers);
 end
 
+const ANTHROPIC_DAILY_SEARCH_CAP = 100;            # hard cap; refuse fire if exceeded
+const ANTHROPIC_MAX_USES_PER_TICKER = 2;           # passed to web_search tool
+const ANTHROPIC_HEADLINES_PER_TICKER = 3;          # asked for in prompt
+const ANTHROPIC_FETCH_MODEL = "claude-sonnet-4-6"; # search-capable model
+const ANTHROPIC_FETCH_MAX_TOKENS = 800;
+# Tier 1 caps Sonnet 4.6 at 10K input tokens/min and 5 requests/min. Web
+# search inflates input tokens (results are fed back into context), so we
+# pace per-ticker fetches to stay under the cap. Lower this once your
+# account auto-promotes to Tier 2 (80K input tokens/min).
+const ANTHROPIC_INTER_TICKER_SLEEP = 60.0;
+const ANTHROPIC_POST_FETCH_SLEEP = 35.0;    # let input-token bucket recover from the search
+const ANTHROPIC_SCORING_RATE_LIMIT = 14.0;  # seconds between per-item scoring calls
+
+function _budget_path(fire_time::DateTime)::String
+    mkpath(NEWS_DIR);
+    return joinpath(NEWS_DIR, "budget-$(Dates.format(Date(fire_time), "yyyy-mm-dd")).json");
+end
+
+function _read_budget(fire_time::DateTime)::Dict{String,Any}
+    path = _budget_path(fire_time);
+    isfile(path) || return Dict("date" => Dates.format(Date(fire_time), "yyyy-mm-dd"),
+        "searches" => 0, "fires" => 0);
+    return JSON.parsefile(path);
+end
+
+function _write_budget(fire_time::DateTime, budget::Dict{String,Any})
+    open(_budget_path(fire_time), "w") do f
+        JSON.print(f, budget);
+    end
+end
+
+function _parse_headline_json(reply::String)::Vector{Dict{String,Any}}
+    # Strip optional markdown fence and any prose around the JSON array.
+    s = strip(reply);
+    s = replace(s, r"^```(?:json)?\n?" => "");
+    s = replace(s, r"\n?```$" => "");
+    # Find the outermost array.
+    i = findfirst('[', s);
+    j = findlast(']', s);
+    (i === nothing || j === nothing || j <= i) && return Dict{String,Any}[];
+    payload = s[i:j];
+    return try
+        parsed = JSON.parse(payload);
+        parsed isa Vector ? Vector{Dict{String,Any}}(parsed) : Dict{String,Any}[];
+    catch e
+        log_entry("anthropic_web", "JSON parse failed: $(e); reply=$(first(reply, 200))");
+        Dict{String,Any}[];
+    end
+end
+
+function _fetch_ticker_headlines(ticker::String, api_key::String)::Tuple{Vector{Dict{String,Any}},Int}
+    prompt = string(
+        "Search the web for the most recent financial news about ticker ",
+        "$(ticker) from the past few hours. Return up to $(ANTHROPIC_HEADLINES_PER_TICKER) ",
+        "current headlines as a JSON array. Each entry must have keys: ",
+        "\"headline\" (the headline text only, no source name), ",
+        "\"url\" (the article URL), ",
+        "\"published_relative\" (a phrase like \"30 minutes ago\" or \"today\"). ",
+        "Output ONLY the JSON array, no preamble, no explanation, no markdown fence.",
+    );
+    (text, n_searches) = eCornellAIFinance._call_claude_with_web_search(prompt;
+        api_key = api_key,
+        model = ANTHROPIC_FETCH_MODEL,
+        max_tokens = ANTHROPIC_FETCH_MAX_TOKENS,
+        max_uses = ANTHROPIC_MAX_USES_PER_TICKER);
+    return (_parse_headline_json(text), n_searches);
+end
+
 function score_anthropic_web_hour(news_cfg, fire_time::DateTime, tickers::Vector{String})
     api_key = get(ENV, news_cfg.anthropic_key_env, "");
     if isempty(api_key)
         log_entry("anthropic_web", "$(news_cfg.anthropic_key_env) is unset; falling back to synthetic.");
         return score_synthetic_hour(news_cfg, fire_time, tickers);
     end
-    log_entry("anthropic_web", "Anthropic web-fetch integration not yet wired (Phase B follow-up); falling back to synthetic.");
-    score_synthetic_hour(news_cfg, fire_time, tickers);
+
+    budget = _read_budget(fire_time);
+    if Int(budget["searches"]) >= ANTHROPIC_DAILY_SEARCH_CAP
+        log_entry("anthropic_web", "daily search cap reached " *
+            "($(budget["searches"])/$(ANTHROPIC_DAILY_SEARCH_CAP)); falling back to synthetic.");
+        return score_synthetic_hour(news_cfg, fire_time, tickers);
+    end
+
+    # Fetch + score per ticker so the rate-limit budget is consumed gradually
+    # and a single 429 only kills its own ticker, not the whole fire.
+    items = MyNewsItem[];
+    fire_searches = 0;
+    for (i, t) in enumerate(tickers)
+        i > 1 && ANTHROPIC_INTER_TICKER_SLEEP > 0.0 && sleep(ANTHROPIC_INTER_TICKER_SLEEP);
+        local headlines
+        try
+            (headlines, n_searches) = _fetch_ticker_headlines(t, api_key);
+            fire_searches += n_searches;
+        catch e
+            log_entry("anthropic_web", "fetch failed for $(t): $(sprint(showerror, e)); skipping ticker.");
+            continue;
+        end
+        ANTHROPIC_POST_FETCH_SLEEP > 0.0 && !isempty(headlines) && sleep(ANTHROPIC_POST_FETCH_SLEEP);
+        for (j, h) in enumerate(headlines)
+            text = String(get(h, "headline", ""));
+            isempty(text) && continue;
+            it = MyNewsItem();
+            it.ticker = t;
+            it.publication_day = 1;
+            it.text = text;
+            it.true_score = NaN;
+            it.claude_score = NaN;
+            it.source = "anthropic_web";
+            j > 1 && ANTHROPIC_SCORING_RATE_LIMIT > 0.0 && sleep(ANTHROPIC_SCORING_RATE_LIMIT);
+            try
+                prompt = string(
+                    "Read this financial news headline and assign a sentiment score in ",
+                    "[-1.0, +1.0] for the mentioned company. -1 = strongly bearish, ",
+                    "0 = neutral, +1 = strongly bullish. Output only the number.\n\n",
+                    "Headline: $(text)\nScore:");
+                reply = eCornellAIFinance._call_claude(prompt;
+                    api_key = api_key, model = news_cfg.scoring_model, max_tokens = 10);
+                s = try parse(Float64, strip(reply)); catch; NaN; end
+                it.claude_score = isnan(s) ? NaN : clamp(s, -1.0, 1.0);
+            catch e
+                log_entry("anthropic_web", "score failed for $(t) item $(j): $(sprint(showerror, e)); leaving NaN.");
+            end
+            push!(items, it);
+        end
+    end
+
+    budget["searches"] = Int(budget["searches"]) + fire_searches;
+    budget["fires"] = Int(budget["fires"]) + 1;
+    _write_budget(fire_time, budget);
+    n_scored = count(it -> !isnan(it.claude_score), items);
+    log_entry("anthropic_web", "$(length(items)) items, $(n_scored) scored, $(fire_searches) searches " *
+        "(today $(budget["searches"])/$(ANTHROPIC_DAILY_SEARCH_CAP)).");
+
+    if isempty(items)
+        log_entry("anthropic_web", "no live items returned; falling back to synthetic.");
+        return score_synthetic_hour(news_cfg, fire_time, tickers);
+    end
+
+    # Wrap into a corpus for persistence (claude_score is already populated
+    # per-item above; no further scoring call here).
+    scenario = build(MyNewsScenario, (
+        label = "live_anthropic_web", kappa_pos = 0.0, kappa_neg = 0.0,
+        arrival_intensity = 0.0, sentiment_mean = 0.0, sentiment_sd = 0.0,
+    ));
+    K = length(tickers);
+    hour_corpus = build(MyNewsCorpus, (
+        items = items, tickers = tickers, scenario = scenario,
+        news_factor = zeros(1, K), shocked_prices = zeros(1, K), seed = 0,
+    ));
+
+    sentiment = Dict{String,Float64}(t => 0.0 for t in tickers);
+    severity = Dict{String,Float64}(t => 0.0 for t in tickers);
+    counts = Dict{String,Int}(t => 0 for t in tickers);
+    for it in hour_corpus.items
+        haskey(sentiment, it.ticker) || continue;
+        isnan(it.claude_score) && continue;
+        sentiment[it.ticker] += it.claude_score;
+        severity[it.ticker] = max(severity[it.ticker], abs(it.claude_score));
+        counts[it.ticker] += 1;
+    end
+    for t in tickers
+        sentiment[t] = counts[t] > 0 ? sentiment[t] / counts[t] : 0.0;
+    end
+
+    write_news_artifact(fire_time, hour_corpus, sentiment, severity, counts, "anthropic_web");
 end
 
 # ──────────────────────────────────────────────────────────────────────────────

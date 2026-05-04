@@ -14,6 +14,10 @@ Manifest.toml
 # Credentials (API keys, secrets)
 **/config/credentials.toml
 
+# S4 cron-generated runtime artifacts (regenerated each fire)
+lectures/session-4/data/news/news-*.jld2
+lectures/session-4/data/news/budget-*.json
+
 # Build artifacts
 deps/
 docs/build/
