@@ -27,11 +27,11 @@ cash_fraction = 0.0
 # Must satisfy max_weight >= 1/N for feasibility (N = number of tickers).
 # Typical ranges: 0.20-0.25 for concentrated books (<= 10 tickers),
 # 0.05-0.10 for diversified books. Use 1.0 to disable the cap.
-max_weight = 0.10
+max_weight = 0.20
 
 [profile]
 # Your questionnaire answers (informational, not used by the code)
-risk_tolerance = "risk-tolerant"     # risk-averse, balanced, risk-tolerant
+risk_tolerance = "balanced"          # risk-averse, balanced, risk-tolerant
 time_horizon = "long"                # short, medium, long
 primary_objective = "growth"         # preservation, income, growth, balanced
-archetype = "Aggressive Growth"      # one of the 5 archetypes
+archetype = "Growth-Oriented"        # one of the 5 archetypes
