@@ -20,7 +20,7 @@ target_growth = 0.16
 # 0.0 = fully invested in the risky portfolio (RA notebook).
 # >0.0 = partial cash position (RRFA notebook, from CML/tangent theory).
 # The risky weights always sum to 1 regardless of cash_fraction.
-cash_fraction = 0.00
+cash_fraction = 0.0
 
 # Maximum weight on any single ticker in the risky portfolio (concentration cap).
 # Enforced as w_i <= max_weight in the min-variance QP.
