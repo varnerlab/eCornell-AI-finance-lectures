@@ -49,7 +49,7 @@ function parse_args()
     mode = "engine";
     for arg in ARGS
         if startswith(arg, "--mode=")
-            mode = split(arg, "=")[2];
+            mode = String(split(arg, "=")[2]);   # split returns SubString; log_entry wants String
         end
     end
     return mode;
@@ -471,6 +471,7 @@ function run_engine_close(client, cfg, state, fire_time::DateTime)
     K = length(tickers);
     ewls_states = state["ewls_states"]::Dict{String,MyEWLSState};
     intraday_market_prices = state["intraday_market_prices"]::Vector{Float64};
+    Δt = state["Δt"]::Float64;
 
     sentiment = compute_live_sentiment(intraday_market_prices);
     ema_s = compute_ema(intraday_market_prices; window = cfg.N_short);
@@ -595,10 +596,13 @@ function main()
     cfg = load_config();
     client = Alpaca.load_client(CREDS_PATH);
 
-    # Market-hours gate (skip silently outside session).
+    # Market-hours gate (skip silently outside session). engine_close runs
+    # AT the 16:00 ET close where Alpaca already reports is_open=false, so
+    # only the intraday engine fires gate on the clock; engine_close always
+    # runs (its job is to write the EOD tape entry + tomorrow's ticket).
     clock = Alpaca.get_clock(client);
     fire_time = now(UTC);
-    if mode in ("engine", "engine_close") && !clock.is_open
+    if mode == "engine" && !clock.is_open
         log_entry(mode, "market closed at $(fire_time); skipping.");
         return;
     end

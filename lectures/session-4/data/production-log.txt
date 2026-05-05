@@ -471,3 +471,63 @@ CF-RAY: 9f673f130ceedcde-EWR
 2026-05-05 14:00:32 [ENGINE] fire=2026-05-05T18:00:22.654 sent=0.008 λ=-0.034 regime=neutral η=4.85 wealth=$100291.74 dd=0.0% auto=4 queued=11 submitted=4
 2026-05-05 14:00:19 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-05 14:00:32 [ENGINE] fire=2026-05-05T18:00:22.654 sent=0.008 λ=-0.034 regime=neutral η=4.85 wealth=$100291.74 dd=0.0% auto=4 queued=11 submitted=4
+2026-05-05 14:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 14:30:32 [ENGINE] fire=2026-05-05T18:30:22.938 sent=0.02 λ=-0.036 regime=neutral η=4.84 wealth=$100415.9 dd=0.0% auto=3 queued=11 submitted=3
+2026-05-05 14:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 14:30:32 [ENGINE] fire=2026-05-05T18:30:22.938 sent=0.02 λ=-0.036 regime=neutral η=4.84 wealth=$100415.9 dd=0.0% auto=3 queued=11 submitted=3
+2026-05-05 14:48:26 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 49/100).
+2026-05-05 14:48:28 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-18.jld2 -- 66 items, 18 tickers flagged
+2026-05-05 14:00:18 [NEWS-HOURLY] fire at 2026-05-05T18:00:17.958 source=anthropic_web tickers=22
+2026-05-05 14:48:26 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 49/100).
+2026-05-05 14:48:28 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-18.jld2 -- 66 items, 18 tickers flagged
+2026-05-05 15:00:20 [NEWS-HOURLY] fire at 2026-05-05T19:00:20.649 source=anthropic_web tickers=22
+2026-05-05 15:00:22 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 15:00:35 [ENGINE] fire=2026-05-05T19:00:25.467 sent=0.011 λ=-0.037 regime=neutral η=4.84 wealth=$100338.37 dd=0.1% auto=6 queued=12 submitted=6
+2026-05-05 15:00:22 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 15:00:35 [ENGINE] fire=2026-05-05T19:00:25.467 sent=0.011 λ=-0.037 regime=neutral η=4.84 wealth=$100338.37 dd=0.1% auto=6 queued=12 submitted=6
+2026-05-05 15:30:18 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 15:30:31 [ENGINE] fire=2026-05-05T19:30:22.053 sent=0.018 λ=-0.038 regime=neutral η=4.83 wealth=$100430.71 dd=0.0% auto=4 queued=12 submitted=4
+2026-05-05 15:30:18 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 15:30:31 [ENGINE] fire=2026-05-05T19:30:22.053 sent=0.018 λ=-0.038 regime=neutral η=4.83 wealth=$100430.71 dd=0.0% auto=4 queued=12 submitted=4
+2026-05-05 15:51:20 [NEWS-ANTHROPIC_WEB] score failed for CVX item 1: HTTP.Exceptions.StatusError(503, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 503 Service Unavailable
+Date: Tue, 05 May 2026 19:51:19 GMT
+Content-Type: text/plain
+Content-Length: 95
+Connection: keep-alive
+Server: cloudflare
+x-envoy-upstream-service-time: 2211232
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f72117d1a2243dc-EWR
+
+upstream connect error or disconnect/reset before headers. reset reason: connection termination"""); leaving NaN.
+2026-05-05 16:00:18 [NEWS-HOURLY] fire at 2026-05-05T20:00:18.744 source=anthropic_web tickers=22
+2026-05-05 16:00:20 [CONFIG] tickers source=session-1 -> 22 names
+ERROR: LoadError: MethodError: no method matching log_entry(::SubString{String}, ::String)
+The function `log_entry` exists, but no method is defined for this combination of argument types.
+
+Closest candidates are:
+  log_entry(!Matched::String, ::String)
+   @ Main ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:58
+
+Stacktrace:
+ [1] main()
+   @ Main ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:602
+ [2] top-level scope
+   @ ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:619
+ [3] include(mod::Module, _path::String)
+   @ Base ./Base.jl:306
+ [4] exec_options(opts::Base.JLOptions)
+   @ Base ./client.jl:317
+ [5] _start()
+   @ Base ./client.jl:550
+in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:619
+2026-05-05 16:00:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 16:01:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 16:01:31 [ENGINE] fire=2026-05-05T20:01:27.400 sent=-0.003 λ=-0.039 regime=neutral η=4.83 wealth=$100256.09 dd=0.2% auto=6 queued=14 submitted=6
+2026-05-05 16:02:10 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 16:02:13 [ENGINE] no new bars since 2026-05-05T20:00:00; skipping engine update.
+2026-05-05 16:02:14 [ENGINE_CLOSE] wrote ticket for 2026-05-06: 20 trades, η=4.83, regime=neutral, news_flags=18
