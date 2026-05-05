@@ -77,6 +77,14 @@ end
 function load_universe_from_prod_config()::Vector{String}
     isfile(PROD_CONFIG_PATH) || return String[];
     cfg = TOML.parsefile(PROD_CONFIG_PATH);
+    source = String(get(cfg["Tickers"], "source", "manual"));
+    if source == "session-1"
+        s1_path = joinpath(SESSION_DIR, "..", "session-1", "data", "minvar-allocation.jld2");
+        isfile(s1_path) || error(
+            "Tickers.source=\"session-1\" but $(s1_path) is missing. " *
+            "Run the S1 BuildMinVariancePortfolio notebook first.");
+        return String.(load_results(s1_path)["my_tickers"]);
+    end
     return String.(cfg["Tickers"]["universe"]);
 end
 
