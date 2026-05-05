@@ -40,6 +40,7 @@ const STATE_PATH = joinpath(DATA_DIR, "production-state.jld2");
 const LOG_PATH = joinpath(DATA_DIR, "production-log.txt");
 const CREDS_PATH = joinpath(CONFIG_DIR, "credentials.toml");
 const CONFIG_PATH = joinpath(CONFIG_DIR, "production-config.toml");
+const S1_ALLOCATION_PATH = joinpath(SESSION_DIR, "..", "session-1", "data", "minvar-allocation.jld2");
 
 # ──────────────────────────────────────────────────────────────────────────────
 # CLI + logging
@@ -77,8 +78,20 @@ function load_config()
     sched = cfg["Schedule"];
     bar_minutes = Int(eng["bar_minutes"]);
 
+    source = String(get(cfg["Tickers"], "source", "manual"));
+    tickers = if source == "session-1"
+        isfile(S1_ALLOCATION_PATH) || error(
+            "Tickers.source=\"session-1\" but $(S1_ALLOCATION_PATH) is missing. " *
+            "Run the S1 BuildMinVariancePortfolio notebook to produce it, or set " *
+            "Tickers.source=\"manual\" in $(CONFIG_PATH).");
+        String.(load_results(S1_ALLOCATION_PATH)["my_tickers"])
+    else
+        String.(cfg["Tickers"]["universe"])
+    end;
+    log_entry("config", "tickers source=$(source) -> $(length(tickers)) names");
+
     return (
-        tickers = String.(cfg["Tickers"]["universe"]),
+        tickers = tickers,
         B₀ = Float64(eng["B0"]),
         bar_minutes = bar_minutes,
         half_life_calendar_days = Float64(eng["half_life_calendar_days"]),
@@ -584,7 +597,7 @@ function main()
 
     # Market-hours gate (skip silently outside session).
     clock = Alpaca.get_clock(client);
-    fire_time = now();
+    fire_time = now(UTC);
     if mode in ("engine", "engine_close") && !clock.is_open
         log_entry(mode, "market closed at $(fire_time); skipping.");
         return;

@@ -367,7 +367,7 @@ function main()
         load_universe_from_prod_config() : news_cfg.explicit_tickers;
     isempty(tickers) && error("No tickers configured. Check production-config.toml or news-source.toml.");
 
-    fire_time = now();
+    fire_time = now(UTC);
     log_entry(mode, "fire at $(fire_time) source=$(news_cfg.mode) tickers=$(length(tickers))");
 
     if news_cfg.mode == "synthetic"
