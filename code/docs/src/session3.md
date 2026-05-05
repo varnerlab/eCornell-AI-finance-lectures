@@ -72,6 +72,7 @@ MyEtaBanditResult
 classify_regime
 eta_bandit_world
 solve_eta_bandit
+solve_eta_bandit_multipath
 backtest_eta_bandit
 build_compliance_config
 ```
