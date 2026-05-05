@@ -461,3 +461,13 @@ CF-RAY: 9f673f130ceedcde-EWR
 2026-05-05 13:30:32 [ENGINE] fire=2026-05-05T17:30:23.047 sent=0.01 λ=-0.033 regime=neutral η=4.86 wealth=$100221.19 dd=0.0% auto=12 queued=10 submitted=12
 2026-05-05 13:30:19 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-05 13:30:32 [ENGINE] fire=2026-05-05T17:30:23.047 sent=0.01 λ=-0.033 regime=neutral η=4.86 wealth=$100221.19 dd=0.0% auto=12 queued=10 submitted=12
+2026-05-05 13:48:25 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 27/100).
+2026-05-05 13:48:27 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-17.jld2 -- 66 items, 19 tickers flagged
+2026-05-05 13:00:19 [NEWS-HOURLY] fire at 2026-05-05T17:00:19.324 source=anthropic_web tickers=22
+2026-05-05 13:48:25 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 27/100).
+2026-05-05 13:48:27 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-17.jld2 -- 66 items, 19 tickers flagged
+2026-05-05 14:00:18 [NEWS-HOURLY] fire at 2026-05-05T18:00:17.958 source=anthropic_web tickers=22
+2026-05-05 14:00:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 14:00:32 [ENGINE] fire=2026-05-05T18:00:22.654 sent=0.008 λ=-0.034 regime=neutral η=4.85 wealth=$100291.74 dd=0.0% auto=4 queued=11 submitted=4
+2026-05-05 14:00:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-05 14:00:32 [ENGINE] fire=2026-05-05T18:00:22.654 sent=0.008 λ=-0.034 regime=neutral η=4.85 wealth=$100291.74 dd=0.0% auto=4 queued=11 submitted=4
