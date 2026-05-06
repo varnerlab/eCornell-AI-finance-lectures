@@ -531,3 +531,28 @@ in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-le
 2026-05-05 16:02:10 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-05 16:02:13 [ENGINE] no new bars since 2026-05-05T20:00:00; skipping engine update.
 2026-05-05 16:02:14 [ENGINE_CLOSE] wrote ticket for 2026-05-06: 20 trades, η=4.83, regime=neutral, news_flags=18
+2026-05-05 16:25:27 [NEWS-ANTHROPIC_WEB] 66 items, 65 scored, 22 searches (today 71/100).
+2026-05-05 16:25:29 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-19.jld2 -- 66 items, 18 tickers flagged
+2026-05-05 15:00:20 [NEWS-HOURLY] fire at 2026-05-05T19:00:20.649 source=anthropic_web tickers=22
+2026-05-05 15:51:20 [NEWS-ANTHROPIC_WEB] score failed for CVX item 1: HTTP.Exceptions.StatusError(503, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 503 Service Unavailable
+Date: Tue, 05 May 2026 19:51:19 GMT
+Content-Type: text/plain
+Content-Length: 95
+Connection: keep-alive
+Server: cloudflare
+x-envoy-upstream-service-time: 2211232
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f72117d1a2243dc-EWR
+
+upstream connect error or disconnect/reset before headers. reset reason: connection termination"""); leaving NaN.
+2026-05-05 16:25:27 [NEWS-ANTHROPIC_WEB] 66 items, 65 scored, 22 searches (today 71/100).
+2026-05-05 16:25:29 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-19.jld2 -- 66 items, 18 tickers flagged
+2026-05-05 16:48:29 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 71/100).
+2026-05-05 16:48:31 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-20.jld2 -- 66 items, 17 tickers flagged
+2026-05-05 16:00:18 [NEWS-HOURLY] fire at 2026-05-05T20:00:18.744 source=anthropic_web tickers=22
+2026-05-05 16:48:29 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 71/100).
+2026-05-05 16:48:31 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-20.jld2 -- 66 items, 17 tickers flagged
