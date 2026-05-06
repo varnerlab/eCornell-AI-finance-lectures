@@ -556,3 +556,1305 @@ upstream connect error or disconnect/reset before headers. reset reason: connect
 2026-05-05 16:00:18 [NEWS-HOURLY] fire at 2026-05-05T20:00:18.744 source=anthropic_web tickers=22
 2026-05-05 16:48:29 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 71/100).
 2026-05-05 16:48:31 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-05-20.jld2 -- 66 items, 17 tickers flagged
+2026-05-06 09:30:17 [CONFIG] tickers source=session-1 -> 22 names
+ERROR: LoadError: KeyError: key "DIS" not found
+Stacktrace:
+ [1] getindex(h::Dict{String, Vector{Bar}}, key::String)
+   @ Base ./dict.jl:477
+ [2] run_engine_step(client::AlpacaClient, cfg::@NamedTuple{tickers::Vector{String}, B₀::Float64, bar_minutes::Int64, half_life_calendar_days::Float64, prior_weight_calendar_days::Float64, N_short::Int64, N_long::Int64, GAIN::Float64, N_growth::Int64, cost_bps::Float64, epsilon::Float64, n_bandit_iters::Int64, max_bandit_churn::Int64, compliance::Dict{String, Float64}, news_severity_queue_threshold::Float64, max_drawdown::Float64, sentiment_threshold::Float64, sentiment_override_lambda::Float64, flag_severity_threshold::Float64, market_open::String, market_close::String}, state::Dict{String, Any}, fire_time::DateTime; is_close::Bool)
+   @ Main ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:272
+ [3] main()
+   @ Main ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:613
+ [4] top-level scope
+   @ ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:623
+ [5] include(mod::Module, _path::String)
+   @ Base ./Base.jl:306
+ [6] exec_options(opts::Base.JLOptions)
+   @ Base ./client.jl:317
+ [7] _start()
+   @ Base ./client.jl:550
+in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:623
+2026-05-06 09:30:17 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 09:35:16 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 09:35:20 [EXECUTE] no signed ticket at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/tickets/signed-2026-05-06.jld2; nothing to execute.
+2026-05-06 09:35:16 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 09:35:20 [EXECUTE] no signed ticket at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/tickets/signed-2026-05-06.jld2; nothing to execute.
+2026-05-06 10:00:15 [NEWS-HOURLY] fire at 2026-05-06T14:00:15.720 source=anthropic_web tickers=22
+2026-05-06 10:00:17 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 10:00:29 [ENGINE] fire=2026-05-06T14:00:20.585 sent=0.0 λ=0.001 regime=neutral η=5.0 wealth=$101054.33 dd=0.0% auto=7 queued=12 submitted=7
+2026-05-06 10:00:17 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 10:00:29 [ENGINE] fire=2026-05-06T14:00:20.585 sent=0.0 λ=0.001 regime=neutral η=5.0 wealth=$101054.33 dd=0.0% auto=7 queued=12 submitted=7
+2026-05-06 10:30:16 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 10:30:28 [ENGINE] fire=2026-05-06T14:30:19.895 sent=0.0 λ=0.0 regime=neutral η=5.0 wealth=$101556.38 dd=0.0% auto=0 queued=12 submitted=0
+2026-05-06 10:30:16 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 10:30:28 [ENGINE] fire=2026-05-06T14:30:19.895 sent=0.0 λ=0.0 regime=neutral η=5.0 wealth=$101556.38 dd=0.0% auto=0 queued=12 submitted=0
+2026-05-06 10:48:53 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-06 10:48:55 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-06-14.jld2 -- 66 items, 19 tickers flagged
+2026-05-06 10:00:15 [NEWS-HOURLY] fire at 2026-05-06T14:00:15.720 source=anthropic_web tickers=22
+2026-05-06 10:48:53 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-06 10:48:55 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-06-14.jld2 -- 66 items, 19 tickers flagged
+2026-05-06 11:00:15 [NEWS-HOURLY] fire at 2026-05-06T15:00:15.826 source=anthropic_web tickers=22
+2026-05-06 11:00:17 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 11:00:30 [ENGINE] fire=2026-05-06T15:00:20.592 sent=0.037 λ=-0.002 regime=neutral η=4.99 wealth=$101348.91 dd=0.2% auto=9 queued=12 submitted=9
+2026-05-06 11:00:17 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 11:00:30 [ENGINE] fire=2026-05-06T15:00:20.592 sent=0.037 λ=-0.002 regime=neutral η=4.99 wealth=$101348.91 dd=0.2% auto=9 queued=12 submitted=9
+2026-05-06 11:24:04 [NEWS-ANTHROPIC_WEB] score failed for UNH item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:24:04 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYdW33X4mWEmi8sQymG
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-21ab2fdaf10cf2a1c1b51c0aa3088cd1-a8ab8821bed5e75b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2311
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f78fd523a2ecb2e-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYdW33X4mWEmi8sQymG"}"""); leaving NaN.
+2026-05-06 11:25:48 [NEWS-ANTHROPIC_WEB] score failed for LLY item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:25:48 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYmDQ9UxGYPSa17Z7qF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1e54aa1c621d112b02fd25d2242554dc-5f5fc3e56949fdd2-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1564
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f78ffe08b80a4a0-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYmDQ9UxGYPSa17Z7qF"}"""); leaving NaN.
+2026-05-06 11:26:20 [NEWS-ANTHROPIC_WEB] score failed for LLY item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:26:20 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYoVrQm7vB1furFkDxc
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-80d5b9f0c2bdbf38d8a6dbff31a60778-ce7c027ccd62545a-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2625
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f7900a22c1542a5-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYoVrQm7vB1furFkDxc"}"""); leaving NaN.
+2026-05-06 11:27:23 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:27:23 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYt8H2G3sv3rjnFkymF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-5647de03d7c72f9be7540c8a6ebd7c23-846ca2813a1b062f-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2703
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79022a8cd0577b-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYt8H2G3sv3rjnFkymF"}"""); skipping ticker.
+2026-05-06 11:29:23 [NEWS-ANTHROPIC_WEB] score failed for HON item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:29:23 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZ2yiaDqKCMYzXAsqL2
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-78bf8b24db931c6491b136af05e72e5c-7a3ac8d1c17ce651-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2805
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790519189af5f8-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZ2yiaDqKCMYzXAsqL2"}"""); leaving NaN.
+2026-05-06 11:29:40 [NEWS-ANTHROPIC_WEB] score failed for HON item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:29:40 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZ4EGxoSDehPpcXXs2Y
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-b49b8354c598e41445c549e01f470f1b-c9c555414ba3106d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2429
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f7905831a572e7a-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZ4EGxoSDehPpcXXs2Y"}"""); leaving NaN.
+2026-05-06 11:30:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 11:30:35 [ENGINE] fire=2026-05-06T15:30:24.443 sent=0.04 λ=-0.004 regime=neutral η=4.98 wealth=$100997.48 dd=0.6% auto=6 queued=12 submitted=6
+2026-05-06 11:30:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 11:30:35 [ENGINE] fire=2026-05-06T15:30:24.443 sent=0.04 λ=-0.004 regime=neutral η=4.98 wealth=$100997.48 dd=0.6% auto=6 queued=12 submitted=6
+2026-05-06 11:30:43 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:30:43 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZ8qmG49N5B3ZB869Ex
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-38d193b66335da9872e4a17757a06f4b-41d21ae5c471bbfd-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2628
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79070a3b4bfef2-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZ8qmG49N5B3ZB869Ex"}"""); skipping ticker.
+2026-05-06 11:31:45 [NEWS-ANTHROPIC_WEB] fetch failed for AAPL: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:31:45 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZDUFayMjw5oWemWUHu
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-7c1a77d9cc20477cd7882a7fa32987a6-b297955f0db9bd49-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2101
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790892ba799867-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZDUFayMjw5oWemWUHu"}"""); skipping ticker.
+2026-05-06 11:32:48 [NEWS-ANTHROPIC_WEB] fetch failed for MSFT: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:32:48 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZJ4soJQ2gGUrmbN6Vq
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-5ec02f293afec236a4a81484a15ab427-8d5d22606bcefd53-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3332
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790a17dcb244ce-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZJ4soJQ2gGUrmbN6Vq"}"""); skipping ticker.
+2026-05-06 11:33:51 [NEWS-ANTHROPIC_WEB] fetch failed for NVDA: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:33:51 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZNjpxhDXcr1qd6BStP
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-6a11ca8d3fbaf37611ec59c211587b9b-fddaf7bd1e674a1c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2909
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790ba498414339-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZNjpxhDXcr1qd6BStP"}"""); skipping ticker.
+2026-05-06 11:34:54 [NEWS-ANTHROPIC_WEB] fetch failed for AVGO: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:34:54 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZTPUVmubind7GajMdY
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-73792b66f07352db09ce890e68ec9d8a-f433cfca9f1b9f2b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2537
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790d2eb8d4b1bc-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZTPUVmubind7GajMdY"}"""); skipping ticker.
+2026-05-06 11:35:58 [NEWS-ANTHROPIC_WEB] fetch failed for CRM: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:35:58 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZY1Xmw48je8qfekkMN
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-eb708a4475f8f6664cb46e3fb19d5b8c-e1ce90b7b6411cd0-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3498
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790eb69de62142-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZY1Xmw48je8qfekkMN"}"""); skipping ticker.
+2026-05-06 11:38:01 [NEWS-ANTHROPIC_WEB] score failed for SHW item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:38:01 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZhAggsyPU1fqymLaAW
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-402fe6232f0bbc3993ff4855a1ba5d81-fa6736f0f04a9cd1-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3035
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f7911bf0aad4ba5-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZhAggsyPU1fqymLaAW"}"""); leaving NaN.
+2026-05-06 11:38:18 [NEWS-ANTHROPIC_WEB] score failed for SHW item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:38:18 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZiSGazwoZ1f3zBzDie
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-3dee85f7e60f59c45b0598073fbad9c8-902eb01f16f130fb-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1937
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79122a7c900f90-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZiSGazwoZ1f3zBzDie"}"""); leaving NaN.
+2026-05-06 11:40:36 [NEWS-ANTHROPIC_WEB] 45 items, 38 scored, 15 searches (today 37/100).
+2026-05-06 11:40:38 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-06-15.jld2 -- 45 items, 11 tickers flagged
+2026-05-06 11:00:15 [NEWS-HOURLY] fire at 2026-05-06T15:00:15.826 source=anthropic_web tickers=22
+2026-05-06 11:24:04 [NEWS-ANTHROPIC_WEB] score failed for UNH item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:24:04 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYdW33X4mWEmi8sQymG
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-21ab2fdaf10cf2a1c1b51c0aa3088cd1-a8ab8821bed5e75b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2311
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f78fd523a2ecb2e-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYdW33X4mWEmi8sQymG"}"""); leaving NaN.
+2026-05-06 11:25:48 [NEWS-ANTHROPIC_WEB] score failed for LLY item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:25:48 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYmDQ9UxGYPSa17Z7qF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1e54aa1c621d112b02fd25d2242554dc-5f5fc3e56949fdd2-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1564
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f78ffe08b80a4a0-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYmDQ9UxGYPSa17Z7qF"}"""); leaving NaN.
+2026-05-06 11:26:20 [NEWS-ANTHROPIC_WEB] score failed for LLY item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:26:20 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYoVrQm7vB1furFkDxc
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-80d5b9f0c2bdbf38d8a6dbff31a60778-ce7c027ccd62545a-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2625
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f7900a22c1542a5-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYoVrQm7vB1furFkDxc"}"""); leaving NaN.
+2026-05-06 11:27:23 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:27:23 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamYt8H2G3sv3rjnFkymF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-5647de03d7c72f9be7540c8a6ebd7c23-846ca2813a1b062f-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2703
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79022a8cd0577b-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamYt8H2G3sv3rjnFkymF"}"""); skipping ticker.
+2026-05-06 11:29:23 [NEWS-ANTHROPIC_WEB] score failed for HON item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:29:23 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZ2yiaDqKCMYzXAsqL2
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-78bf8b24db931c6491b136af05e72e5c-7a3ac8d1c17ce651-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2805
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790519189af5f8-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZ2yiaDqKCMYzXAsqL2"}"""); leaving NaN.
+2026-05-06 11:29:40 [NEWS-ANTHROPIC_WEB] score failed for HON item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:29:40 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZ4EGxoSDehPpcXXs2Y
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-b49b8354c598e41445c549e01f470f1b-c9c555414ba3106d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2429
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f7905831a572e7a-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZ4EGxoSDehPpcXXs2Y"}"""); leaving NaN.
+2026-05-06 11:30:43 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:30:43 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZ8qmG49N5B3ZB869Ex
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-38d193b66335da9872e4a17757a06f4b-41d21ae5c471bbfd-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2628
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79070a3b4bfef2-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZ8qmG49N5B3ZB869Ex"}"""); skipping ticker.
+2026-05-06 11:31:45 [NEWS-ANTHROPIC_WEB] fetch failed for AAPL: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:31:45 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZDUFayMjw5oWemWUHu
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-7c1a77d9cc20477cd7882a7fa32987a6-b297955f0db9bd49-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2101
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790892ba799867-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZDUFayMjw5oWemWUHu"}"""); skipping ticker.
+2026-05-06 11:32:48 [NEWS-ANTHROPIC_WEB] fetch failed for MSFT: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:32:48 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZJ4soJQ2gGUrmbN6Vq
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-5ec02f293afec236a4a81484a15ab427-8d5d22606bcefd53-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3332
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790a17dcb244ce-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZJ4soJQ2gGUrmbN6Vq"}"""); skipping ticker.
+2026-05-06 11:33:51 [NEWS-ANTHROPIC_WEB] fetch failed for NVDA: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:33:51 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZNjpxhDXcr1qd6BStP
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-6a11ca8d3fbaf37611ec59c211587b9b-fddaf7bd1e674a1c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2909
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790ba498414339-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZNjpxhDXcr1qd6BStP"}"""); skipping ticker.
+2026-05-06 11:34:54 [NEWS-ANTHROPIC_WEB] fetch failed for AVGO: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:34:54 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZTPUVmubind7GajMdY
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-73792b66f07352db09ce890e68ec9d8a-f433cfca9f1b9f2b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2537
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790d2eb8d4b1bc-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZTPUVmubind7GajMdY"}"""); skipping ticker.
+2026-05-06 11:35:58 [NEWS-ANTHROPIC_WEB] fetch failed for CRM: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:35:58 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZY1Xmw48je8qfekkMN
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-eb708a4475f8f6664cb46e3fb19d5b8c-e1ce90b7b6411cd0-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3498
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f790eb69de62142-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZY1Xmw48je8qfekkMN"}"""); skipping ticker.
+2026-05-06 11:38:01 [NEWS-ANTHROPIC_WEB] score failed for SHW item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:38:01 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZhAggsyPU1fqymLaAW
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-402fe6232f0bbc3993ff4855a1ba5d81-fa6736f0f04a9cd1-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3035
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f7911bf0aad4ba5-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZhAggsyPU1fqymLaAW"}"""); leaving NaN.
+2026-05-06 11:38:18 [NEWS-ANTHROPIC_WEB] score failed for SHW item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 15:38:18 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamZiSGazwoZ1f3zBzDie
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-3dee85f7e60f59c45b0598073fbad9c8-902eb01f16f130fb-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1937
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79122a7c900f90-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamZiSGazwoZ1f3zBzDie"}"""); leaving NaN.
+2026-05-06 11:40:36 [NEWS-ANTHROPIC_WEB] 45 items, 38 scored, 15 searches (today 37/100).
+2026-05-06 11:40:38 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-06-15.jld2 -- 45 items, 11 tickers flagged
+2026-05-06 12:00:20 [NEWS-HOURLY] fire at 2026-05-06T16:00:20.382 source=anthropic_web tickers=22
+2026-05-06 12:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 12:00:36 [ENGINE] fire=2026-05-06T16:00:25.137 sent=0.042 λ=-0.005 regime=neutral η=4.98 wealth=$101021.06 dd=0.5% auto=6 queued=14 submitted=6
+2026-05-06 12:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 12:00:36 [ENGINE] fire=2026-05-06T16:00:25.137 sent=0.042 λ=-0.005 regime=neutral η=4.98 wealth=$101021.06 dd=0.5% auto=6 queued=14 submitted=6
+2026-05-06 12:03:32 [NEWS-ANTHROPIC_WEB] score failed for NFLX item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:03:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Cambe21TDCbqzZiyLfb8Q
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-9110b519c7af330585fb948fc71d5039-3dc1019d9cb2be74-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1720
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79371f3cc8624e-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Cambe21TDCbqzZiyLfb8Q"}"""); leaving NaN.
+2026-05-06 12:03:49 [NEWS-ANTHROPIC_WEB] score failed for NFLX item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:03:49 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambfGpiMKz2YXUU2aUr5
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-295e66d5553ea414f55cc9de3d444025-78bcfd6dd89ddfae-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2923
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793789bc47a0f4-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambfGpiMKz2YXUU2aUr5"}"""); leaving NaN.
+2026-05-06 12:05:51 [NEWS-ANTHROPIC_WEB] score failed for AMZN item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:05:51 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambpMaTpMj7PXiy4GmnL
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-f33b2193100ca1d1704974657b168245-dffac78345b702f8-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1860
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793a8bbb805e65-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambpMaTpMj7PXiy4GmnL"}"""); leaving NaN.
+2026-05-06 12:06:07 [NEWS-ANTHROPIC_WEB] score failed for AMZN item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:06:07 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambqY6kn57ZJqHdxrKLU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-57d568ccfbc25dd061c310dee102373b-eb2cf5fbe1a8a80b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1618
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793aeff9a7d826-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambqY6kn57ZJqHdxrKLU"}"""); leaving NaN.
+2026-05-06 12:06:25 [NEWS-ANTHROPIC_WEB] score failed for AMZN item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:06:25 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Cambrhb35Go1asbBJkn4G
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-ac5a9fe997c66cf377b1f239837c3bf4-43a8ff59e133599c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3824
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793b529e5952c0-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Cambrhb35Go1asbBJkn4G"}"""); leaving NaN.
+2026-05-06 12:07:27 [NEWS-ANTHROPIC_WEB] fetch failed for HD: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:07:27 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambwR9TqngQ8m9VYQZ8Y
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-bae0372914a2494a18bcdd9218410244-68ba3e6fb1157941-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1737
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793ce27915a4c6-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambwR9TqngQ8m9VYQZ8Y"}"""); skipping ticker.
+2026-05-06 12:08:29 [NEWS-ANTHROPIC_WEB] fetch failed for TJX: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:08:29 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Camc1z3Vqca9ECREwibcx
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-ad2433f038787526535560c528179068-edf181bca9dba761-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1678
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793e655e4a8b88-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Camc1z3Vqca9ECREwibcx"}"""); skipping ticker.
+2026-05-06 12:11:52 [NEWS-ANTHROPIC_WEB] fetch failed for CVX: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:11:52 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcGRnhBCVKN4LXortr7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-faba748282ad3486f8b772daab962018-c8bee45bbe9d106d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 8581
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f79432e5f1f8815-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcGRnhBCVKN4LXortr7"}"""); skipping ticker.
+2026-05-06 12:13:52 [NEWS-ANTHROPIC_WEB] score failed for JPM item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:13:52 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcRkULfXCVMJEFErodi
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-47a282b0907a1f9c97fa574bc8da47d3-38ad6c5a7f3a16ca-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2308
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f794644bf040f97-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcRkULfXCVMJEFErodi"}"""); leaving NaN.
+2026-05-06 12:15:09 [NEWS-ANTHROPIC_WEB] fetch failed for V: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:15:09 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcXU9jg5rRT5aiEYEur
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-84bcc1de89a978e64a51ed1452726300-2a173cc21d3631df-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1587
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f7948299ff7423b-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcXU9jg5rRT5aiEYEur"}"""); skipping ticker.
+2026-05-06 12:16:18 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:16:18 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Camcc2BBMAZiiUQP8PMP3
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-4ac8e3dd86370d20f3ef4d9532fa1806-29c6880b637f61de-01
+Server: cloudflare
+x-envoy-upstream-service-time: 8914
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f7949ab9e9ddb6d-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Camcc2BBMAZiiUQP8PMP3"}"""); skipping ticker.
+2026-05-06 12:18:03 [NEWS-ANTHROPIC_WEB] score failed for UNH item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:18:03 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamckCHs5LR6fkrEgMnEm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-6cbdd7da3948278f90617aaa7dad1ac7-bcda3c08e3cd678d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2751
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f794c60ab637611-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamckCHs5LR6fkrEgMnEm"}"""); leaving NaN.
+2026-05-06 12:18:19 [NEWS-ANTHROPIC_WEB] score failed for UNH item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:18:19 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcmSYtQLeMAwyZjrTjQ
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-072b2b7a7461a321fcd0cca0088b1543-a881517140e7a0ea-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2101
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f794cca4a045a29-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcmSYtQLeMAwyZjrTjQ"}"""); leaving NaN.
+2026-05-06 12:20:34 [NEWS-ANTHROPIC_WEB] score failed for LLY item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:20:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcwNbHdZMfapxETjih1
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-04c672da34424c5442bc8a0b7fd7e944-66e9732b379e5161-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2005
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f7950145d5925dc-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcwNbHdZMfapxETjih1"}"""); leaving NaN.
+2026-05-06 12:30:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 12:30:35 [ENGINE] fire=2026-05-06T16:30:24.338 sent=0.029 λ=-0.006 regime=neutral η=4.97 wealth=$100959.28 dd=0.6% auto=3 queued=14 submitted=3
+2026-05-06 12:30:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 12:30:35 [ENGINE] fire=2026-05-06T16:30:24.338 sent=0.029 λ=-0.006 regime=neutral η=4.97 wealth=$100959.28 dd=0.6% auto=3 queued=14 submitted=3
+2026-05-06 12:43:35 [NEWS-ANTHROPIC_WEB] 51 items, 42 scored, 17 searches (today 54/100).
+2026-05-06 12:43:37 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-06-16.jld2 -- 51 items, 12 tickers flagged
+2026-05-06 12:00:20 [NEWS-HOURLY] fire at 2026-05-06T16:00:20.382 source=anthropic_web tickers=22
+2026-05-06 12:03:32 [NEWS-ANTHROPIC_WEB] score failed for NFLX item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:03:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Cambe21TDCbqzZiyLfb8Q
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-9110b519c7af330585fb948fc71d5039-3dc1019d9cb2be74-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1720
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f79371f3cc8624e-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Cambe21TDCbqzZiyLfb8Q"}"""); leaving NaN.
+2026-05-06 12:03:49 [NEWS-ANTHROPIC_WEB] score failed for NFLX item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:03:49 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambfGpiMKz2YXUU2aUr5
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-295e66d5553ea414f55cc9de3d444025-78bcfd6dd89ddfae-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2923
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793789bc47a0f4-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambfGpiMKz2YXUU2aUr5"}"""); leaving NaN.
+2026-05-06 12:05:51 [NEWS-ANTHROPIC_WEB] score failed for AMZN item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:05:51 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambpMaTpMj7PXiy4GmnL
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-f33b2193100ca1d1704974657b168245-dffac78345b702f8-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1860
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793a8bbb805e65-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambpMaTpMj7PXiy4GmnL"}"""); leaving NaN.
+2026-05-06 12:06:07 [NEWS-ANTHROPIC_WEB] score failed for AMZN item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:06:07 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambqY6kn57ZJqHdxrKLU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-57d568ccfbc25dd061c310dee102373b-eb2cf5fbe1a8a80b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1618
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793aeff9a7d826-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambqY6kn57ZJqHdxrKLU"}"""); leaving NaN.
+2026-05-06 12:06:25 [NEWS-ANTHROPIC_WEB] score failed for AMZN item 3: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:06:25 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Cambrhb35Go1asbBJkn4G
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-ac5a9fe997c66cf377b1f239837c3bf4-43a8ff59e133599c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3824
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793b529e5952c0-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Cambrhb35Go1asbBJkn4G"}"""); leaving NaN.
+2026-05-06 12:07:27 [NEWS-ANTHROPIC_WEB] fetch failed for HD: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:07:27 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CambwR9TqngQ8m9VYQZ8Y
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-bae0372914a2494a18bcdd9218410244-68ba3e6fb1157941-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1737
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793ce27915a4c6-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CambwR9TqngQ8m9VYQZ8Y"}"""); skipping ticker.
+2026-05-06 12:08:29 [NEWS-ANTHROPIC_WEB] fetch failed for TJX: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:08:29 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Camc1z3Vqca9ECREwibcx
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-ad2433f038787526535560c528179068-edf181bca9dba761-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1678
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f793e655e4a8b88-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Camc1z3Vqca9ECREwibcx"}"""); skipping ticker.
+2026-05-06 12:11:52 [NEWS-ANTHROPIC_WEB] fetch failed for CVX: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:11:52 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcGRnhBCVKN4LXortr7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-faba748282ad3486f8b772daab962018-c8bee45bbe9d106d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 8581
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f79432e5f1f8815-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcGRnhBCVKN4LXortr7"}"""); skipping ticker.
+2026-05-06 12:13:52 [NEWS-ANTHROPIC_WEB] score failed for JPM item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:13:52 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcRkULfXCVMJEFErodi
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-47a282b0907a1f9c97fa574bc8da47d3-38ad6c5a7f3a16ca-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2308
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f794644bf040f97-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcRkULfXCVMJEFErodi"}"""); leaving NaN.
+2026-05-06 12:15:09 [NEWS-ANTHROPIC_WEB] fetch failed for V: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:15:09 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcXU9jg5rRT5aiEYEur
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-84bcc1de89a978e64a51ed1452726300-2a173cc21d3631df-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1587
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f7948299ff7423b-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcXU9jg5rRT5aiEYEur"}"""); skipping ticker.
+2026-05-06 12:16:18 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:16:18 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Camcc2BBMAZiiUQP8PMP3
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-4ac8e3dd86370d20f3ef4d9532fa1806-29c6880b637f61de-01
+Server: cloudflare
+x-envoy-upstream-service-time: 8914
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f7949ab9e9ddb6d-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Camcc2BBMAZiiUQP8PMP3"}"""); skipping ticker.
+2026-05-06 12:18:03 [NEWS-ANTHROPIC_WEB] score failed for UNH item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:18:03 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamckCHs5LR6fkrEgMnEm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-6cbdd7da3948278f90617aaa7dad1ac7-bcda3c08e3cd678d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2751
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f794c60ab637611-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamckCHs5LR6fkrEgMnEm"}"""); leaving NaN.
+2026-05-06 12:18:19 [NEWS-ANTHROPIC_WEB] score failed for UNH item 2: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:18:19 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcmSYtQLeMAwyZjrTjQ
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-072b2b7a7461a321fcd0cca0088b1543-a881517140e7a0ea-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2101
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f794cca4a045a29-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcmSYtQLeMAwyZjrTjQ"}"""); leaving NaN.
+2026-05-06 12:20:34 [NEWS-ANTHROPIC_WEB] score failed for LLY item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Wed, 06 May 2026 16:20:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CamcwNbHdZMfapxETjih1
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-04c672da34424c5442bc8a0b7fd7e944-66e9732b379e5161-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2005
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9f7950145d5925dc-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CamcwNbHdZMfapxETjih1"}"""); leaving NaN.
+2026-05-06 12:43:35 [NEWS-ANTHROPIC_WEB] 51 items, 42 scored, 17 searches (today 54/100).
+2026-05-06 12:43:37 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-06-16.jld2 -- 51 items, 12 tickers flagged
+2026-05-06 13:00:20 [NEWS-HOURLY] fire at 2026-05-06T17:00:20.264 source=anthropic_web tickers=22
+2026-05-06 13:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 13:00:37 [ENGINE] fire=2026-05-06T17:00:25.260 sent=0.012 λ=-0.007 regime=neutral η=4.97 wealth=$100877.16 dd=0.7% auto=10 queued=10 submitted=10
+2026-05-06 13:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-06 13:00:37 [ENGINE] fire=2026-05-06T17:00:25.260 sent=0.012 λ=-0.007 regime=neutral η=4.97 wealth=$100877.16 dd=0.7% auto=10 queued=10 submitted=10
