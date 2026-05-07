@@ -15,7 +15,7 @@ universe = ["AAPL", "MSFT", "GOOG", "AMZN", "NVDA"]  # fallback / manual overrid
 #                          form. Always available.
 #   "policy"             : policy_eta(trained_policy, state). Requires
 #                          ../session-3/data/policy-eta-results.jld2 to be
-#                          present (the S3 PolicyEtaLearning hand-off).
+#                          present (the S3 Optional PolicyEtaLearning hand-off).
 #                          Falls back to heuristic with a warning if the
 #                          artifact is missing.
 # Phase 1 of the S3->S4 cutover keeps "heuristic" as the live decision

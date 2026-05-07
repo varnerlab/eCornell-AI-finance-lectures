@@ -125,7 +125,7 @@ function load_config()
 end
 
 # ──────────────────────────────────────────────────────────────────────────────
-# Policy-eta shadow logging (REINFORCE policy from S3 PolicyEtaLearning)
+# Policy-eta shadow logging (REINFORCE policy from S3 Optional PolicyEtaLearning)
 # ──────────────────────────────────────────────────────────────────────────────
 # Phase 1 of the S3 -> S4 handoff: load the trained policy if its artifact
 # exists, compute eta_policy alongside the heuristic at every fire, and

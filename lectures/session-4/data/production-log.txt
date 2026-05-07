@@ -1933,3 +1933,47 @@ Precompiling packages...
 2026-05-07 09:35:24 [EXECUTE] no signed ticket at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/tickets/signed-2026-05-07.jld2; nothing to execute.
 2026-05-07 09:35:20 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-07 09:35:24 [EXECUTE] no signed ticket at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/tickets/signed-2026-05-07.jld2; nothing to execute.
+2026-05-07 10:00:19 [NEWS-HOURLY] fire at 2026-05-07T14:00:19.416 source=anthropic_web tickers=22
+2026-05-07 10:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 10:00:36 [ENGINE] fire=2026-05-07T14:00:24.741 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.07] wealth=$101374.48 dd=0.2% auto=5 queued=11 submitted=5
+2026-05-07 10:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 10:00:36 [ENGINE] fire=2026-05-07T14:00:24.741 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.07] wealth=$101374.48 dd=0.2% auto=5 queued=11 submitted=5
+2026-05-07 10:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 10:30:34 [ENGINE] fire=2026-05-07T14:30:23.257 sent=0.004 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.07] wealth=$100803.63 dd=0.7% auto=3 queued=9 submitted=3
+2026-05-07 10:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 10:30:34 [ENGINE] fire=2026-05-07T14:30:23.257 sent=0.004 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.07] wealth=$100803.63 dd=0.7% auto=3 queued=9 submitted=3
+2026-05-07 10:49:00 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-07 10:49:02 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-07-14.jld2 -- 66 items, 19 tickers flagged
+2026-05-07 10:00:19 [NEWS-HOURLY] fire at 2026-05-07T14:00:19.416 source=anthropic_web tickers=22
+2026-05-07 10:49:00 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-07 10:49:02 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-07-14.jld2 -- 66 items, 19 tickers flagged
+2026-05-07 11:00:19 [NEWS-HOURLY] fire at 2026-05-07T15:00:18.891 source=anthropic_web tickers=22
+2026-05-07 11:00:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 11:00:35 [ENGINE] fire=2026-05-07T15:00:24.050 sent=0.013 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101337.86 dd=0.2% auto=12 queued=9 submitted=12
+2026-05-07 11:00:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 11:00:35 [ENGINE] fire=2026-05-07T15:00:24.050 sent=0.013 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101337.86 dd=0.2% auto=12 queued=9 submitted=12
+2026-05-07 11:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 11:30:33 [ENGINE] fire=2026-05-07T15:30:22.803 sent=-0.004 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101018.88 dd=0.5% auto=11 queued=8 submitted=11
+2026-05-07 11:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 11:30:33 [ENGINE] fire=2026-05-07T15:30:22.803 sent=-0.004 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101018.88 dd=0.5% auto=11 queued=8 submitted=11
+2026-05-07 11:48:40 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-07 11:48:42 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-07-15.jld2 -- 66 items, 19 tickers flagged
+2026-05-07 11:00:19 [NEWS-HOURLY] fire at 2026-05-07T15:00:18.891 source=anthropic_web tickers=22
+2026-05-07 11:48:40 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-07 11:48:42 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-07-15.jld2 -- 66 items, 19 tickers flagged
+2026-05-07 12:00:19 [NEWS-HOURLY] fire at 2026-05-07T16:00:19.449 source=anthropic_web tickers=22
+2026-05-07 12:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 12:00:32 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 17, available: 15)", "{\"available\":\"15\",\"code\":40310000,\"existing_qty\":\"15\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 17, available: 15)\",\"symbol\":\"CVX\"}")
+2026-05-07 12:00:36 [ENGINE] fire=2026-05-07T16:00:24.337 sent=-0.012 λ=-0.002 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101019.55 dd=0.5% auto=12 queued=10 submitted=11
+2026-05-07 12:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 12:00:32 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 17, available: 15)", "{\"available\":\"15\",\"code\":40310000,\"existing_qty\":\"15\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 17, available: 15)\",\"symbol\":\"CVX\"}")
+2026-05-07 12:00:36 [ENGINE] fire=2026-05-07T16:00:24.337 sent=-0.012 λ=-0.002 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101019.55 dd=0.5% auto=12 queued=10 submitted=11
+2026-05-07 12:30:14 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 12:30:28 [ENGINE] fire=2026-05-07T16:30:16.994 sent=-0.009 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.07] wealth=$101023.53 dd=0.5% auto=10 queued=10 submitted=10
+2026-05-07 12:30:14 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 12:30:28 [ENGINE] fire=2026-05-07T16:30:16.994 sent=-0.009 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.07] wealth=$101023.53 dd=0.5% auto=10 queued=10 submitted=10
+2026-05-07 12:48:40 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-07 12:48:42 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-07-16.jld2 -- 66 items, 19 tickers flagged
+2026-05-07 12:00:19 [NEWS-HOURLY] fire at 2026-05-07T16:00:19.449 source=anthropic_web tickers=22
+2026-05-07 12:48:40 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-07 12:48:42 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-07-16.jld2 -- 66 items, 19 tickers flagged

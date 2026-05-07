@@ -65,12 +65,12 @@ Replace the engine's frozen SIM calibration with daily EWLS updates, swap the ha
 
 | Notebook | Description |
 |:---------|:------------|
-| [Lecture](lectures/session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb) | Theory: EWLS online SIM estimation, REINFORCE-with-baseline for CES elasticity, formal deployment gates |
+| [Lecture](lectures/session-3/eCornell-AI-Finance-S3-Lecture-OnlineLearningValidation-May-2026.ipynb) | Theory: EWLS online SIM estimation, per-regime epsilon-greedy bandit for CES elasticity, formal deployment gates |
 | [Introduction](lectures/session-3/eCornell-AI-Finance-S3-Introduction-MayasLearningEngine-May-2026.ipynb) | Orientation: Maya's engine scale-up hinges on parameter drift, learned eta, and five deployment gates |
 | [Example 1](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-EWLSEngineReplay-May-2026.ipynb) | Replay the engine with frozen vs. EWLS-online SIM parameters on the Monte Carlo ensemble |
-| [Example 2](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-PolicyEtaLearning-May-2026.ipynb) | Learn the CES elasticity with a state-conditioned REINFORCE-with-baseline policy and compare to heuristic + bandit on held-out paths |
+| [Example 2](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-BanditEtaLearning-May-2026.ipynb) | Learn the CES elasticity per regime with an epsilon-greedy bandit and compare to the Session 2 heuristic and best-flat-$\eta$ oracle on held-out paths |
 | [Example 3](lectures/session-3/eCornell-AI-Finance-S3-Example-Core-ValidationReport-May-2026.ipynb) | Produce a pass/fail validation report (5 strategies, 5 gates) and export the compliance configuration for Session 4 |
-| [Example 4](lectures/session-3/eCornell-AI-Finance-S3-Example-Optional-BanditEtaLearning-May-2026.ipynb) | Optional: per-regime epsilon-greedy bandit baseline for CES elasticity (the simpler stateless alternative the policy is compared against) |
+| [Example 4](lectures/session-3/eCornell-AI-Finance-S3-Example-Optional-PolicyEtaLearning-May-2026.ipynb) | Optional: state-conditioned REINFORCE-with-baseline policy for continuous CES elasticity, deployed against the heuristic and the bandit on held-out paths |
 | [Example 5](lectures/session-3/eCornell-AI-Finance-S3-Example-Optional-TickerPickerBandit-May-2026.ipynb) | Optional: extend the bandit to combinatorial asset selection over $2^K{-}1$ subsets |
 
 ### [Session 4: From Prototype to Production - Sentiment, Triggers, and Portfolio Operations](lectures/session-4/)
