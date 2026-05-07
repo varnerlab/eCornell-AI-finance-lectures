@@ -17,6 +17,7 @@ using eCornellAIFinance
 # load session-specific external packages -
 using Colors
 using DataFrames
+using Flux
 using HypothesisTests
 using Plots
 using PrettyTables
