@@ -1996,3 +1996,35 @@ Precompiling packages...
 2026-05-07 14:00:34 [ENGINE] fire=2026-05-07T18:00:24.248 sent=-0.042 λ=0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.07] wealth=$100623.69 dd=0.9% auto=2 queued=8 submitted=2
 2026-05-07 14:00:20 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-07 14:00:34 [ENGINE] fire=2026-05-07T18:00:24.248 sent=-0.042 λ=0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.07] wealth=$100623.69 dd=0.9% auto=2 queued=8 submitted=2
+2026-05-07 14:30:18 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 14:30:30 [ENGINE] fire=2026-05-07T18:30:21.461 sent=-0.037 λ=0.007 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.07] wealth=$100922.66 dd=0.6% auto=0 queued=8 submitted=0
+2026-05-07 14:30:18 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 14:30:30 [ENGINE] fire=2026-05-07T18:30:21.461 sent=-0.037 λ=0.007 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.07] wealth=$100922.66 dd=0.6% auto=0 queued=8 submitted=0
+2026-05-07 14:48:33 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 110/100).
+2026-05-07 14:48:36 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-07-18.jld2 -- 66 items, 18 tickers flagged
+2026-05-07 15:00:19 [NEWS-HOURLY] fire at 2026-05-07T19:00:19.489 source=anthropic_web tickers=22
+2026-05-07 15:00:21 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-07 15:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 15:00:21 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-07 15:00:19 [NEWS-HOURLY] fire at 2026-05-07T19:00:19.489 source=anthropic_web tickers=22
+2026-05-07 15:00:21 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-07 15:00:21 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-07 15:00:34 [ENGINE] fire=2026-05-07T19:00:24.949 sent=-0.03 λ=0.009 regime=neutral η=4.96 [shadow η_h=4.96 η_p=2.07] wealth=$100840.49 dd=0.7% auto=0 queued=8 submitted=0
+2026-05-07 15:00:21 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 15:00:34 [ENGINE] fire=2026-05-07T19:00:24.949 sent=-0.03 λ=0.009 regime=neutral η=4.96 [shadow η_h=4.96 η_p=2.07] wealth=$100840.49 dd=0.7% auto=0 queued=8 submitted=0
+2026-05-07 15:30:18 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 15:30:30 [ENGINE] fire=2026-05-07T19:30:22.013 sent=-0.021 λ=0.011 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.07] wealth=$100783.49 dd=0.8% auto=0 queued=8 submitted=0
+2026-05-07 15:30:18 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 15:30:30 [ENGINE] fire=2026-05-07T19:30:22.013 sent=-0.021 λ=0.011 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.07] wealth=$100783.49 dd=0.8% auto=0 queued=8 submitted=0
+2026-05-07 16:00:20 [NEWS-HOURLY] fire at 2026-05-07T20:00:20.454 source=anthropic_web tickers=22
+2026-05-07 16:00:22 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-07 16:00:22 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 16:00:22 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-07 16:00:20 [NEWS-HOURLY] fire at 2026-05-07T20:00:20.454 source=anthropic_web tickers=22
+2026-05-07 16:00:22 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-07 16:00:22 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-07 16:00:34 [ENGINE] fire=2026-05-07T20:00:25.410 sent=0.013 λ=0.012 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.07] wealth=$100869.11 dd=0.7% auto=0 queued=8 submitted=0
+2026-05-07 16:00:35 [ENGINE_CLOSE] wrote ticket for 2026-05-08: 8 trades, η=4.95, regime=neutral, news_flags=18
+2026-05-07 16:00:22 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-07 16:00:34 [ENGINE] fire=2026-05-07T20:00:25.410 sent=0.013 λ=0.012 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.07] wealth=$100869.11 dd=0.7% auto=0 queued=8 submitted=0
+2026-05-07 16:00:35 [ENGINE_CLOSE] wrote ticket for 2026-05-08: 8 trades, η=4.95, regime=neutral, news_flags=18
