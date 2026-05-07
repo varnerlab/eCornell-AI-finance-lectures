@@ -256,6 +256,108 @@ function build(type::Type{MyEtaBanditModel}, data::NamedTuple)::MyEtaBanditModel
     return model;
 end
 
+# --- Session 3: REINFORCE Builders ----------------------------------------------
+
+"""
+    build(type::Type{MyREINFORCEPolicy}, data::NamedTuple) -> MyREINFORCEPolicy
+
+Construct a Gaussian REINFORCE policy with linear mean head and a
+state-independent log-std.
+
+### Required fields
+- `n_features::Int`
+- `eta_min::Float64`
+- `eta_max::Float64`
+
+### Optional fields
+- `w_mu::Array{Float64,1}` — defaults to zeros(n_features)
+- `b_mu::Float64` — defaults to the midpoint of `[eta_min, eta_max]`, a neutral
+  prior over the action range when state weights are zero
+- `log_sigma::Float64` — defaults to log(0.5)
+"""
+function build(type::Type{MyREINFORCEPolicy}, data::NamedTuple)::MyREINFORCEPolicy
+
+    policy = MyREINFORCEPolicy();
+    policy.n_features = data.n_features;
+    policy.eta_min = data.eta_min;
+    policy.eta_max = data.eta_max;
+
+    policy.w_mu = haskey(data, :w_mu) ? data.w_mu : zeros(data.n_features);
+    policy.b_mu = haskey(data, :b_mu) ? data.b_mu : 0.5 * (data.eta_min + data.eta_max);
+    policy.log_sigma = haskey(data, :log_sigma) ? data.log_sigma : log(0.5);
+
+    return policy;
+end
+
+"""
+    build(type::Type{MyValueBaseline}, data::NamedTuple) -> MyValueBaseline
+
+Construct a linear value baseline V_φ(s) = w' · s + b. Defaults to the zero
+function so the first batch of advantages equals the raw return.
+
+### Required fields
+- `n_features::Int`
+
+### Optional fields
+- `w::Array{Float64,1}` — defaults to zeros(n_features)
+- `b::Float64` — defaults to 0.0
+"""
+function build(type::Type{MyValueBaseline}, data::NamedTuple)::MyValueBaseline
+
+    baseline = MyValueBaseline();
+    baseline.n_features = data.n_features;
+    baseline.w = haskey(data, :w) ? data.w : zeros(data.n_features);
+    baseline.b = haskey(data, :b) ? data.b : 0.0;
+
+    return baseline;
+end
+
+"""
+    build(type::Type{MyREINFORCETrainer}, data::NamedTuple) -> MyREINFORCETrainer
+
+Construct a REINFORCE-with-baseline trainer configuration. Required fields are
+the episode-loop parameters; Adam hyperparameters and reward-shaping defaults
+follow community conventions.
+
+### Required fields
+- `n_episodes::Int`
+- `horizon::Int`
+
+### Optional fields (with defaults)
+- `learning_rate::Float64 = 1e-3`
+- `beta1::Float64 = 0.9`
+- `beta2::Float64 = 0.999`
+- `epsilon::Float64 = 1e-8`
+- `episodes_per_update::Int = 16`
+- `discount::Float64 = 0.99`
+- `drawdown_penalty::Float64 = 0.0` — set positive to penalize drawdowns
+- `drawdown_threshold::Float64 = 0.05` — penalty activates above 5% drawdown
+- `baseline_lr::Float64 = 1e-2`
+- `seed::Int = 42`
+"""
+function build(type::Type{MyREINFORCETrainer}, data::NamedTuple)::MyREINFORCETrainer
+
+    trainer = MyREINFORCETrainer();
+
+    # required -
+    trainer.n_episodes = data.n_episodes;
+    trainer.horizon = data.horizon;
+
+    # optional with defaults -
+    trainer.learning_rate = haskey(data, :learning_rate) ? data.learning_rate : 1e-3;
+    trainer.beta1 = haskey(data, :beta1) ? data.beta1 : 0.9;
+    trainer.beta2 = haskey(data, :beta2) ? data.beta2 : 0.999;
+    trainer.epsilon = haskey(data, :epsilon) ? data.epsilon : 1e-8;
+    trainer.episodes_per_update = haskey(data, :episodes_per_update) ? data.episodes_per_update : 16;
+    trainer.discount = haskey(data, :discount) ? data.discount : 0.99;
+    trainer.drawdown_penalty = haskey(data, :drawdown_penalty) ? data.drawdown_penalty : 0.0;
+    trainer.drawdown_threshold = haskey(data, :drawdown_threshold) ? data.drawdown_threshold : 0.05;
+    trainer.baseline_lr = haskey(data, :baseline_lr) ? data.baseline_lr : 1e-2;
+    trainer.seed = haskey(data, :seed) ? data.seed : 42;
+
+    return trainer;
+end
+
 # --- Session 4: Production Builders ---------------------------------------------
 
 """

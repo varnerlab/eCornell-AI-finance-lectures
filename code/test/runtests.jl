@@ -41,6 +41,10 @@ const SIM_PARAMS = Dict(
         @test MyEscalationEvent() isa MyEscalationEvent
         @test MyProductionDayResult() isa MyProductionDayResult
         @test MyProductionContext() isa MyProductionContext
+        @test MyREINFORCEPolicy() isa MyREINFORCEPolicy
+        @test MyValueBaseline() isa MyValueBaseline
+        @test MyREINFORCETrainer() isa MyREINFORCETrainer
+        @test MyPolicyTrainingResult() isa MyPolicyTrainingResult
     end
 
     # ===================================================================
@@ -831,6 +835,145 @@ const SIM_PARAMS = Dict(
             @test config["drawdown_gate"] ≈ 0.10
             @test config["turnover_limit"] ≈ 0.40
             @test config["position_size_limit"] ≈ 3000.0
+        end
+    end
+
+    # ===================================================================
+    @testset "Compute — Session 3 (REINFORCE Policy)" begin
+
+        @testset "build_policy_state — encodes regime indicators" begin
+            s_bull = build_policy_state(lambda_short=0.1, lambda_long=0.2,
+                regime=:bullish, drawdown=0.0, realized_vol=0.15, news_flag_count=0.0);
+            @test length(s_bull) == 8
+            @test s_bull[3] == 1.0   # bull
+            @test s_bull[4] == 0.0   # neut
+            @test s_bull[5] == 0.0   # bear
+
+            s_bear = build_policy_state(lambda_short=-0.1, lambda_long=-0.2,
+                regime=:bearish, drawdown=0.05, realized_vol=0.20, news_flag_count=3.0);
+            @test s_bear[5] == 1.0   # bear
+            @test s_bear[1] ≈ -0.1
+            @test s_bear[7] ≈ 0.05
+            @test s_bear[8] ≈ 3.0
+        end
+
+        @testset "MyREINFORCEPolicy — defaults + sample/eta basics" begin
+            policy = build(MyREINFORCEPolicy, (n_features=3, eta_min=0.5, eta_max=5.0));
+            @test policy.n_features == 3
+            @test policy.b_mu ≈ 2.75   # midpoint
+            @test exp(policy.log_sigma) ≈ 0.5
+            @test policy.w_mu == zeros(3)
+
+            # deterministic action with zero weights -> b_mu, clamped -
+            s = [1.0, -0.5, 0.2];
+            @test policy_eta(policy, s) ≈ 2.75
+
+            # sampled action stays in bounds -
+            rng = MersenneTwister(7);
+            for _ in 1:50
+                out = sample_action(policy, s, rng);
+                @test policy.eta_min <= out.eta <= policy.eta_max
+                @test isfinite(out.log_pdf)
+            end
+        end
+
+        @testset "policy_log_pdf — matches Gaussian density at the mean" begin
+            policy = build(MyREINFORCEPolicy, (n_features=2, eta_min=0.5, eta_max=5.0,
+                w_mu=[0.5, -1.0], b_mu=2.0, log_sigma=log(0.4)));
+            s = [1.0, 0.5];
+            μ = dot(policy.w_mu, s) + policy.b_mu;   # 0.5 + (-0.5) + 2 = 2.0
+            σ = exp(policy.log_sigma);
+            @test policy_log_pdf(policy, s, μ) ≈ -0.5 * log(2π) - log(σ)
+        end
+
+        @testset "Numerical-vs-analytic gradient of log π" begin
+            policy = build(MyREINFORCEPolicy, (n_features=2, eta_min=0.5, eta_max=5.0,
+                w_mu=[0.3, -0.1], b_mu=1.5, log_sigma=log(0.6)));
+            s = [0.7, -0.2];
+            η_raw = 1.8;
+            μ = dot(policy.w_mu, s) + policy.b_mu;
+            σ = exp(policy.log_sigma);
+
+            # analytic gradients of log π wrt parameters -
+            δ = (η_raw - μ) / σ^2;
+            grad_w_an = δ .* s;
+            grad_b_an = δ;
+            grad_ls_an = -1.0 + ((η_raw - μ)^2) / σ^2;
+
+            # finite-difference -
+            ε = 1e-6;
+            f0 = policy_log_pdf(policy, s, η_raw);
+
+            for i in 1:2
+                p2 = build(MyREINFORCEPolicy, (n_features=2, eta_min=0.5, eta_max=5.0,
+                    w_mu=copy(policy.w_mu), b_mu=policy.b_mu, log_sigma=policy.log_sigma));
+                p2.w_mu[i] += ε;
+                fp = policy_log_pdf(p2, s, η_raw);
+                @test abs((fp - f0)/ε - grad_w_an[i]) < 1e-4
+            end
+
+            p_b = build(MyREINFORCEPolicy, (n_features=2, eta_min=0.5, eta_max=5.0,
+                w_mu=copy(policy.w_mu), b_mu=policy.b_mu + ε, log_sigma=policy.log_sigma));
+            @test abs((policy_log_pdf(p_b, s, η_raw) - f0)/ε - grad_b_an) < 1e-4
+
+            p_ls = build(MyREINFORCEPolicy, (n_features=2, eta_min=0.5, eta_max=5.0,
+                w_mu=copy(policy.w_mu), b_mu=policy.b_mu, log_sigma=policy.log_sigma + ε));
+            @test abs((policy_log_pdf(p_ls, s, η_raw) - f0)/ε - grad_ls_an) < 1e-4
+        end
+
+        @testset "compute_returns — backward sweep matches hand-rolled" begin
+            r = [1.0, 2.0, 3.0];
+            γ = 0.5;
+            G = compute_returns(r, γ);
+            # G[3] = 3, G[2] = 2 + 0.5*3 = 3.5, G[1] = 1 + 0.5*3.5 = 2.75 -
+            @test G ≈ [2.75, 3.5, 3.0]
+
+            # single-step degenerate case -
+            @test compute_returns([5.0], 0.9) ≈ [5.0]
+            # γ=0 reduces to per-step rewards -
+            @test compute_returns([1.0, 2.0, 3.0], 0.0) ≈ [1.0, 2.0, 3.0]
+        end
+
+        @testset "evaluate_baseline — linear" begin
+            b = build(MyValueBaseline, (n_features=3, w=[1.0, -2.0, 0.5], b=0.1));
+            @test evaluate_baseline(b, [1.0, 1.0, 1.0]) ≈ 1.0 - 2.0 + 0.5 + 0.1
+        end
+
+        @testset "REINFORCE convergence — toy stationary target" begin
+            # constant 1-feature state, optimal η = 2.0, reward = -(η - 2.0)^2 + tiny noise -
+            policy = build(MyREINFORCEPolicy, (n_features=1, eta_min=0.5, eta_max=5.0,
+                w_mu=[0.0], b_mu=2.75, log_sigma=log(0.5)));
+            baseline = build(MyValueBaseline, (n_features=1,));
+            trainer = build(MyREINFORCETrainer, (
+                n_episodes=2400, horizon=8, episodes_per_update=12,
+                discount=0.99, learning_rate=5e-3, baseline_lr=2e-2, seed=123
+            ));
+
+            function env_fn(p, rng)
+                T = trainer.horizon;
+                states = Vector{Vector{Float64}}(undef, T);
+                actions = zeros(T);
+                rewards = zeros(T);
+                for t in 1:T
+                    s = [1.0];
+                    out = sample_action(p, s, rng);
+                    states[t] = s;
+                    actions[t] = out.eta_raw;
+                    rewards[t] = -(out.eta - 2.0)^2 + 0.02 * randn(rng);
+                end
+                return (states, actions, rewards);
+            end
+
+            result = train_reinforce!(trainer, policy, baseline, env_fn);
+
+            # mean episode return should improve from start to end of training -
+            n = result.n_updates;
+            early = mean(result.mean_episode_return[1:max(1, div(n,5))]);
+            late  = mean(result.mean_episode_return[end-max(1, div(n,5))+1:end]);
+            @test late > early
+
+            # final policy mean should be near the optimum (within 0.4) -
+            @test abs(policy_eta(policy, [1.0]) - 2.0) < 0.4
         end
     end
 

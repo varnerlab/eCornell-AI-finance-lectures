@@ -46,6 +46,7 @@ export MyBacktestScenario, MyBacktestResult, MyValidationReport
 export MyBanditContext, MyEpsilonGreedyBanditModel, MyBanditResult
 export MyEWLSState
 export MyEtaBanditModel, MyEtaBanditResult
+export MyREINFORCEPolicy, MyValueBaseline, MyREINFORCETrainer, MyPolicyTrainingResult
 export MySentimentSignal, MyEscalationEvent, MyProductionDayResult, MyProductionContext
 export MyLiveProductionDayResult, MyStressScenario, MyStressResult
 export MyNewsScenario, MyNewsItem, MyNewsCorpus
@@ -74,6 +75,9 @@ export bandit_world, solve_bandit, compute_regret, backtest_bandit
 export ewls_init, ewls_update!, replay_engine_ewls
 export classify_regime, eta_bandit_world, solve_eta_bandit, solve_eta_bandit_multipath
 export backtest_eta_bandit, build_compliance_config
+export build_policy_state, sample_action, policy_log_pdf, policy_eta
+export evaluate_baseline, compute_returns, train_reinforce!
+export rollout_policy_episode, backtest_eta_policy, backtest_eta_heuristic
 
 # export compute — Session 4 -
 export generate_synthetic_sentiment, check_escalation_triggers

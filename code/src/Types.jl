@@ -474,6 +474,153 @@ mutable struct MyEtaBanditResult
     MyEtaBanditResult() = new();
 end
 
+# --- Session 3: REINFORCE Policy Types -----------------------------------------
+
+"""
+    MyREINFORCEPolicy
+
+Gaussian policy π_θ(η | s) for state-conditioned CES elasticity selection.
+
+The mean head is linear in the state features, μ_θ(s) = w_μ' · s + b_μ. The
+log-standard-deviation is a state-independent learnable scalar (log σ), which
+keeps the audience-facing exposition simple and reduces gradient variance.
+Sampled actions are squashed to `[eta_min, eta_max]` at use time.
+
+### Fields
+- `w_mu::Array{Float64,1}` — mean-head weights, length `n_features`
+- `b_mu::Float64` — mean-head bias
+- `log_sigma::Float64` — log standard deviation (state-independent)
+- `eta_min::Float64` — lower bound for the squashed action
+- `eta_max::Float64` — upper bound for the squashed action
+- `n_features::Int` — state dimension
+"""
+mutable struct MyREINFORCEPolicy
+
+    # mean head: μ_θ(s) = w_μ' · s + b_μ -
+    w_mu::Array{Float64,1}
+    b_mu::Float64
+
+    # log-std (state-independent) -
+    log_sigma::Float64
+
+    # action bounds -
+    eta_min::Float64
+    eta_max::Float64
+
+    # state dimension -
+    n_features::Int
+
+    # constructor -
+    MyREINFORCEPolicy() = new();
+end
+
+"""
+    MyValueBaseline
+
+Linear value baseline V_φ(s) = w' · s + b used to reduce REINFORCE gradient
+variance. Trained alongside the policy by Monte Carlo regression on observed
+returns G_t.
+
+### Fields
+- `w::Array{Float64,1}` — baseline weights, length `n_features`
+- `b::Float64` — baseline bias
+- `n_features::Int` — state dimension (must match policy)
+"""
+mutable struct MyValueBaseline
+
+    w::Array{Float64,1}
+    b::Float64
+    n_features::Int
+
+    # constructor -
+    MyValueBaseline() = new();
+end
+
+"""
+    MyREINFORCETrainer
+
+Training configuration for REINFORCE-with-baseline. Adam optimizes the policy
+parameters, plain SGD updates the linear baseline.
+
+### Fields
+- `learning_rate::Float64` — Adam step size for policy parameters
+- `beta1::Float64` — Adam first-moment decay (typical 0.9)
+- `beta2::Float64` — Adam second-moment decay (typical 0.999)
+- `epsilon::Float64` — Adam numerical floor (typical 1e-8)
+- `n_episodes::Int` — total training episodes
+- `episodes_per_update::Int` — episode batch size per gradient step
+- `horizon::Int` — steps per episode
+- `discount::Float64` — discount factor γ
+- `drawdown_penalty::Float64` — κ in `r_t = g_t − κ · max(0, dd_t − dd_threshold)`
+- `drawdown_threshold::Float64` — drawdown threshold beyond which the penalty activates
+- `baseline_lr::Float64` — SGD step size for the value baseline
+- `seed::Int` — RNG seed for episode reproducibility
+"""
+mutable struct MyREINFORCETrainer
+
+    # optimization -
+    learning_rate::Float64
+    beta1::Float64
+    beta2::Float64
+    epsilon::Float64
+
+    # episode loop -
+    n_episodes::Int
+    episodes_per_update::Int
+    horizon::Int
+    discount::Float64
+
+    # reward shaping -
+    drawdown_penalty::Float64
+    drawdown_threshold::Float64
+
+    # baseline -
+    baseline_lr::Float64
+
+    # rng -
+    seed::Int
+
+    # constructor -
+    MyREINFORCETrainer() = new();
+end
+
+"""
+    MyPolicyTrainingResult
+
+Output bundle from `train_reinforce!`: trained policy and baseline plus
+per-update learning curves used by the validation report.
+
+### Fields
+- `policy::MyREINFORCEPolicy` — trained Gaussian policy
+- `baseline::MyValueBaseline` — trained linear baseline
+- `mean_episode_return::Array{Float64,1}` — mean undiscounted episode return per update
+- `policy_loss::Array{Float64,1}` — policy-gradient surrogate loss per update
+- `baseline_loss::Array{Float64,1}` — Monte Carlo regression MSE per update
+- `gradient_norm::Array{Float64,1}` — ‖∇θ‖₂ per update
+- `mean_action::Array{Float64,1}` — mean sampled η per update (post-squash)
+- `mean_advantage::Array{Float64,1}` — mean |A_t| per update
+- `n_updates::Int` — total gradient updates performed
+"""
+mutable struct MyPolicyTrainingResult
+
+    policy::MyREINFORCEPolicy
+    baseline::MyValueBaseline
+
+    # learning curves -
+    mean_episode_return::Array{Float64,1}
+    policy_loss::Array{Float64,1}
+    baseline_loss::Array{Float64,1}
+    gradient_norm::Array{Float64,1}
+    mean_action::Array{Float64,1}
+    mean_advantage::Array{Float64,1}
+
+    # diagnostics -
+    n_updates::Int
+
+    # constructor -
+    MyPolicyTrainingResult() = new();
+end
+
 # --- Session 3: EWLS Types -----------------------------------------------------
 
 """

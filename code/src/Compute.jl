@@ -2392,6 +2392,706 @@ function build_compliance_config(;
     );
 end
 
+# --- Session 3: REINFORCE Policy Functions --------------------------------------
+
+"""
+    build_policy_state(; lambda_short, lambda_long, regime, drawdown,
+        realized_vol, news_flag_count) -> Vector{Float64}
+
+Pack the canonical policy state vector. The order is fixed so that policy
+weights are interpretable and persisted artifacts remain compatible.
+
+### Required keyword fields
+- `lambda_short::Float64` — short-window EMA growth signal
+- `lambda_long::Float64` — long-window EMA growth signal (the engine's `λ_eff`)
+- `regime::Symbol` — one of `:bearish`, `:neutral`, `:bullish`
+- `drawdown::Float64` — current drawdown from peak (≥ 0)
+- `realized_vol::Float64` — rolling realized volatility (annualized)
+- `news_flag_count::Float64` — count of flagged news items in the current bar
+"""
+function build_policy_state(; lambda_short::Float64, lambda_long::Float64,
+    regime::Symbol, drawdown::Float64, realized_vol::Float64,
+    news_flag_count::Float64)::Vector{Float64}
+
+    bull = regime == :bullish ? 1.0 : 0.0;
+    neut = regime == :neutral ? 1.0 : 0.0;
+    bear = regime == :bearish ? 1.0 : 0.0;
+
+    return [lambda_short, lambda_long, bull, neut, bear,
+            realized_vol, drawdown, news_flag_count];
+end
+
+"""
+    sample_action(policy::MyREINFORCEPolicy, state::Vector{Float64}, rng) -> NamedTuple
+
+Sample η ~ N(μ_θ(s), σ²) and return the squashed action, the unsquashed
+Gaussian draw, the mean, and the log-probability density. The unsquashed draw
+is what enters the policy-gradient update; the squashed value is what the
+allocator consumes.
+
+Returns a NamedTuple `(eta, eta_raw, mu, log_pdf)`.
+"""
+function sample_action(policy::MyREINFORCEPolicy, state::Vector{Float64}, rng)::NamedTuple
+
+    @assert length(state) == policy.n_features "state length must match policy.n_features";
+
+    μ = dot(policy.w_mu, state) + policy.b_mu;
+    σ = exp(policy.log_sigma);
+    η_raw = μ + σ * randn(rng);
+    η_squashed = clamp(η_raw, policy.eta_min, policy.eta_max);
+
+    log_pdf = -0.5 * log(2π) - policy.log_sigma - 0.5 * ((η_raw - μ) / σ)^2;
+
+    return (eta = η_squashed, eta_raw = η_raw, mu = μ, log_pdf = log_pdf);
+end
+
+"""
+    policy_log_pdf(policy::MyREINFORCEPolicy, state::Vector{Float64}, eta_raw::Float64) -> Float64
+
+Log-density of the unsquashed Gaussian action under the current policy.
+Used by the importance-style baseline calculation if needed; the on-policy
+training loop already returns this from `sample_action`.
+"""
+function policy_log_pdf(policy::MyREINFORCEPolicy, state::Vector{Float64}, eta_raw::Float64)::Float64
+
+    μ = dot(policy.w_mu, state) + policy.b_mu;
+    σ = exp(policy.log_sigma);
+    return -0.5 * log(2π) - policy.log_sigma - 0.5 * ((eta_raw - μ) / σ)^2;
+end
+
+"""
+    policy_eta(policy::MyREINFORCEPolicy, state::Vector{Float64}) -> Float64
+
+Deterministic action used in production: the squashed mean μ_θ(s) with no
+exploration noise. This is the value that S4's `production_runner.jl` swaps in
+for `compute_adaptive_eta(λ_eff)` once the trained policy clears the
+validation tournament.
+"""
+function policy_eta(policy::MyREINFORCEPolicy, state::Vector{Float64})::Float64
+
+    μ = dot(policy.w_mu, state) + policy.b_mu;
+    return clamp(μ, policy.eta_min, policy.eta_max);
+end
+
+"""
+    evaluate_baseline(baseline::MyValueBaseline, state::Vector{Float64}) -> Float64
+
+Linear baseline V_φ(s) = w' · s + b.
+"""
+function evaluate_baseline(baseline::MyValueBaseline, state::Vector{Float64})::Float64
+    return dot(baseline.w, state) + baseline.b;
+end
+
+"""
+    compute_returns(rewards::Vector{Float64}, discount::Float64) -> Vector{Float64}
+
+Compute the per-step Monte Carlo return G_t = Σ_{k≥0} γ^k r_{t+k} via a
+backward sweep. Returns a vector of the same length as `rewards`.
+"""
+function compute_returns(rewards::Vector{Float64}, discount::Float64)::Vector{Float64}
+
+    T = length(rewards);
+    G = zeros(T);
+    running = 0.0;
+    for t in T:-1:1
+        running = rewards[t] + discount * running;
+        G[t] = running;
+    end
+    return G;
+end
+
+"""
+    train_reinforce!(trainer::MyREINFORCETrainer, policy::MyREINFORCEPolicy,
+        baseline::MyValueBaseline, env_fn) -> MyPolicyTrainingResult
+
+Train `policy` and `baseline` in place using REINFORCE-with-baseline. The
+caller supplies a closure `env_fn(policy, rng) -> (states, eta_raws, rewards)`
+that rolls out a single episode under the current policy.
+
+The trainer batches `episodes_per_update` episodes per gradient step; the
+policy parameters are updated with Adam, and the linear baseline is updated
+with Monte Carlo regression on the observed returns G_t.
+
+Returns a `MyPolicyTrainingResult` with per-update learning curves.
+"""
+function train_reinforce!(trainer::MyREINFORCETrainer, policy::MyREINFORCEPolicy,
+    baseline::MyValueBaseline, env_fn)::MyPolicyTrainingResult
+
+    @assert policy.n_features == baseline.n_features "policy and baseline must share state dimension";
+
+    rng = Random.MersenneTwister(trainer.seed);
+    n_features = policy.n_features;
+
+    # Adam moments for policy params -
+    m_w = zeros(n_features); v_w = zeros(n_features);
+    m_b = 0.0;               v_b = 0.0;
+    m_ls = 0.0;              v_ls = 0.0;
+
+    n_updates = max(1, div(trainer.n_episodes, trainer.episodes_per_update));
+    mean_episode_return = zeros(n_updates);
+    policy_loss_curve   = zeros(n_updates);
+    baseline_loss_curve = zeros(n_updates);
+    grad_norm_curve     = zeros(n_updates);
+    mean_action_curve   = zeros(n_updates);
+    mean_advantage_curve = zeros(n_updates);
+
+    adam_t = 0;
+
+    for upd in 1:n_updates
+
+        # accumulators across episode batch -
+        grad_w = zeros(n_features);
+        grad_b = 0.0;
+        grad_ls = 0.0;
+
+        ep_returns_sum = 0.0;
+        actions_sum = 0.0;
+        actions_count = 0;
+        adv_abs_sum = 0.0;
+        adv_count = 0;
+        policy_surrogate = 0.0;
+        baseline_sse = 0.0;
+        baseline_samples = 0;
+
+        for _ in 1:trainer.episodes_per_update
+
+            # rollout one episode -
+            states, eta_raws, rewards = env_fn(policy, rng);
+            T_ep = length(rewards);
+            T_ep == 0 && continue;
+
+            # apply drawdown shaping if configured -
+            if trainer.drawdown_penalty > 0.0
+                rewards = _apply_drawdown_penalty(rewards,
+                    trainer.drawdown_penalty, trainer.drawdown_threshold);
+            end
+
+            # compute discounted returns -
+            G = compute_returns(rewards, trainer.discount);
+            ep_returns_sum += G[1];
+
+            # baseline values + advantages -
+            for t in 1:T_ep
+                s_t = states[t];
+                v_t = evaluate_baseline(baseline, s_t);
+                A_t = G[t] - v_t;
+
+                σ = exp(policy.log_sigma);
+                μ_t = dot(policy.w_mu, s_t) + policy.b_mu;
+                δ = (eta_raws[t] - μ_t) / σ^2;
+
+                # gradient of log π · A -
+                grad_w  .+= A_t .* δ .* s_t;
+                grad_b  +=  A_t * δ;
+                grad_ls +=  A_t * (-1.0 + ((eta_raws[t] - μ_t)^2) / σ^2);
+
+                # surrogate loss = -E[log π · A] -
+                logp = -0.5 * log(2π) - policy.log_sigma - 0.5 * ((eta_raws[t] - μ_t)/σ)^2;
+                policy_surrogate += -logp * A_t;
+
+                # baseline SGD on MSE between V_φ(s) and G_t -
+                err = v_t - G[t];
+                baseline.w .-= trainer.baseline_lr .* err .* s_t;
+                baseline.b -= trainer.baseline_lr * err;
+                baseline_sse += err^2;
+                baseline_samples += 1;
+
+                actions_sum += eta_raws[t];
+                actions_count += 1;
+                adv_abs_sum += abs(A_t);
+                adv_count += 1;
+            end
+        end
+
+        # average gradient over episode batch -
+        n_steps_total = max(1, actions_count);
+        grad_w ./= n_steps_total;
+        grad_b /= n_steps_total;
+        grad_ls /= n_steps_total;
+
+        # Adam ascent (we maximize J, so step in +grad direction) -
+        adam_t += 1;
+        bc1 = 1.0 - trainer.beta1^adam_t;
+        bc2 = 1.0 - trainer.beta2^adam_t;
+
+        m_w  .= trainer.beta1 .* m_w  .+ (1 - trainer.beta1) .* grad_w;
+        v_w  .= trainer.beta2 .* v_w  .+ (1 - trainer.beta2) .* (grad_w .^ 2);
+        m_b   = trainer.beta1 *  m_b  + (1 - trainer.beta1) *  grad_b;
+        v_b   = trainer.beta2 *  v_b  + (1 - trainer.beta2) *  grad_b^2;
+        m_ls  = trainer.beta1 *  m_ls + (1 - trainer.beta1) *  grad_ls;
+        v_ls  = trainer.beta2 *  v_ls + (1 - trainer.beta2) *  grad_ls^2;
+
+        m_w_hat  = m_w  ./ bc1;  v_w_hat  = v_w  ./ bc2;
+        m_b_hat  = m_b  /  bc1;  v_b_hat  = v_b  /  bc2;
+        m_ls_hat = m_ls /  bc1;  v_ls_hat = v_ls /  bc2;
+
+        policy.w_mu .+= trainer.learning_rate .* m_w_hat ./ (sqrt.(v_w_hat) .+ trainer.epsilon);
+        policy.b_mu  += trainer.learning_rate *  m_b_hat /  (sqrt(v_b_hat) +  trainer.epsilon);
+        policy.log_sigma += trainer.learning_rate * m_ls_hat / (sqrt(v_ls_hat) + trainer.epsilon);
+
+        # log curves -
+        mean_episode_return[upd] = ep_returns_sum / trainer.episodes_per_update;
+        policy_loss_curve[upd]   = policy_surrogate / max(1, n_steps_total);
+        baseline_loss_curve[upd] = baseline_sse / max(1, baseline_samples);
+        grad_norm_curve[upd]     = sqrt(sum(grad_w .^ 2) + grad_b^2 + grad_ls^2);
+        mean_action_curve[upd]   = actions_count > 0 ? actions_sum / actions_count : NaN;
+        mean_advantage_curve[upd] = adv_count > 0 ? adv_abs_sum / adv_count : NaN;
+    end
+
+    result = MyPolicyTrainingResult();
+    result.policy = policy;
+    result.baseline = baseline;
+    result.mean_episode_return = mean_episode_return;
+    result.policy_loss = policy_loss_curve;
+    result.baseline_loss = baseline_loss_curve;
+    result.gradient_norm = grad_norm_curve;
+    result.mean_action = mean_action_curve;
+    result.mean_advantage = mean_advantage_curve;
+    result.n_updates = n_updates;
+
+    return result;
+end
+
+# Internal helper: subtract drawdown penalty from a reward sequence given the
+# implied wealth trajectory exp(cumsum(rewards)). Drawdowns are measured from
+# the running peak of cumulative growth.
+function _apply_drawdown_penalty(rewards::Vector{Float64}, κ::Float64,
+    threshold::Float64)::Vector{Float64}
+
+    T = length(rewards);
+    shaped = copy(rewards);
+    cum = 0.0;
+    peak = 0.0;
+    for t in 1:T
+        cum += rewards[t];
+        peak = max(peak, cum);
+        dd = max(0.0, peak - cum);
+        if dd > threshold
+            shaped[t] -= κ * (dd - threshold);
+        end
+    end
+    return shaped;
+end
+
+"""
+    rollout_policy_episode(policy, context, lambda_short_series, lambda_long_series,
+        t_start, horizon, rng;
+        lambda_threshold = 0.5, max_drawdown = 0.15, max_turnover = 0.50,
+        realized_vol_window = 21) -> NamedTuple
+
+Roll out a single REINFORCE training episode against the multi-day stateful
+engine. Starting at `t_start` with budget `context.B`, sample η from `policy`
+each step, allocate via CES, and step the wealth/share state forward; the
+realized one-period log-wealth growth is the per-step reward. Drawdown and
+turnover gates mirror `backtest_eta_bandit`.
+
+Returns a NamedTuple `(states, eta_raws, rewards)` whose three vectors share
+length `horizon`.
+"""
+function rollout_policy_episode(policy::MyREINFORCEPolicy,
+    context::MyRebalancingContextModel,
+    lambda_short_series::Vector{Float64},
+    lambda_long_series::Vector{Float64},
+    t_start::Int, horizon::Int, rng;
+    lambda_threshold::Float64 = 0.5,
+    max_drawdown::Float64 = 0.15,
+    max_turnover::Float64 = 0.50,
+    realized_vol_window::Int = 21)::NamedTuple
+
+    K = length(context.tickers);
+    pmatrix = context.marketdata;
+    n_rows = size(pmatrix, 1);
+
+    # cap horizon at the available window -
+    horizon_eff = min(horizon, n_rows - t_start - 1);
+    horizon_eff = max(horizon_eff, 0);
+
+    states  = Vector{Vector{Float64}}(undef, horizon_eff);
+    eta_raws = zeros(horizon_eff);
+    rewards = zeros(horizon_eff);
+
+    horizon_eff == 0 && return (states = states, eta_raws = eta_raws, rewards = rewards);
+
+    # initial allocation at t_start with policy-sampled η -
+    λ_long_init = lambda_long_series[min(t_start, length(lambda_long_series))];
+    λ_short_init = lambda_short_series[min(t_start, length(lambda_short_series))];
+    regime_init = classify_regime(λ_long_init; θ = lambda_threshold);
+
+    ctx = deepcopy(context);
+    ctx.lambda = λ_long_init;
+    peak_wealth = ctx.B;
+
+    # realized-vol feature: rolling std of cross-asset average log-return over a
+    # `realized_vol_window`-day window prior to t (annualized).
+    function _realized_vol(t::Int)::Float64
+        t_lo = max(2, t - realized_vol_window + 1);
+        t_hi = t;
+        if t_hi <= t_lo
+            return 0.0;
+        end
+        rets = Float64[];
+        for τ in (t_lo + 1):t_hi
+            asset_logrets = 0.0;
+            n_valid = 0;
+            for k in 1:K
+                p_now  = pmatrix[τ, k + 1];
+                p_prev = pmatrix[τ - 1, k + 1];
+                if p_now > 0 && p_prev > 0
+                    asset_logrets += log(p_now / p_prev);
+                    n_valid += 1;
+                end
+            end
+            if n_valid > 0
+                push!(rets, asset_logrets / n_valid);
+            end
+        end
+        return length(rets) >= 2 ? std(rets) * sqrt(252) : 0.0;
+    end
+
+    rv_init = _realized_vol(t_start);
+
+    s_init = build_policy_state(
+        lambda_short = λ_short_init, lambda_long = λ_long_init,
+        regime = regime_init, drawdown = 0.0,
+        realized_vol = rv_init, news_flag_count = 0.0
+    );
+    out_init = sample_action(policy, s_init, rng);
+    states[1]   = s_init;
+    eta_raws[1] = out_init.eta_raw;
+
+    prev_alloc = allocate_shares(t_start, ctx; allocator = :ces, eta = out_init.eta);
+
+    for step in 1:horizon_eff
+
+        t = t_start + step;     # step destination
+        prices_t  = [pmatrix[t,     i + 1] for i in 1:K];
+        prices_pv = [pmatrix[t - 1, i + 1] for i in 1:K];
+
+        # mark-to-market wealth at t -
+        liquidation_value = prev_alloc.cash;
+        for i in 1:K
+            liquidation_value += prev_alloc.shares[i] * prices_t[i];
+        end
+
+        # one-period reward: log-wealth growth from prev_alloc held t-1 -> t -
+        W_prev = prev_alloc.cash + sum(prev_alloc.shares[i] * prices_pv[i] for i in 1:K);
+        rewards[step] = (W_prev > 0 && liquidation_value > 0) ?
+                            log(liquidation_value / W_prev) : 0.0;
+
+        peak_wealth = max(peak_wealth, liquidation_value);
+        dd = peak_wealth > 0 ? (peak_wealth - liquidation_value) / peak_wealth : 0.0;
+
+        # if we already filled `horizon_eff` steps, stop -
+        step >= horizon_eff && break;
+
+        # build state at the next decision point t -
+        λ_long_t  = lambda_long_series[min(t, length(lambda_long_series))];
+        λ_short_t = lambda_short_series[min(t, length(lambda_short_series))];
+        regime_t  = classify_regime(λ_long_t; θ = lambda_threshold);
+        rv_t      = _realized_vol(t);
+
+        s_t = build_policy_state(
+            lambda_short = λ_short_t, lambda_long = λ_long_t,
+            regime = regime_t, drawdown = dd,
+            realized_vol = rv_t, news_flag_count = 0.0
+        );
+        out_t = sample_action(policy, s_t, rng);
+        states[step + 1]   = s_t;
+        eta_raws[step + 1] = out_t.eta_raw;
+
+        if dd > max_drawdown
+            # de-risk: hold cash through next step -
+            derisk = MyRebalancingResult();
+            derisk.shares = zeros(K);
+            derisk.cash = liquidation_value;
+            derisk.gamma = zeros(K);
+            derisk.eta = 0.0;
+            prev_alloc = derisk;
+        else
+            ctx_day = deepcopy(ctx);
+            ctx_day.B = liquidation_value;
+            ctx_day.lambda = λ_long_t;
+
+            new_alloc = allocate_shares(t, ctx_day; allocator = :ces, eta = out_t.eta);
+
+            # turnover cap -
+            old_shares = prev_alloc.shares;
+            trade_value = sum(abs(new_alloc.shares[i] - old_shares[i]) * prices_t[i] for i in 1:K);
+            turnover_frac = liquidation_value > 0 ? trade_value / liquidation_value : 0.0;
+            if turnover_frac > max_turnover
+                scale = max_turnover / turnover_frac;
+                old_cash = prev_alloc.cash;
+                new_cash = new_alloc.cash;
+                for i in 1:K
+                    new_alloc.shares[i] = old_shares[i] + scale * (new_alloc.shares[i] - old_shares[i]);
+                end
+                new_alloc.cash = old_cash + scale * (new_cash - old_cash);
+            end
+
+            prev_alloc = new_alloc;
+        end
+    end
+
+    return (states = states, eta_raws = eta_raws, rewards = rewards);
+end
+
+"""
+    backtest_eta_policy(scenario, tickers, sim_params, policy;
+        B₀, offset, L_short, L_long, GAIN, L_growth, lambda_threshold, epsilon,
+        max_drawdown, max_turnover, realized_vol_window) -> MyBacktestResult
+
+Held-out backtest of `policy` across all scenario paths. Mirrors
+`backtest_eta_bandit` but the per-day η is set deterministically by
+`policy_eta(policy, build_policy_state(...))`. Returns a `MyBacktestResult`
+with `strategy_label = "REINFORCE Policy CES"`.
+"""
+function backtest_eta_policy(scenario::MyBacktestScenario, tickers::Array{String,1},
+    sim_params::Dict{String,Tuple{Float64,Float64,Float64}},
+    policy::MyREINFORCEPolicy;
+    B₀::Float64 = 10000.0, offset::Int = 84,
+    L_short::Int = 21, L_long::Int = 63,
+    GAIN::Float64 = 10.0, L_growth::Int = 10,
+    lambda_threshold::Float64 = 0.5,
+    epsilon::Float64 = 0.1,
+    max_drawdown::Float64 = 0.15,
+    max_turnover::Float64 = 0.50,
+    realized_vol_window::Int = 21)::MyBacktestResult
+
+    Δt = 1.0 / 252.0;
+    n_paths = scenario.n_paths;
+    n_steps = scenario.n_steps;
+    K = length(tickers);
+    n_trading = n_steps - offset;
+
+    final_wealth = zeros(n_paths);
+    max_drawdowns = zeros(n_paths);
+    sharpe_ratios = zeros(n_paths);
+    wealth_paths = zeros(n_trading + 1, n_paths);
+
+    for p in 1:n_paths
+
+        mkt = scenario.market_paths[p, :];
+        ema_s = compute_ema(mkt; window = L_short);
+        ema_l = compute_ema(mkt; window = L_long);
+        λ_long = compute_lambda(ema_s, ema_l; G = GAIN);
+        λ_long[1:offset] .= 0.0;
+
+        # short λ proxy: difference of EMA short and a still-shorter EMA -
+        ema_xs = compute_ema(mkt; window = max(5, div(L_short, 4)));
+        λ_short = compute_lambda(ema_xs, ema_s; G = GAIN);
+        λ_short[1:offset] .= 0.0;
+
+        gm_raw = compute_market_growth(mkt; Δt = Δt);
+        gm_e = compute_ema(gm_raw; window = L_growth);
+
+        pmatrix = zeros(n_steps, K + 1);
+        pmatrix[:, 1] = 1:n_steps;
+        for k in 1:K
+            pmatrix[:, k + 1] = scenario.price_paths[p, :, k];
+        end
+
+        ctx = build(MyRebalancingContextModel, (
+            B = B₀, tickers = tickers, marketdata = pmatrix,
+            marketfactor = gm_e, sim_parameters = sim_params,
+            lambda = 0.0, Δt = Δt, epsilon = epsilon
+        ));
+
+        rules = build(MyTriggerRules, (
+            max_drawdown = max_drawdown, max_turnover = max_turnover,
+            rebalance_schedule = ones(Int, n_trading)
+        ));
+
+        results = Dict{Int,MyRebalancingResult}();
+
+        # initial allocation at t = offset using policy_eta -
+        λ_long_init  = λ_long[offset];
+        λ_short_init = λ_short[offset];
+        regime_init  = classify_regime(λ_long_init; θ = lambda_threshold);
+        s_init = build_policy_state(
+            lambda_short = λ_short_init, lambda_long = λ_long_init,
+            regime = regime_init, drawdown = 0.0,
+            realized_vol = 0.0, news_flag_count = 0.0
+        );
+        η_init = policy_eta(policy, s_init);
+        ctx.lambda = λ_long_init;
+        results[0] = allocate_shares(offset, ctx; allocator = :ces, eta = η_init);
+
+        peak_wealth = B₀;
+
+        # rolling window of average asset log-returns for realized vol -
+        avg_logrets = zeros(n_steps);
+        for τ in 2:n_steps
+            s = 0.0; n_v = 0;
+            for k in 1:K
+                p_now  = pmatrix[τ, k + 1];
+                p_prev = pmatrix[τ - 1, k + 1];
+                if p_now > 0 && p_prev > 0
+                    s += log(p_now / p_prev); n_v += 1;
+                end
+            end
+            avg_logrets[τ] = n_v > 0 ? s / n_v : 0.0;
+        end
+
+        for day in 1:n_trading
+            actual_day = offset + day;
+
+            prev = results[day - 1];
+            liquidation_value = prev.cash;
+            for i in 1:K
+                liquidation_value += prev.shares[i] * pmatrix[actual_day, i + 1];
+            end
+
+            peak_wealth = max(peak_wealth, liquidation_value);
+            drawdown = peak_wealth > 0 ? (peak_wealth - liquidation_value) / peak_wealth : 0.0;
+
+            if drawdown > rules.max_drawdown
+                derisk = MyRebalancingResult();
+                derisk.shares = zeros(K);
+                derisk.cash = liquidation_value;
+                derisk.gamma = zeros(K);
+                derisk.eta = 0.0;
+                results[day] = derisk;
+            else
+                ctx_day = deepcopy(ctx);
+                ctx_day.B = liquidation_value;
+                ctx_day.lambda = λ_long[min(actual_day, length(λ_long))];
+
+                # rolling realized vol (annualized) from window prior to actual_day -
+                t_lo = max(2, actual_day - realized_vol_window + 1);
+                window = avg_logrets[t_lo:actual_day];
+                rv_d = length(window) >= 2 ? std(window) * sqrt(252) : 0.0;
+
+                regime_d = classify_regime(ctx_day.lambda; θ = lambda_threshold);
+                s_d = build_policy_state(
+                    lambda_short = λ_short[min(actual_day, length(λ_short))],
+                    lambda_long = ctx_day.lambda,
+                    regime = regime_d, drawdown = drawdown,
+                    realized_vol = rv_d, news_flag_count = 0.0
+                );
+                η_d = policy_eta(policy, s_d);
+
+                new_result = allocate_shares(actual_day, ctx_day; allocator = :ces, eta = η_d);
+
+                old_shares = results[day - 1].shares;
+                trade_value = sum(abs(new_result.shares[i] - old_shares[i]) * pmatrix[actual_day, i + 1] for i in 1:K);
+                turnover_frac = liquidation_value > 0 ? trade_value / liquidation_value : 0.0;
+                if turnover_frac > rules.max_turnover
+                    scale = rules.max_turnover / turnover_frac;
+                    old_cash = results[day - 1].cash;
+                    new_cash = new_result.cash;
+                    for i in 1:K
+                        new_result.shares[i] = old_shares[i] + scale * (new_result.shares[i] - old_shares[i]);
+                    end
+                    new_result.cash = old_cash + scale * (new_cash - old_cash);
+                end
+
+                results[day] = new_result;
+            end
+        end
+
+        wealth = compute_wealth_series(results, pmatrix, tickers; offset = offset);
+        wealth_paths[:, p] .= wealth;
+        final_wealth[p] = wealth[end];
+        returns = diff(wealth) ./ wealth[1:end-1];
+        peak = accumulate(max, wealth);
+        max_drawdowns[p] = maximum((peak .- wealth) ./ peak);
+        vol = std(returns) * sqrt(252);
+        mean_ret = (wealth[end] / wealth[1] - 1.0);
+        sharpe_ratios[p] = vol > 0 ? mean_ret / vol : 0.0;
+    end
+
+    result = MyBacktestResult();
+    result.scenario_label = scenario.label;
+    result.strategy_label = "REINFORCE Policy CES";
+    result.final_wealth = final_wealth;
+    result.max_drawdowns = max_drawdowns;
+    result.sharpe_ratios = sharpe_ratios;
+    result.wealth_paths = wealth_paths;
+    return result;
+end
+
+"""
+    backtest_eta_heuristic(scenario, tickers, sim_params;
+        B₀, offset, L_short, L_long, GAIN, L_growth, eta_bounds,
+        max_drawdown, max_turnover, epsilon) -> MyBacktestResult
+
+Backtest the Session 2 sentiment-adaptive heuristic
+`compute_adaptive_eta(λ_t)` across all scenario paths under the same engine
+gates as `backtest_eta_bandit` and `backtest_eta_policy`. Returns a
+`MyBacktestResult` with `strategy_label = "Heuristic CES"`.
+"""
+function backtest_eta_heuristic(scenario::MyBacktestScenario, tickers::Array{String,1},
+    sim_params::Dict{String,Tuple{Float64,Float64,Float64}};
+    B₀::Float64 = 10000.0, offset::Int = 84,
+    L_short::Int = 21, L_long::Int = 63,
+    GAIN::Float64 = 10.0, L_growth::Int = 10,
+    eta_bounds::Tuple{Float64,Float64} = (0.5, 5.0),
+    max_drawdown::Float64 = 0.15, max_turnover::Float64 = 0.50,
+    epsilon::Float64 = 0.1)::MyBacktestResult
+
+    Δt = 1.0 / 252.0;
+    n_paths = scenario.n_paths;
+    n_steps = scenario.n_steps;
+    K = length(tickers);
+    n_trading = n_steps - offset;
+
+    final_wealth = zeros(n_paths);
+    max_drawdowns = zeros(n_paths);
+    sharpe_ratios = zeros(n_paths);
+    wealth_paths = zeros(n_trading + 1, n_paths);
+
+    for p in 1:n_paths
+        mkt = scenario.market_paths[p, :];
+        ema_s = compute_ema(mkt; window = L_short);
+        ema_l = compute_ema(mkt; window = L_long);
+        λ = compute_lambda(ema_s, ema_l; G = GAIN);
+        λ[1:offset] .= 0.0;
+
+        gm_raw = compute_market_growth(mkt; Δt = Δt);
+        gm_e = compute_ema(gm_raw; window = L_growth);
+
+        pmatrix = zeros(n_steps, K + 1);
+        pmatrix[:, 1] = 1:n_steps;
+        for k in 1:K
+            pmatrix[:, k + 1] = scenario.price_paths[p, :, k];
+        end
+
+        ctx = build(MyRebalancingContextModel, (
+            B = B₀, tickers = tickers, marketdata = pmatrix,
+            marketfactor = gm_e, sim_parameters = sim_params,
+            lambda = 0.0, Δt = Δt, epsilon = epsilon
+        ));
+
+        rules = build(MyTriggerRules, (
+            max_drawdown = max_drawdown, max_turnover = max_turnover,
+            rebalance_schedule = ones(Int, n_trading)
+        ));
+
+        results = run_rebalancing_engine(ctx, rules, λ;
+            offset = offset, allocator = :ces,
+            adaptive_eta = true, eta_bounds = eta_bounds);
+        wealth = compute_wealth_series(results, pmatrix, tickers; offset = offset);
+        wealth_paths[:, p] .= wealth;
+
+        final_wealth[p] = wealth[end];
+        returns = diff(wealth) ./ wealth[1:end-1];
+        peak = accumulate(max, wealth);
+        max_drawdowns[p] = maximum((peak .- wealth) ./ peak);
+        vol = std(returns) * sqrt(252);
+        mean_ret = (wealth[end] / wealth[1] - 1.0);
+        sharpe_ratios[p] = vol > 0 ? mean_ret / vol : 0.0;
+    end
+
+    result = MyBacktestResult();
+    result.scenario_label = scenario.label;
+    result.strategy_label = "Heuristic CES";
+    result.final_wealth = final_wealth;
+    result.max_drawdowns = max_drawdowns;
+    result.sharpe_ratios = sharpe_ratios;
+    result.wealth_paths = wealth_paths;
+    return result;
+end
+
 # --- Session 3: EWLS Functions --------------------------------------------------
 
 """

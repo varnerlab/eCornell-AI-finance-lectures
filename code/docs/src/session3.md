@@ -77,6 +77,40 @@ backtest_eta_bandit
 build_compliance_config
 ```
 
+## REINFORCE Policy (Policy-Gradient Elasticity Learning)
+
+### Types
+
+```@docs
+MyREINFORCEPolicy
+MyValueBaseline
+MyREINFORCETrainer
+MyPolicyTrainingResult
+```
+
+### Factory Methods
+
+```@docs
+build(::Type{MyREINFORCEPolicy}, ::NamedTuple)
+build(::Type{MyValueBaseline}, ::NamedTuple)
+build(::Type{MyREINFORCETrainer}, ::NamedTuple)
+```
+
+### Functions
+
+```@docs
+build_policy_state
+sample_action
+policy_log_pdf
+policy_eta
+evaluate_baseline
+compute_returns
+train_reinforce!
+rollout_policy_episode
+backtest_eta_policy
+backtest_eta_heuristic
+```
+
 ## EWLS (Exponentially Weighted Least Squares)
 
 ### Types
