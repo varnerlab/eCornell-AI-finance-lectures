@@ -10,6 +10,18 @@ source = "session-1"
 universe = ["AAPL", "MSFT", "GOOG", "AMZN", "NVDA"]  # fallback / manual override
 
 [Engine]
+# Source of the CES elasticity η at each fire.
+#   "heuristic" (default): compute_adaptive_eta(λ_eff). The Session 2 closed
+#                          form. Always available.
+#   "policy"             : policy_eta(trained_policy, state). Requires
+#                          ../session-3/data/policy-eta-results.jld2 to be
+#                          present (the S3 PolicyEtaLearning hand-off).
+#                          Falls back to heuristic with a warning if the
+#                          artifact is missing.
+# Phase 1 of the S3->S4 cutover keeps "heuristic" as the live decision
+# while shadow-logging eta_policy at every fire. Flip to "policy" once the
+# shadow record clears the validation tournament.
+eta_source = "heuristic"
 B0 = 100000.0
 # Half-life conceptual semantics: calendar days. The runner converts to bar
 # units via intraday_half_life(half_life_calendar_days, bar_minutes).

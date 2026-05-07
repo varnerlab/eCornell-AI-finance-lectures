@@ -162,6 +162,37 @@ If nothing appears at the expected time, check:
 - `~/.ecornell-s4-env` — file exists, has `ANTHROPIC_API_KEY` exported, mode 600
 - (macOS) Full Disk Access granted to `/usr/sbin/cron`
 
+## Step 8 (optional): switch to the policy-gradient elasticity selector
+
+`production-config.toml` has an `Engine.eta_source` field with two values:
+
+- `"heuristic"` (default): `compute_adaptive_eta(λ_eff)` from Session 2.
+  Always available; no artifact dependency.
+- `"policy"`: `policy_eta(trained_policy, state)` from the Session 3
+  REINFORCE-with-baseline policy. Reads the artifact at
+  `lectures/session-3/data/policy-eta-results.jld2`. Falls back to the
+  heuristic with a `[POLICY-ETA]` warning line if the artifact is missing
+  or fails to load.
+
+The default is `"heuristic"`. Phase 1 of the cutover keeps that decision
+live and shadow-logs `eta_policy` at every fire (visible in the
+`[ENGINE] ... [shadow η_h=... η_p=...]` log line and persisted in the
+intraday tape and `production-state.jld2`). Flip to `"policy"` only when
+the validation tournament from `S3-Example-Core-ValidationReport` shows
+the policy clears the same gate set as the heuristic on the held-out path
+ensemble:
+
+- median Sharpe ≥ heuristic median Sharpe
+- p95 drawdown ≤ heuristic p95 drawdown + 1pp slack
+- median W/W₀ ≥ heuristic median W/W₀
+- the shadow `η_h` vs `η_p` log line agrees within 0.5 in absolute units
+  for the bulk of the trading day (sanity check that the policy is not
+  flipping wildly in production)
+
+To roll back at any time, change `Engine.eta_source` back to `"heuristic"`
+and the next fire reverts to the closed-form selector. No artifact needs
+to be removed or replaced.
+
 ## Files that DO transfer via git
 
 These are tracked in the repo and will be present after `git clone`:

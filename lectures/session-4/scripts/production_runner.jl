@@ -41,6 +41,7 @@ const LOG_PATH = joinpath(DATA_DIR, "production-log.txt");
 const CREDS_PATH = joinpath(CONFIG_DIR, "credentials.toml");
 const CONFIG_PATH = joinpath(CONFIG_DIR, "production-config.toml");
 const S1_ALLOCATION_PATH = joinpath(SESSION_DIR, "..", "session-1", "data", "minvar-allocation.jld2");
+const POLICY_ARTIFACT_PATH = joinpath(SESSION_DIR, "..", "session-3", "data", "policy-eta-results.jld2");
 
 # ──────────────────────────────────────────────────────────────────────────────
 # CLI + logging
@@ -90,8 +91,13 @@ function load_config()
     end;
     log_entry("config", "tickers source=$(source) -> $(length(tickers)) names");
 
+    eta_source = String(get(eng, "eta_source", "heuristic"));
+    eta_source in ("heuristic", "policy") ||
+        error("Engine.eta_source must be \"heuristic\" or \"policy\", got \"$(eta_source)\"");
+
     return (
         tickers = tickers,
+        eta_source = eta_source,
         B₀ = Float64(eng["B0"]),
         bar_minutes = bar_minutes,
         half_life_calendar_days = Float64(eng["half_life_calendar_days"]),
@@ -116,6 +122,59 @@ function load_config()
         market_open = String(sched["market_open"]),
         market_close = String(sched["market_close"]),
     );
+end
+
+# ──────────────────────────────────────────────────────────────────────────────
+# Policy-eta shadow logging (REINFORCE policy from S3 PolicyEtaLearning)
+# ──────────────────────────────────────────────────────────────────────────────
+# Phase 1 of the S3 -> S4 handoff: load the trained policy if its artifact
+# exists, compute eta_policy alongside the heuristic at every fire, and
+# persist both into engine_snapshot. The actual decision still uses the
+# heuristic; we only swap behind a config flag once the shadow record clears
+# the validation tournament.
+
+function load_trained_policy()
+    isfile(POLICY_ARTIFACT_PATH) || return nothing;
+    try
+        d = load_results(POLICY_ARTIFACT_PATH);
+        return build(MyREINFORCEPolicy, (
+            n_features = length(d["policy_w_mu"]),
+            eta_min    = Float64(d["policy_eta_min"]),
+            eta_max    = Float64(d["policy_eta_max"]),
+            w_mu       = Vector{Float64}(d["policy_w_mu"]),
+            b_mu       = Float64(d["policy_b_mu"]),
+            log_sigma  = Float64(d["policy_log_sigma"]),
+        ));
+    catch err
+        log_entry("policy-eta", "load failed at $(POLICY_ARTIFACT_PATH): $(err)");
+        return nothing;
+    end
+end
+
+# Cross-asset annualized realized vol from the intraday market series.
+function intraday_realized_vol(intraday_market_prices::Vector{Float64};
+    window::Int = 21)::Float64
+    n = length(intraday_market_prices);
+    n < 2 && return 0.0;
+    rets = diff(log.(max.(intraday_market_prices, 1e-9)));
+    isempty(rets) && return 0.0;
+    win = rets[max(1, end-window+1):end];
+    length(win) < 2 && return 0.0;
+    return std(win) * sqrt(252);
+end
+
+# Compute eta_policy if the policy is available; otherwise NaN (signals
+# missing artifact in production-state).
+function compute_shadow_eta_policy(policy, λ_short::Float64, λ_long::Float64,
+    regime::Symbol, drawdown::Float64, realized_vol::Float64,
+    news_flag_count::Float64)::Float64
+    policy === nothing && return NaN;
+    s = build_policy_state(
+        lambda_short = λ_short, lambda_long = λ_long,
+        regime = regime, drawdown = drawdown,
+        realized_vol = realized_vol, news_flag_count = news_flag_count,
+    );
+    return policy_eta(policy, s);
 end
 
 # ──────────────────────────────────────────────────────────────────────────────
@@ -331,11 +390,28 @@ function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool
         return state;
     end
 
-    # 6) Bandit picks eta per regime.
+    # 6) Eta selection (heuristic decision + REINFORCE policy shadow log).
     regime = classify_regime(λ_eff);
-    # Pragmatic: use the heuristic eta until a long-running per-regime bandit
-    # is wired in. Bandit-learned eta gets folded in here in a follow-up.
-    eta = compute_adaptive_eta(λ_eff);
+    eta_heuristic = compute_adaptive_eta(λ_eff);
+
+    # Shadow log: compute eta_policy from the S3 trained policy if available.
+    # Decision stays on the heuristic; eta_policy is recorded for the
+    # validation tournament that gates the production cutover.
+    ema_xs_p = compute_ema(intraday_market_prices; window = max(5, cfg.N_short ÷ 4));
+    λ_short_series = compute_lambda(ema_xs_p, ema_s; G = cfg.GAIN);
+    λ_short = isempty(λ_short_series) ? 0.0 : λ_short_series[end];
+    realized_vol = intraday_realized_vol(intraday_market_prices);
+    trained_policy = load_trained_policy();
+    eta_policy = compute_shadow_eta_policy(trained_policy, λ_short, λ_eff,
+        regime, drawdown, realized_vol, 0.0);
+    eta = if cfg.eta_source == "policy" && !isnan(eta_policy)
+        eta_policy
+    else
+        if cfg.eta_source == "policy"
+            log_entry("policy-eta", "eta_source=\"policy\" but no trained policy artifact; falling back to heuristic.");
+        end
+        eta_heuristic
+    end;
 
     # 7) Allocator. Build a single-period rebalancing context using current
     # snapshot (frozen sim params from EWLS, current prices, λ_eff).
@@ -384,7 +460,11 @@ function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool
     );
     engine_snapshot = Dict{String,Any}(
         "eta" => eta,
+        "eta_heuristic" => eta_heuristic,
+        "eta_policy" => eta_policy,
         "lambda_eff" => λ_eff,
+        "lambda_short" => λ_short,
+        "realized_vol" => realized_vol,
         "sentiment" => sentiment,
         "regime" => string(regime),
         "drawdown" => drawdown,
@@ -429,8 +509,12 @@ function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool
         last_bar = last_seen,
         sentiment = sentiment,
         lambda_eff = λ_eff,
+        lambda_short = λ_short,
+        realized_vol = realized_vol,
         regime = regime,
         eta = eta,
+        eta_heuristic = eta_heuristic,
+        eta_policy = eta_policy,
         target_weights = target_weights,
         proposed_n = length(proposed_trades),
         auto_n = length(auto_trades),
@@ -443,10 +527,12 @@ function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool
     push!(tape_entries, entry);
     save_results(tape_path, Dict("entries" => tape_entries));
 
+    eta_policy_log = isnan(eta_policy) ? "n/a" : string(round(eta_policy, digits=2));
     log_entry("engine",
         "fire=$(fire_time) " *
         "sent=$(round(sentiment, digits=3)) λ=$(round(λ_eff, digits=3)) " *
         "regime=$(regime) η=$(round(eta, digits=2)) " *
+        "[shadow η_h=$(round(eta_heuristic, digits=2)) η_p=$(eta_policy_log)] " *
         "wealth=\$$(round(current_wealth, digits=2)) dd=$(round(drawdown*100, digits=1))% " *
         "auto=$(length(auto_trades)) queued=$(length(queued_items)) submitted=$(n_submitted)");
 
