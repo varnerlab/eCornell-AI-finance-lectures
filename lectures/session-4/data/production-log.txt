@@ -2203,3 +2203,7 @@ CF-RAY: 9f8966fd3fa2b89f-EWR
 2026-05-08 12:00:38 [ENGINE] fire=2026-05-08T16:00:27.264 sent=0.027 λ=-0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.05] wealth=$100226.34 dd=1.3% auto=9 queued=8 submitted=9
 2026-05-08 12:00:23 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-08 12:00:38 [ENGINE] fire=2026-05-08T16:00:27.264 sent=0.027 λ=-0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.05] wealth=$100226.34 dd=1.3% auto=9 queued=8 submitted=9
+2026-05-08 12:30:22 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-08 12:30:36 [ENGINE] fire=2026-05-08T16:30:25.733 sent=0.012 λ=-0.024 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.05] wealth=$100386.12 dd=1.2% auto=9 queued=8 submitted=9
+2026-05-08 12:30:22 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-08 12:30:36 [ENGINE] fire=2026-05-08T16:30:25.733 sent=0.012 λ=-0.024 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.05] wealth=$100386.12 dd=1.2% auto=9 queued=8 submitted=9
