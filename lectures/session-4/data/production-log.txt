@@ -2050,3 +2050,53 @@ Precompiling packages...
 2026-05-08 10:00:22 [NEWS-HOURLY] fire at 2026-05-08T14:00:21.984 source=anthropic_web tickers=22
 2026-05-08 10:48:46 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
 2026-05-08 10:48:48 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-08-14.jld2 -- 66 items, 19 tickers flagged
+2026-05-08 11:00:23 [NEWS-HOURLY] fire at 2026-05-08T15:00:23.515 source=anthropic_web tickers=22
+2026-05-08 11:00:25 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-08 11:00:32 [NEWS-ANTHROPIC_WEB] fetch failed for DIS: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Fri, 08 May 2026 15:00:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CaqJTB6sPfA1D9gJyhLbc
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d9e4e242e7a6aaaf3c3deb79e87387d8-def5473a419abeba-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2587
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9f895592ff1fb295-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CaqJTB6sPfA1D9gJyhLbc"}"""); skipping ticker.
+2026-05-08 11:00:39 [ENGINE] fire=2026-05-08T15:00:29.098 sent=0.026 λ=-0.018 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.05] wealth=$100371.68 dd=1.2% auto=5 queued=7 submitted=5
+2026-05-08 11:00:25 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-08 11:00:39 [ENGINE] fire=2026-05-08T15:00:29.098 sent=0.026 λ=-0.018 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.05] wealth=$100371.68 dd=1.2% auto=5 queued=7 submitted=5
+2026-05-08 11:03:49 [NEWS-ANTHROPIC_WEB] fetch failed for AMZN: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Fri, 08 May 2026 15:03:49 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011CaqJhhjzhwoAEDFTipztL
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-98df5475b4c9549287733dbceb9cb9c6-325218d00c395423-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2945
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9f895a632efa2633-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011CaqJhhjzhwoAEDFTipztL"}"""); skipping ticker.
