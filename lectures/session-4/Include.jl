@@ -32,6 +32,7 @@ using Alpaca
 using Colors
 using DataFrames
 using Dates
+using Flux
 using JLD2
 using JSON
 using Plots
