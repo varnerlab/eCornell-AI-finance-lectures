@@ -1,0 +1,52 @@
+  Activating project at `~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4`
+  Activating project at `~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4`
+================================================================================
+Archetype bake-off: 5 Claude-curated baskets vs algorithmic baselines
+================================================================================
+Loading environment ... K = 413
+Loading sector map ... 11 sectors, 36 tickers dropped
+
+Bake-off K_COMPARE = 22 (Σ q_s)
+  per-sector quotas: Industrials=2, Financials=2, Information Technology=2, Health Care=2, Consumer Discretionary=2, Consumer Staples=2, Utilities=2, Real Estate=2, Materials=2, Communication Services=2, Energy=2
+
+--- Deploying archetype baskets ---
+  ConservativeIncome      K=20  W_T/W_0=1.097  ann= +7.21%  DD= 5.8%  Sharpe=+0.298
+  ConservativeGrowth      K=24  W_T/W_0=1.047  ann= +3.57%  DD= 8.4%  Sharpe=-0.102
+  Balanced                K=22  W_T/W_0=1.092  ann= +6.84%  DD= 7.6%  Sharpe=+0.247
+  GrowthOriented          K=22  W_T/W_0=1.104  ann= +7.69%  DD=11.1%  Sharpe=+0.313
+  AggressiveGrowth        K=20  W_T/W_0=1.157  ann=+11.34%  DD=11.6%  Sharpe=+0.552
+
+--- Full-Universe (deterministic baseline, K = 413) ---
+  W_T/W_0=1.166  ann=+11.88%  DD=13.1%  Sharpe=+0.490
+
+--- Inline MC sweep at K=22 (30 seeds) ---
+  done in 3.6s
+  Sector-Bandit       W_T median=1.147  Sharpe median=+0.502  DD median=9.1%
+  Random-per-sector   W_T median=1.107  Sharpe median=+0.354  DD median=7.5%
+  Sector-Bandit beats Random-per-sector: 14 / 30 (47%)
+
+--- Bake-off (sorted by Sharpe, descending) ---
+┌───────────────────────────────┬───────┬─────────────┬─────────────┬────────────┬─────────┐
+│                      Strategy │     K │ W_T_over_W0 │ Ann_ret_pct │ Max_DD_pct │  Sharpe │
+│                        String │ Int64 │     Float64 │     Float64 │    Float64 │ Float64 │
+├───────────────────────────────┼───────┼─────────────┼─────────────┼────────────┼─────────┤
+│              AggressiveGrowth │    20 │       1.157 │       11.34 │       11.6 │   0.552 │
+│     Sector-Bandit (MC median) │    22 │       1.147 │       10.63 │        9.1 │   0.502 │
+│                 Full-Universe │   413 │       1.166 │       11.88 │       13.1 │    0.49 │
+│ Random-per-sector (MC median) │    22 │       1.107 │        7.88 │        7.5 │   0.354 │
+│                GrowthOriented │    22 │       1.104 │        7.69 │       11.1 │   0.313 │
+│            ConservativeIncome │    20 │       1.097 │        7.21 │        5.8 │   0.298 │
+│                      Balanced │    22 │       1.092 │        6.84 │        7.6 │   0.247 │
+│            ConservativeGrowth │    24 │       1.047 │        3.57 │        8.4 │  -0.102 │
+└───────────────────────────────┴───────┴─────────────┴─────────────┴────────────┴─────────┘
+
+--- Archetype Sharpe vs bandit Sharpe distribution (K=22, 30 seeds) ---
+  Bandit Sharpe percentiles: min=-2.507  Q25=+0.101  median=+0.502  Q75=+0.883  max=+1.886
+
+  ConservativeIncome      Sharpe=+0.298  →  beats 33% of bandit seeds; bandit beats it 67% of the time
+  ConservativeGrowth      Sharpe=-0.102  →  beats 20% of bandit seeds; bandit beats it 80% of the time
+  Balanced                Sharpe=+0.247  →  beats 33% of bandit seeds; bandit beats it 67% of the time
+  GrowthOriented          Sharpe=+0.313  →  beats 33% of bandit seeds; bandit beats it 67% of the time
+  AggressiveGrowth        Sharpe=+0.552  →  beats 53% of bandit seeds; bandit beats it 47% of the time
+
+Saved /Users/jeffreyvarner/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/bandit/compare_archetypes_results.jld2

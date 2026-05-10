@@ -1,0 +1,90 @@
+  Activating project at `~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4`
+================================================================================
+Monte Carlo: per-sector bandit, 30 seeds
+================================================================================
+Loading environment ... K = 413, 85..2746 usable training days
+Loading sector map ... 11 sectors, 36 tickers dropped (no GICS match)
+
+Sector quotas (Σ q_s = 16):
+  Industrials                N_s =  60   q_s = 2
+  Financials                 N_s =  54   q_s = 2
+  Information Technology     N_s =  50   q_s = 2
+  Health Care                N_s =  44   q_s = 2
+  Consumer Discretionary     N_s =  39   q_s = 2
+  Consumer Staples           N_s =  31   q_s = 1
+  Utilities                  N_s =  26   q_s = 1
+  Real Estate                N_s =  24   q_s = 1
+  Materials                  N_s =  17   q_s = 1
+  Communication Services     N_s =  16   q_s = 1
+  Energy                     N_s =  16   q_s = 1
+
+Full-universe baseline ... W_T/W_0=1.166  ann=+11.88%  DD=13.1%  Sharpe=+0.490
+
+--- Per-seed sweep ---
+  seed   1 ( 1001): SB W_T=1.071 Sharpe=+0.058 DD=14.0% | RND W_T=1.215 Sharpe=+0.952 |  0.6s
+  seed   2 ( 1002): SB W_T=1.060 Sharpe=-0.001 DD=14.6% | RND W_T=1.013 Sharpe=-0.358 |  0.1s
+  seed   3 ( 1003): SB W_T=1.025 Sharpe=-0.236 DD=12.4% | RND W_T=1.232 Sharpe=+1.046 |  0.1s
+  seed   4 ( 1004): SB W_T=0.869 Sharpe=-2.370 DD=15.4% | RND W_T=1.324 Sharpe=+1.320 |  0.1s
+  seed   5 ( 1005): SB W_T=1.135 Sharpe=+0.384 DD=11.6% | RND W_T=0.964 Sharpe=-0.616 |  0.1s
+  seed   6 ( 1006): SB W_T=1.288 Sharpe=+1.184 DD=10.8% | RND W_T=0.969 Sharpe=-0.708 |  0.1s
+  seed   7 ( 1007): SB W_T=0.856 Sharpe=-2.896 DD=15.6% | RND W_T=1.112 Sharpe=+0.332 |  0.1s
+  seed   8 ( 1008): SB W_T=1.068 Sharpe=+0.041 DD=12.1% | RND W_T=1.165 Sharpe=+0.658 |  0.1s
+  seed   9 ( 1009): SB W_T=1.112 Sharpe=+0.271 DD=10.0% | RND W_T=1.164 Sharpe=+0.680 |  0.1s
+  seed  10 ( 1010): SB W_T=1.197 Sharpe=+0.784 DD=11.6% | RND W_T=1.170 Sharpe=+0.903 |  0.1s
+  seed  11 ( 1011): SB W_T=1.034 Sharpe=-0.171 DD=14.9% | RND W_T=1.004 Sharpe=-0.421 |  0.1s
+  seed  12 ( 1012): SB W_T=1.303 Sharpe=+1.060 DD=13.1% | RND W_T=0.857 Sharpe=-3.419 |  0.1s
+  seed  13 ( 1013): SB W_T=1.078 Sharpe=+0.131 DD= 9.6% | RND W_T=1.177 Sharpe=+0.744 |  0.1s
+  seed  14 ( 1014): SB W_T=1.286 Sharpe=+1.450 DD= 7.3% | RND W_T=0.962 Sharpe=-0.671 |  0.1s
+  seed  15 ( 1015): SB W_T=0.922 Sharpe=-0.913 DD=13.3% | RND W_T=1.151 Sharpe=+0.552 |  0.1s
+  seed  16 ( 1016): SB W_T=1.235 Sharpe=+1.064 DD=11.4% | RND W_T=1.028 Sharpe=-0.187 |  0.1s
+  seed  17 ( 1017): SB W_T=1.041 Sharpe=-0.137 DD= 9.6% | RND W_T=1.103 Sharpe=+0.291 |  0.1s
+  seed  18 ( 1018): SB W_T=1.219 Sharpe=+0.886 DD=11.3% | RND W_T=1.049 Sharpe=-0.077 |  0.1s
+  seed  19 ( 1019): SB W_T=1.167 Sharpe=+0.551 DD=11.6% | RND W_T=1.042 Sharpe=-0.132 |  0.1s
+  seed  20 ( 1020): SB W_T=1.147 Sharpe=+0.575 DD=11.0% | RND W_T=1.035 Sharpe=-0.152 |  0.1s
+  seed  21 ( 1021): SB W_T=1.091 Sharpe=+0.188 DD=12.1% | RND W_T=1.126 Sharpe=+0.474 |  0.1s
+  seed  22 ( 1022): SB W_T=1.188 Sharpe=+0.662 DD=13.0% | RND W_T=0.971 Sharpe=-0.532 |  0.1s
+  seed  23 ( 1023): SB W_T=1.231 Sharpe=+0.901 DD=10.3% | RND W_T=1.091 Sharpe=+0.239 |  0.1s
+  seed  24 ( 1024): SB W_T=1.109 Sharpe=+0.276 DD=12.3% | RND W_T=1.235 Sharpe=+0.922 |  0.1s
+  seed  25 ( 1025): SB W_T=1.128 Sharpe=+0.342 DD=12.7% | RND W_T=1.109 Sharpe=+0.344 |  0.1s
+  seed  26 ( 1026): SB W_T=0.865 Sharpe=-2.062 DD=15.8% | RND W_T=1.239 Sharpe=+0.971 |  0.1s
+  seed  27 ( 1027): SB W_T=1.043 Sharpe=-0.136 DD= 8.0% | RND W_T=1.193 Sharpe=+0.804 |  0.1s
+  seed  28 ( 1028): SB W_T=1.175 Sharpe=+0.676 DD= 9.4% | RND W_T=1.110 Sharpe=+0.294 |  0.3s
+  seed  29 ( 1029): SB W_T=1.042 Sharpe=-0.133 DD= 9.1% | RND W_T=1.034 Sharpe=-0.182 |  0.1s
+  seed  30 ( 1030): SB W_T=1.079 Sharpe=+0.131 DD=10.6% | RND W_T=1.069 Sharpe=+0.062 |  0.1s
+
+Total sweep time: 2.8s
+
+--- Summary across 30 seeds ---
+┌────────────┬──────────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┬─────────┐
+│     Metric │     Strategy │     Min │     Q25 │  Median │    Mean │     Q75 │     Max │     Std │
+│     String │       String │ Float64 │ Float64 │ Float64 │ Float64 │ Float64 │ Float64 │ Float64 │
+├────────────┼──────────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┼─────────┤
+│  W_T / W_0 │ SectorBandit │   0.856 │   1.042 │     1.1 │   1.102 │   1.185 │   1.303 │    0.12 │
+│  W_T / W_0 │ RandomBucket │   0.857 │    1.03 │   1.106 │   1.097 │   1.169 │   1.324 │   0.105 │
+│  W_T / W_0 │ FullUniverse │   1.166 │   1.166 │   1.166 │   1.166 │   1.166 │   1.166 │     0.0 │
+│ Ann. ret % │ SectorBandit │ -12.083 │   3.206 │   7.396 │   7.078 │  13.162 │  20.501 │   8.729 │
+│ Ann. ret % │ RandomBucket │ -11.973 │   2.267 │   7.829 │   6.836 │  12.104 │  21.734 │   7.484 │
+│ Ann. ret % │ FullUniverse │  11.879 │  11.879 │  11.879 │  11.879 │  11.879 │  11.879 │     0.0 │
+│   Max DD % │ SectorBandit │   7.267 │  10.352 │  11.616 │  11.805 │  13.055 │  15.769 │   2.185 │
+│   Max DD % │ RandomBucket │   6.258 │   7.657 │   8.281 │    9.43 │  11.402 │  15.414 │   2.695 │
+│   Max DD % │ FullUniverse │  13.093 │  13.093 │  13.093 │  13.093 │  13.093 │  13.093 │     0.0 │
+│     Sharpe │ SectorBandit │  -2.896 │  -0.136 │   0.229 │   0.085 │   0.672 │    1.45 │     1.0 │
+│     Sharpe │ RandomBucket │  -3.419 │  -0.186 │   0.293 │   0.138 │   0.728 │    1.32 │   0.883 │
+│     Sharpe │ FullUniverse │    0.49 │    0.49 │    0.49 │    0.49 │    0.49 │    0.49 │     0.0 │
+└────────────┴──────────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┴─────────┘
+
+Head-to-head (W_T comparison):
+  Sector-Bandit beats Random-per-sector : 17 / 30 (57%)
+  Sector-Bandit beats Full-Universe     : 10 / 30 (33%)   [Full = 1.166]
+  Random-per-sector beats Full-Universe : 8 / 30 (27%)
+
+Head-to-head (Sharpe comparison):
+  Sector-Bandit Sharpe > Random         : 15 / 30 (50%)
+  Sector-Bandit Sharpe > Full-Universe  : 11 / 30 (37%)  [Full = +0.490]
+
+Drawdown trigger trips (Max DD >= 15.0%):
+  Sector-Bandit baskets that tripped   : 3 / 30 (10%)
+  Random-per-sector baskets tripped    : 2 / 30 (7%)
+  Full-Universe tripped                : no
+
+Saved /Users/jeffreyvarner/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/bandit/monte_carlo_per_sector_bandit_results.jld2
