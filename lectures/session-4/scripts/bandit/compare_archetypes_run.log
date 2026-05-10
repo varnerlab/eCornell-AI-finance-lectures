@@ -20,7 +20,7 @@ Bake-off K_COMPARE = 22 (Σ q_s)
   W_T/W_0=1.166  ann=+11.88%  DD=13.1%  Sharpe=+0.490
 
 --- Inline MC sweep at K=22 (30 seeds) ---
-  done in 3.6s
+  done in 3.5s
   Sector-Bandit       W_T median=1.147  Sharpe median=+0.502  DD median=9.1%
   Random-per-sector   W_T median=1.107  Sharpe median=+0.354  DD median=7.5%
   Sector-Bandit beats Random-per-sector: 14 / 30 (47%)
