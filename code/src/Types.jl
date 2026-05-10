@@ -1102,3 +1102,79 @@ mutable struct MySignedTicket
     # constructor -
     MySignedTicket() = new();
 end
+
+# --- Session 4 Optional: Fraud-detection GNN -----------------------------------
+
+"""
+    MyTransactionGraph
+
+Container for a synthetic AML transaction graph used by the S4 Optional
+fraud-detection example. Bank accounts are nodes and directed wire transfers
+are edges. Per-account features and fraud labels live alongside the structural
+data so the same struct is the input to both the graph visualization and the
+GNN training loop.
+
+### Fields
+- `adjacency::Matrix{Float32}` — directed adjacency matrix `A[i, j] = 1` if
+  account `i` transferred to account `j` at least once over the simulation
+  window; size `(N, N)`.
+- `node_features::Matrix{Float32}` — `(d, N)` matrix; each column is one
+  account's feature vector. Features are
+  `[in_volume, out_volume, n_counterparties, account_age_days,
+   avg_transfer_amount, geo_hash]`, all standardized.
+- `labels::Vector{Int}` — `length N`; `1` for accounts inside a planted
+  laundering ring, `0` otherwise.
+- `train_mask::Vector{Bool}` — `length N`; `true` for nodes whose labels are
+  visible during training (transductive node classification).
+- `test_mask::Vector{Bool}` — `length N`; `true` for held-out evaluation nodes.
+  Disjoint from `train_mask`.
+- `ring_membership::Dict{Int,Int}` — maps node index to its ring id; absent
+  keys are legitimate (non-ring) accounts.
+"""
+mutable struct MyTransactionGraph
+
+    # data -
+    adjacency::Matrix{Float32}
+    node_features::Matrix{Float32}
+    labels::Vector{Int}
+    train_mask::Vector{Bool}
+    test_mask::Vector{Bool}
+    ring_membership::Dict{Int,Int}
+
+    # constructor -
+    MyTransactionGraph() = new();
+end
+
+"""
+    MyFraudGNNLayer{A, B, F} <: GraphNeuralNetworks.GNNLayer
+
+A GraphSAGE-style message-passing layer used as the building block of the S4
+Optional fraud-detection GNN. For each node `i` in a graph, the forward pass
+computes
+`x_i^(ℓ+1) = act.(W1 * x_i^(ℓ) + W2 * sum_{j ∈ N_in(i)} x_j^(ℓ) + b)`,
+where `N_in(i)` is the set of nodes with an edge into `i`. The split into
+`W1` (self) and `W2` (neighbor) lets the layer learn distinct roles for an
+account's own behavior and the behavior of accounts that send funds to it.
+The forward pass and `Flux.@layer` registration are in `Compute.jl`.
+
+### Type parameters
+- `A <: AbstractMatrix` — type of weight matrices `W1` and `W2`
+- `B <: AbstractVector` — type of bias `b`
+- `F` — type of the activation function `act`
+
+### Fields
+- `W1::A` — self-transform weights, shape `(d_out, d_in)`.
+- `W2::A` — neighbor-transform weights, shape `(d_out, d_in)`.
+- `b::B` — per-layer bias, length `d_out`, broadcast across nodes.
+- `act::F` — elementwise activation function (e.g. `relu`, `identity`).
+
+The struct subtypes [`GraphNeuralNetworks.GNNLayer`](https://juliagraphs.org/GraphNeuralNetworks.jl/stable/) so it can be used as a stage inside a `GNNChain`.
+The default constructor in `Factory.jl` initializes `W1`, `W2` with
+Glorot-uniform weights and `b` with zeros.
+"""
+struct MyFraudGNNLayer{A<:AbstractMatrix, B<:AbstractVector, F} <: GraphNeuralNetworks.GNNLayer
+    W1::A   # self-transform applied to the node's own feature vector
+    W2::A   # neighbor-transform applied to the sum of incoming-neighbor feature vectors
+    b::B    # per-layer bias of length d_out, broadcast across nodes
+    act::F  # elementwise activation function
+end

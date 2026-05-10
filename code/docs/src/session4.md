@@ -33,6 +33,13 @@ MySignedDecision
 MyComplianceQueueItem
 ```
 
+### Fraud Detection GNN (Optional)
+
+```@docs
+MyTransactionGraph
+MyFraudGNNLayer
+```
+
 ## Factory Methods
 
 ```@docs
@@ -45,6 +52,8 @@ build(::Type{MyTomorrowsTicket}, ::NamedTuple)
 build(::Type{MySignedTicket}, ::NamedTuple)
 build(::Type{MySignedDecision}, ::NamedTuple)
 build(::Type{MyComplianceQueueItem}, ::NamedTuple)
+build(::Type{MyTransactionGraph}, ::NamedTuple)
+build(::Type{MyFraudGNNLayer}, ::Pair{Int,Int}, ::Function)
 ```
 
 ## Functions
@@ -89,6 +98,16 @@ split_intraday_trades
 bars_per_day
 intraday_dt
 intraday_half_life
+```
+
+### Fraud Detection GNN (Optional)
+
+```@docs
+simulate_fraud_graph
+to_gnn_graph
+build_fraud_gnn
+train_fraud_gnn!
+evaluate_fraud_classifier
 ```
 
 ## File I/O

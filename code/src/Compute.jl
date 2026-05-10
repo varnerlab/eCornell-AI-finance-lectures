@@ -4629,3 +4629,380 @@ function build_tomorrows_ticket(target_weights::Vector{Float64},
         regime = regime,
     ));
 end
+
+# --- Session 4 Optional: Fraud-detection GNN -----------------------------------
+
+"""
+    simulate_fraud_graph(; n_accounts, fraud_rate, ring_sizes, p_legit_edge,
+        train_frac, feature_noise, seed) -> MyTransactionGraph
+
+Generate a synthetic AML transaction graph for the S4 Optional fraud-detection
+example. Bank accounts are nodes, directed wire transfers are edges. A fraction
+of accounts are planted in laundering rings whose members exchange funds in
+short cyclic patterns; the rest behave like a sparse Erdős–Rényi background.
+Per-node features are deliberately noisy so a flat-features classifier cannot
+fully separate the two classes; the cyclic-ring structure is the dominant
+signal that a 2-layer GNN can exploit through message passing.
+
+### Keyword arguments
+- `n_accounts::Int = 500` — total number of nodes `N`.
+- `fraud_rate::Float64 = 0.16` — target fraction of nodes inside a planted ring.
+- `ring_sizes::UnitRange{Int} = 8:14` — uniform draw of nodes per ring; rings
+  are packed sequentially until `fraud_rate × N` is reached.
+- `p_legit_edge::Float64 = 0.018` — Erdős–Rényi edge probability for the
+  background random graph applied to every ordered pair `(i, j)`, `i ≠ j`,
+  including ring↔legit cross-edges that dilute the community signal.
+- `p_ring_chord::Float64 = 0.45` — chord-edge probability between non-adjacent
+  ring members (the cycle is guaranteed). Lower values make rings sparser and
+  harder to detect.
+- `train_frac::Float64 = 0.7` — stratified train fraction within each class.
+- `feature_noise::Float64 = 0.5` — multiplier on the additive Gaussian noise
+  injected into the volume / amount features. Larger values make the
+  flat-features baseline weaker.
+- `seed::Int = 42` — RNG seed for reproducibility.
+
+### Returns
+- A [`MyTransactionGraph`](@ref) with adjacency, standardized 6-d node features,
+  binary labels (1 = ring member, 0 = legit), disjoint train / test masks, and
+  the ring-id lookup.
+"""
+function simulate_fraud_graph(;
+    n_accounts::Int = 500,
+    fraud_rate::Float64 = 0.16,
+    ring_sizes::UnitRange{Int} = 8:14,
+    p_legit_edge::Float64 = 0.018,
+    p_ring_chord::Float64 = 0.45,
+    train_frac::Float64 = 0.7,
+    feature_noise::Float64 = 0.5,
+    seed::Int = 42,
+)::MyTransactionGraph
+
+    Random.seed!(seed);
+
+    N = n_accounts;
+    n_fraud_target = round(Int, N * fraud_rate);
+
+    # --- Step 1: plant laundering rings as cyclic + chord communities ---
+    # Each ring is a small community of size r: a guaranteed cycle plus chord
+    # edges between members at probability `p_ring_chord`. Ring members can
+    # also have edges to non-ring accounts (added in Step 2 below) to mimic
+    # real-world laundering rings that transact with legit accounts to obscure
+    # the trail; the structural signature is therefore weaker than a clean
+    # disconnected community.
+    ring_membership = Dict{Int,Int}();
+    labels = zeros(Int, N);
+    edges = Tuple{Int,Int}[];
+    next_node = 1;
+    ring_id = 0;
+    while next_node + first(ring_sizes) - 1 <= n_fraud_target
+        ring_id += 1;
+        rsz = rand(ring_sizes);
+        rsz = min(rsz, n_fraud_target - next_node + 1);
+        rsz < 3 && break;
+        nodes_in_ring = collect(next_node:(next_node + rsz - 1));
+        # guaranteed cycle: i -> i+1, last -> first
+        for i in 1:(rsz - 1)
+            push!(edges, (nodes_in_ring[i], nodes_in_ring[i + 1]));
+        end
+        push!(edges, (nodes_in_ring[rsz], nodes_in_ring[1]));
+        # chord edges between every other ordered pair with prob p_ring_chord
+        for i in 1:rsz, j in 1:rsz
+            i == j && continue;
+            (j == i + 1) && continue;
+            (i == rsz && j == 1) && continue;
+            rand() < p_ring_chord && push!(edges, (nodes_in_ring[i], nodes_in_ring[j]));
+        end
+        for v in nodes_in_ring
+            ring_membership[v] = ring_id;
+            labels[v] = 1;
+        end
+        next_node += rsz;
+    end
+
+    # --- Step 2: Erdős–Rényi background edges over the full graph ---
+    # All node pairs (legit-legit, legit-ring, ring-legit, ring-ring outside the
+    # planted ring) get an edge with probability `p_legit_edge`. Ring members
+    # therefore acquire random connections to the legit pool, diluting the
+    # community signal that a GNN can exploit; the planted cyclic structure is
+    # still detectable but no longer trivially separable.
+    for i in 1:N, j in 1:N
+        i == j && continue;
+        rand() < p_legit_edge && push!(edges, (i, j));
+    end
+
+    # --- Step 3: build adjacency matrix ---
+    A = zeros(Float32, N, N);
+    for (i, j) in edges
+        A[i, j] = 1.0f0;
+    end
+
+    # --- Step 4: per-node features from simulated transfers ---
+    in_volume = zeros(Float32, N);
+    out_volume = zeros(Float32, N);
+    n_in = zeros(Float32, N);
+    n_out = zeros(Float32, N);
+    for (i, j) in edges
+        # Same amount distribution for ring and legit transfers — by design,
+        # so per-node volume / amount features overlap and the only signal that
+        # separates the two classes is the local graph structure.
+        amt = max(3000.0f0 + 2500.0f0 * randn(Float32), 100.0f0);
+        out_volume[i] += amt;
+        in_volume[j]  += amt;
+        n_out[i] += 1.0f0;
+        n_in[j]  += 1.0f0;
+    end
+
+    avg_amount = zeros(Float32, N);
+    for v in 1:N
+        tot = n_in[v] + n_out[v];
+        avg_amount[v] = tot > 0 ? (in_volume[v] + out_volume[v]) / tot : 0.0f0;
+    end
+
+    n_counterparties = zeros(Float32, N);
+    for v in 1:N
+        cp = Set{Int}();
+        for u in 1:N
+            (A[v, u] > 0 || A[u, v] > 0) && push!(cp, u);
+        end
+        n_counterparties[v] = Float32(length(cp));
+    end
+
+    account_age = Float32.(rand(30:1500, N));
+    geo_hash    = Float32.(rand(0:9, N));
+
+    # --- Step 5: inject feature noise (forces structural signal to dominate) ---
+    noise = Float32(feature_noise);
+    in_volume  .+= noise * 5000.0f0 .* randn(Float32, N);
+    out_volume .+= noise * 5000.0f0 .* randn(Float32, N);
+    avg_amount .+= noise * 2000.0f0 .* randn(Float32, N);
+
+    # --- Step 6: standardize each feature (zero mean, unit variance) ---
+    feature_matrix = vcat(
+        in_volume', out_volume', n_counterparties',
+        account_age', avg_amount', geo_hash'
+    );  # shape (6, N)
+    for r in 1:size(feature_matrix, 1)
+        μ = mean(feature_matrix[r, :]);
+        σ = std(feature_matrix[r, :]);
+        σ = max(σ, 1.0f-6);
+        feature_matrix[r, :] = (feature_matrix[r, :] .- μ) ./ σ;
+    end
+
+    # --- Step 7: stratified train/test masks ---
+    train_mask = falses(N);
+    test_mask  = falses(N);
+    fraud_idx = Random.shuffle!(findall(==(1), labels));
+    legit_idx = Random.shuffle!(findall(==(0), labels));
+    n_train_fraud = round(Int, train_frac * length(fraud_idx));
+    n_train_legit = round(Int, train_frac * length(legit_idx));
+    train_mask[fraud_idx[1:n_train_fraud]] .= true;
+    train_mask[legit_idx[1:n_train_legit]] .= true;
+    test_mask[fraud_idx[(n_train_fraud + 1):end]] .= true;
+    test_mask[legit_idx[(n_train_legit + 1):end]] .= true;
+
+    return build(MyTransactionGraph, (
+        adjacency = A,
+        node_features = feature_matrix,
+        labels = labels,
+        train_mask = train_mask,
+        test_mask = test_mask,
+        ring_membership = ring_membership,
+    ));
+end
+
+"""
+    to_gnn_graph(g_tx::MyTransactionGraph; symmetric::Bool = true)
+        -> GraphNeuralNetworks.GNNGraph
+
+Convert a [`MyTransactionGraph`](@ref) into a `GNNGraph` ready for training.
+The directed adjacency in `g_tx` is symmetrized by default so message passing
+flows in both directions; pass `symmetric = false` to keep the original
+direction (useful for visualization but not recommended for training because
+ring nodes only aggregate from inbound transfers).
+
+The returned graph's `ndata.x` is the (d, N) per-node feature matrix from
+`g_tx.node_features`.
+"""
+function to_gnn_graph(g_tx::MyTransactionGraph; symmetric::Bool = true)::GNNGraph
+
+    A = g_tx.adjacency;
+    N = size(A, 1);
+    src_idx = Int[];
+    dst_idx = Int[];
+    for i in 1:N, j in 1:N
+        A[i, j] > 0 || continue;
+        push!(src_idx, i);
+        push!(dst_idx, j);
+        if symmetric
+            push!(src_idx, j);
+            push!(dst_idx, i);
+        end
+    end
+    return GNNGraph(src_idx, dst_idx;
+        ndata = (x = g_tx.node_features,),
+        num_nodes = N);
+end
+
+# Forward pass for the fraud-detection message-passing layer. For each node
+# i, applies x_i^(ℓ+1) = act(W1·x_i + W2·Σ_{j ∈ N_in(i)} x_j + b). Mirrors the
+# CHEME-5820 L15d MyCustomConvolutionLayerModel forward pass.
+function (l::MyFraudGNNLayer)(g::GNNGraph, x::AbstractMatrix)
+    message(_xi, xj, _e) = l.W2 * xj;
+    m = apply_edges(message, g; xj = x);
+    xnew = aggregate_neighbors(g, +, m);
+    return l.act.(l.W1 * x .+ xnew .+ l.b);
+end
+
+# Register MyFraudGNNLayer with Flux so Flux.setup, Flux.gradient, and
+# Flux.Optimise.update! correctly find W1/W2/b as trainable parameters.
+# Must be at top level (the macro emits Base.show / Functors.functor methods).
+Flux.@layer MyFraudGNNLayer
+
+"""
+    build_fraud_gnn(; nin, nh, nout, dropout_p) -> GraphNeuralNetworks.GNNChain
+
+Build a node-classification GNN for the S4 Optional fraud-detection example.
+Three [`MyFraudGNNLayer`](@ref) stages feed a `Dense(nh, nout)` per-node head
+that emits class logits. Unlike the L15d graph-classifier this network has no
+`GlobalPool`: the readout operates per-node because each node carries its own
+fraud / not-fraud label.
+
+### Keyword arguments
+- `nin::Int` — input feature dimension (6 for the default `simulate_fraud_graph`).
+- `nh::Int` — hidden width shared across the three message-passing stages.
+- `nout::Int` — number of output classes (2 for binary fraud / not-fraud).
+- `dropout_p::Float64 = 0.0` — dropout probability applied to the post-pool
+  features; `0.0` disables dropout.
+"""
+function build_fraud_gnn(; nin::Int, nh::Int, nout::Int,
+    dropout_p::Float64 = 0.0)
+
+    return GNNChain(
+        input   = build(MyFraudGNNLayer, nin => nh, relu),
+        hidden  = build(MyFraudGNNLayer, nh  => nh, relu),
+        output  = build(MyFraudGNNLayer, nh  => nh, relu),
+        dropout = Flux.Dropout(dropout_p),
+        dense   = Flux.Dense(nh, nout),
+    );
+end
+
+"""
+    train_fraud_gnn!(model, g, labels, train_mask, test_mask;
+        n_classes, epochs, η, class_weights, infotime)
+        -> (epochs, train_losses, test_losses)
+
+Masked weighted-cross-entropy training loop for [`build_fraud_gnn`](@ref).
+Trains on `findall(train_mask)` only; held-out `test_mask` nodes contribute
+their features and edges through message passing but never their labels. Class
+weights compensate for the natural ~5–10% fraud-rate imbalance so the network
+does not collapse to predicting the majority class.
+
+### Arguments
+- `model` — a `GNNChain` from [`build_fraud_gnn`](@ref).
+- `g::GNNGraph` — the transaction graph; `g.ndata.x` is `(d, N)`.
+- `labels::Vector{Int}` — per-node class id (`0` legit, `1` fraud), length `N`.
+- `train_mask::Vector{Bool}`, `test_mask::Vector{Bool}` — disjoint Boolean masks.
+
+### Keyword arguments
+- `n_classes::Int = 2` — number of classes.
+- `epochs::Int = 200` — training passes.
+- `η::Float64 = 1e-2` — Adam learning rate.
+- `class_weights::Vector{Float32} = ones(Float32, n_classes)` — per-class loss
+  weight; the canonical setting for the S4 example is `[1.0, 10.0]`.
+- `infotime::Int = 25` — log every `infotime` epochs (plus epochs `1` and
+  `epochs`).
+
+### Returns
+- `(epochs, train_losses, test_losses)` — vectors aligned by index for plotting.
+"""
+function train_fraud_gnn!(model, g::GNNGraph, labels::Vector{Int},
+    train_mask::Vector{Bool}, test_mask::Vector{Bool};
+    n_classes::Int = 2,
+    epochs::Int = 200, η::Float64 = 1e-2,
+    class_weights::Vector{Float32} = ones(Float32, n_classes),
+    infotime::Int = 25)
+
+    N = length(labels);
+    @assert size(g.ndata.x, 2) == N "graph node count mismatch";
+
+    train_idx = findall(train_mask);
+    test_idx  = findall(test_mask);
+
+    # one-hot target matrix (n_classes, N)
+    y = zeros(Float32, n_classes, N);
+    for i in 1:N
+        y[labels[i] + 1, i] = 1.0f0;
+    end
+
+    # per-train-node weight derived from each node's true class
+    w_train = Float32[class_weights[labels[i] + 1] for i in train_idx];
+
+    function _wce(ŷ_sub, y_sub, w)
+        logp = Flux.logsoftmax(ŷ_sub; dims = 1);
+        return -sum(reshape(w, 1, :) .* (y_sub .* logp)) / sum(w);
+    end
+
+    opt_state = Flux.setup(Adam(η), model);
+    train_losses = Float32[];
+    test_losses  = Float32[];
+    epoch_log    = Int[];
+
+    for epoch in 1:epochs
+        grads = Flux.gradient(model) do m
+            ŷ = m(g, g.ndata.x);
+            ŷ_sub = ŷ[:, train_idx];
+            y_sub = y[:, train_idx];
+            _wce(ŷ_sub, y_sub, w_train);
+        end
+        Flux.Optimise.update!(opt_state, model, grads[1]);
+
+        if epoch == 1 || epoch == epochs || epoch % infotime == 0
+            ŷ_full = model(g, g.ndata.x);
+            tl = _wce(ŷ_full[:, train_idx], y[:, train_idx], w_train);
+            ev = Flux.logitcrossentropy(ŷ_full[:, test_idx], y[:, test_idx]);
+            push!(train_losses, Float32(tl));
+            push!(test_losses,  Float32(ev));
+            push!(epoch_log, epoch);
+        end
+    end
+
+    return (epochs = epoch_log,
+            train_losses = train_losses,
+            test_losses = test_losses);
+end
+
+"""
+    evaluate_fraud_classifier(predictions, labels, mask)
+        -> (precision, recall, f1, accuracy, confusion)
+
+Compute precision / recall / F1 for the fraud (positive) class plus overall
+accuracy on the masked subset of nodes. Used in the S4 Optional notebook to
+score the trained GNN and the flat-features baseline on the same held-out
+nodes. `predictions` and `labels` are `0/1` integer vectors; `mask` selects
+the evaluation subset.
+"""
+function evaluate_fraud_classifier(predictions::Vector{Int},
+    labels::Vector{Int}, mask::Vector{Bool})
+
+    @assert length(predictions) == length(labels) == length(mask);
+    test_idx = findall(mask);
+    pred  = predictions[test_idx];
+    truth = labels[test_idx];
+
+    tp = sum((pred .== 1) .& (truth .== 1));
+    fp = sum((pred .== 1) .& (truth .== 0));
+    fn = sum((pred .== 0) .& (truth .== 1));
+    tn = sum((pred .== 0) .& (truth .== 0));
+
+    precision = tp > 0 ? tp / (tp + fp) : 0.0;
+    recall    = tp > 0 ? tp / (tp + fn) : 0.0;
+    f1        = (precision + recall) > 0 ?
+                2 * precision * recall / (precision + recall) : 0.0;
+    accuracy  = (tp + tn) / length(test_idx);
+
+    return (precision = precision,
+            recall = recall,
+            f1 = f1,
+            accuracy = accuracy,
+            confusion = (tp = tp, fp = fp, fn = fn, tn = tn));
+end

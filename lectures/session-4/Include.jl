@@ -33,6 +33,8 @@ using Colors
 using DataFrames
 using Dates
 using Flux
+using GraphNeuralNetworks
+using Graphs
 using JLD2
 using JSON
 using Plots

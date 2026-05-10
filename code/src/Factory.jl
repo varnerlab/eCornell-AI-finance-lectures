@@ -532,3 +532,49 @@ function build(type::Type{MySignedTicket}, data::NamedTuple)::MySignedTicket
 
     return s;
 end
+
+# --- Session 4 Optional: Fraud-detection GNN -----------------------------------
+
+"""
+    build(type::Type{MyTransactionGraph}, data::NamedTuple) -> MyTransactionGraph
+
+Build a [`MyTransactionGraph`](@ref) from a named tuple with fields
+`adjacency`, `node_features`, `labels`, `train_mask`, `test_mask`,
+`ring_membership`. Used by [`simulate_fraud_graph`](@ref); end-users will
+typically call that generator instead of this builder directly.
+"""
+function build(type::Type{MyTransactionGraph}, data::NamedTuple)::MyTransactionGraph
+
+    g = MyTransactionGraph();
+    g.adjacency = data.adjacency;
+    g.node_features = data.node_features;
+    g.labels = data.labels;
+    g.train_mask = data.train_mask;
+    g.test_mask = data.test_mask;
+    g.ring_membership = data.ring_membership;
+
+    return g;
+end
+
+"""
+    build(type::Type{MyFraudGNNLayer}, ch::Pair{Int,Int}, act::Function)
+        -> MyFraudGNNLayer
+
+Build a [`MyFraudGNNLayer`](@ref) with Glorot-uniform `W1` and `W2` of shape
+`(d_out, d_in)`, zero bias of length `d_out`, and the given activation. The
+size pair `ch = d_in => d_out` mirrors `Flux.Dense`'s constructor convention.
+
+### Arguments
+- `ch::Pair{Int,Int}` — `d_in => d_out` channel dimensions.
+- `act::Function` — elementwise activation; typically `relu` for hidden stages
+  and `identity` for the final stage.
+"""
+function build(type::Type{MyFraudGNNLayer}, ch::Pair{Int,Int},
+    act::Function)
+
+    d_in, d_out = ch;
+    W1 = Flux.glorot_uniform(d_out, d_in);
+    W2 = Flux.glorot_uniform(d_out, d_in);
+    b  = zeros(Float32, d_out);
+    return MyFraudGNNLayer(W1, W2, b, act);
+end

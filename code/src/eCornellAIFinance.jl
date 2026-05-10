@@ -7,6 +7,9 @@ using DataFrames
 using Dates
 using Distributions
 using FileIO
+using Flux
+using GraphNeuralNetworks
+using Graphs
 using HTTP
 using HypothesisTests
 using Ipopt
@@ -51,6 +54,7 @@ export MySentimentSignal, MyEscalationEvent, MyProductionDayResult, MyProduction
 export MyLiveProductionDayResult, MyStressScenario, MyStressResult
 export MyNewsScenario, MyNewsItem, MyNewsCorpus
 export MyComplianceQueueItem, MySignedDecision, MyTomorrowsTicket, MySignedTicket
+export MyTransactionGraph, MyFraudGNNLayer
 
 # export factory -
 export build
@@ -89,6 +93,8 @@ export generate_news_text!, score_news_with_claude!
 export estimate_sim_with_news
 export bars_per_day, intraday_dt, intraday_half_life
 export gate_check, split_intraday_trades, build_tomorrows_ticket
+export simulate_fraud_graph, to_gnn_graph
+export build_fraud_gnn, train_fraud_gnn!, evaluate_fraud_classifier
 
 # export files -
 export load_price_data, save_results, load_results
