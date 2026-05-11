@@ -2266,3 +2266,31 @@ CF-RAY: 9f8966fd3fa2b89f-EWR
 2026-05-08 16:00:21 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-08 16:00:35 [ENGINE] fire=2026-05-08T20:00:24.445 sent=-0.002 λ=-0.03 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.05] wealth=$100235.73 dd=1.3% auto=10 queued=11 submitted=10
 2026-05-08 16:00:36 [ENGINE_CLOSE] wrote ticket for 2026-05-11: 21 trades, η=4.87, regime=neutral, news_flags=20
+2026-05-11 09:30:29 [CONFIG] tickers source=session-1 -> 22 names
+ERROR: LoadError: KeyError: key "DIS" not found
+Stacktrace:
+ [1] getindex(h::Dict{String, Vector{Bar}}, key::String)
+   @ Base ./dict.jl:477
+ [2] run_engine_step(client::AlpacaClient, cfg::@NamedTuple{tickers::Vector{String}, eta_source::String, B₀::Float64, bar_minutes::Int64, half_life_calendar_days::Float64, prior_weight_calendar_days::Float64, N_short::Int64, N_long::Int64, GAIN::Float64, N_growth::Int64, cost_bps::Float64, epsilon::Float64, n_bandit_iters::Int64, max_bandit_churn::Int64, compliance::Dict{String, Float64}, news_severity_queue_threshold::Float64, max_drawdown::Float64, sentiment_threshold::Float64, sentiment_override_lambda::Float64, flag_severity_threshold::Float64, market_open::String, market_close::String}, state::Dict{String, Any}, fire_time::DateTime; is_close::Bool)
+   @ Main ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:476
+ [3] main()
+   @ Main ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:880
+ [4] top-level scope
+   @ ~/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:890
+ [5] include(mod::Module, _path::String)
+   @ Base ./Base.jl:306
+ [6] exec_options(opts::Base.JLOptions)
+   @ Base ./client.jl:317
+ [7] _start()
+   @ Base ./client.jl:550
+in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/scripts/production_runner.jl:890
+2026-05-11 09:30:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 09:35:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 09:35:33 [EXECUTE] no signed ticket at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/tickets/signed-2026-05-11.jld2; nothing to execute.
+2026-05-11 09:35:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 09:35:33 [EXECUTE] no signed ticket at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/tickets/signed-2026-05-11.jld2; nothing to execute.
+2026-05-11 10:00:27 [NEWS-HOURLY] fire at 2026-05-11T14:00:27.807 source=anthropic_web tickers=22
+2026-05-11 10:00:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 10:00:44 [ENGINE] fire=2026-05-11T14:00:34.797 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101072.08 dd=0.5% auto=10 queued=12 submitted=10
+2026-05-11 10:00:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 10:00:44 [ENGINE] fire=2026-05-11T14:00:34.797 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101072.08 dd=0.5% auto=10 queued=12 submitted=10
