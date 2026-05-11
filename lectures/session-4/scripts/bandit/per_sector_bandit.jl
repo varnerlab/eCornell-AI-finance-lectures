@@ -35,7 +35,7 @@ include(joinpath(@__DIR__, "historical_train_dqn.jl"))
 
 # ===== CONFIG =====
 
-const K_BASKET_TOTAL    = 16
+const K_BASKET_TOTAL    = 22   # 11 GICS sectors × q_s = 2 each; matches the K_COMPARE bake-off in compare_archetypes.jl
 const ITERS_PER_ARM     = 50      # target iters per arm (× n_arms, capped)
 const ITERS_MAX         = 5000
 const ITERS_MIN         = 500

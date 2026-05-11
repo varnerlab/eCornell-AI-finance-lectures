@@ -16,11 +16,11 @@
 include(joinpath(@__DIR__, "per_sector_bandit.jl"))
 include(joinpath(@__DIR__, "monte_carlo_per_sector_bandit.jl"))
 
-# Bake-off K. Use 22 (uniform q_s=2 across all 11 sectors) to match the
-# median archetype basket size — fairer than the per_sector_bandit default
-# of 16. K_BASKET_TOTAL=16 is still used by per_sector_bandit.jl and
-# monte_carlo_per_sector_bandit.jl when run directly; this override lives
-# only in the bake-off.
+# Bake-off K. Uniform q_s = 2 across all 11 sectors so the assembled
+# basket size matches the median archetype list. As of the K_BASKET_TOTAL
+# flip in per_sector_bandit.jl this now agrees with the standalone default,
+# but the constant is kept here as an explicit knob so the bake-off remains
+# self-documenting if the standalone default ever drifts again.
 const K_COMPARE = 22
 const COMPARE_MC_SEEDS = 30
 
