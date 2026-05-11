@@ -2343,3 +2343,58 @@ in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-le
 2026-05-11 13:00:47 [ENGINE] fire=2026-05-11T17:00:36.613 sent=0.012 λ=-0.012 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.06] wealth=$100584.71 dd=1.0% auto=9 queued=12 submitted=9
 2026-05-11 13:00:32 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-11 13:00:47 [ENGINE] fire=2026-05-11T17:00:36.613 sent=0.012 λ=-0.012 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.06] wealth=$100584.71 dd=1.0% auto=9 queued=12 submitted=9
+2026-05-11 13:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 13:30:39 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 17, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 17, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 13:30:44 [ENGINE] fire=2026-05-11T17:30:34.116 sent=0.002 λ=-0.013 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100638.62 dd=0.9% auto=9 queued=12 submitted=8
+2026-05-11 13:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 13:30:39 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 17, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 17, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 13:30:44 [ENGINE] fire=2026-05-11T17:30:34.116 sent=0.002 λ=-0.013 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100638.62 dd=0.9% auto=9 queued=12 submitted=8
+2026-05-11 13:48:44 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-11 13:48:47 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-17.jld2 -- 66 items, 20 tickers flagged
+2026-05-11 13:00:29 [NEWS-HOURLY] fire at 2026-05-11T17:00:29.759 source=anthropic_web tickers=22
+2026-05-11 13:48:44 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-11 13:48:47 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-17.jld2 -- 66 items, 20 tickers flagged
+2026-05-11 14:00:28 [NEWS-HOURLY] fire at 2026-05-11T18:00:27.998 source=anthropic_web tickers=22
+2026-05-11 14:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 14:00:40 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 20, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 20, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 14:00:44 [ENGINE] fire=2026-05-11T18:00:34.517 sent=0.001 λ=-0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100781.79 dd=0.8% auto=10 queued=12 submitted=9
+2026-05-11 14:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 14:00:40 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 20, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 20, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 14:00:44 [ENGINE] fire=2026-05-11T18:00:34.517 sent=0.001 λ=-0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100781.79 dd=0.8% auto=10 queued=12 submitted=9
+2026-05-11 14:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 14:30:37 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 20, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 20, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 14:30:42 [ENGINE] fire=2026-05-11T18:30:32.408 sent=0.002 λ=-0.015 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$100567.24 dd=1.0% auto=4 queued=12 submitted=3
+2026-05-11 14:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 14:30:37 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 20, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 20, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 14:30:42 [ENGINE] fire=2026-05-11T18:30:32.408 sent=0.002 λ=-0.015 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$100567.24 dd=1.0% auto=4 queued=12 submitted=3
+2026-05-11 14:48:55 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 110/100).
+2026-05-11 14:48:57 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-18.jld2 -- 66 items, 19 tickers flagged
+2026-05-11 14:00:28 [NEWS-HOURLY] fire at 2026-05-11T18:00:27.998 source=anthropic_web tickers=22
+2026-05-11 14:48:55 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 110/100).
+2026-05-11 14:48:57 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-18.jld2 -- 66 items, 19 tickers flagged
+2026-05-11 15:00:28 [NEWS-HOURLY] fire at 2026-05-11T19:00:28.473 source=anthropic_web tickers=22
+2026-05-11 15:00:30 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-11 15:00:30 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-11 15:00:28 [NEWS-HOURLY] fire at 2026-05-11T19:00:28.473 source=anthropic_web tickers=22
+2026-05-11 15:00:30 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-11 15:00:30 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-11 15:00:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 15:00:45 [ENGINE] fire=2026-05-11T19:00:35.014 sent=-0.024 λ=-0.015 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100408.06 dd=1.1% auto=7 queued=13 submitted=7
+2026-05-11 15:00:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 15:00:45 [ENGINE] fire=2026-05-11T19:00:35.014 sent=-0.024 λ=-0.015 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100408.06 dd=1.1% auto=7 queued=13 submitted=7
+2026-05-11 15:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 15:30:41 [ENGINE] fire=2026-05-11T19:30:31.999 sent=-0.011 λ=-0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100581.57 dd=1.0% auto=0 queued=13 submitted=0
+2026-05-11 15:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 15:30:41 [ENGINE] fire=2026-05-11T19:30:31.999 sent=-0.011 λ=-0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100581.57 dd=1.0% auto=0 queued=13 submitted=0
+2026-05-11 16:00:27 [NEWS-HOURLY] fire at 2026-05-11T20:00:27.286 source=anthropic_web tickers=22
+2026-05-11 16:00:29 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-11 16:00:29 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-11 16:00:27 [NEWS-HOURLY] fire at 2026-05-11T20:00:27.286 source=anthropic_web tickers=22
+2026-05-11 16:00:29 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-11 16:00:29 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-11 16:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 16:00:43 [ENGINE] fire=2026-05-11T20:00:33.766 sent=-0.008 λ=-0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100749.41 dd=0.8% auto=0 queued=13 submitted=0
+2026-05-11 16:00:44 [ENGINE_CLOSE] wrote ticket for 2026-05-12: 13 trades, η=4.94, regime=neutral, news_flags=19
+2026-05-11 16:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 16:00:43 [ENGINE] fire=2026-05-11T20:00:33.766 sent=-0.008 λ=-0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100749.41 dd=0.8% auto=0 queued=13 submitted=0
+2026-05-11 16:00:44 [ENGINE_CLOSE] wrote ticket for 2026-05-12: 13 trades, η=4.94, regime=neutral, news_flags=19
