@@ -2294,3 +2294,14 @@ in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-le
 2026-05-11 10:00:44 [ENGINE] fire=2026-05-11T14:00:34.797 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101072.08 dd=0.5% auto=10 queued=12 submitted=10
 2026-05-11 10:00:31 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-11 10:00:44 [ENGINE] fire=2026-05-11T14:00:34.797 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101072.08 dd=0.5% auto=10 queued=12 submitted=10
+2026-05-11 10:30:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 10:30:41 [ENGINE] Alpaca submit_order failed for V: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 10, available: 6)", "{\"available\":\"6\",\"code\":40310000,\"existing_qty\":\"6\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 10, available: 6)\",\"symbol\":\"V\"}")
+2026-05-11 10:30:45 [ENGINE] fire=2026-05-11T14:30:35.502 sent=0.0 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101076.69 dd=0.5% auto=9 queued=13 submitted=8
+2026-05-11 10:30:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 10:30:41 [ENGINE] Alpaca submit_order failed for V: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 10, available: 6)", "{\"available\":\"6\",\"code\":40310000,\"existing_qty\":\"6\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 10, available: 6)\",\"symbol\":\"V\"}")
+2026-05-11 10:30:45 [ENGINE] fire=2026-05-11T14:30:35.502 sent=0.0 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101076.69 dd=0.5% auto=9 queued=13 submitted=8
+2026-05-11 10:48:51 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-11 10:48:54 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-14.jld2 -- 66 items, 18 tickers flagged
+2026-05-11 10:00:27 [NEWS-HOURLY] fire at 2026-05-11T14:00:27.807 source=anthropic_web tickers=22
+2026-05-11 10:48:51 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-11 10:48:54 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-14.jld2 -- 66 items, 18 tickers flagged
