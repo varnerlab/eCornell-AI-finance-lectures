@@ -2305,3 +2305,10 @@ in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-le
 2026-05-11 10:00:27 [NEWS-HOURLY] fire at 2026-05-11T14:00:27.807 source=anthropic_web tickers=22
 2026-05-11 10:48:51 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
 2026-05-11 10:48:54 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-14.jld2 -- 66 items, 18 tickers flagged
+2026-05-11 11:00:29 [NEWS-HOURLY] fire at 2026-05-11T15:00:29.031 source=anthropic_web tickers=22
+2026-05-11 11:00:32 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 11:00:41 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 23, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 23, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 11:00:46 [ENGINE] fire=2026-05-11T15:00:36.208 sent=0.0 λ=-0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.06] wealth=$101262.82 dd=0.3% auto=11 queued=10 submitted=10
+2026-05-11 11:00:32 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-11 11:00:41 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 23, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 23, available: 16)\",\"symbol\":\"CVX\"}")
+2026-05-11 11:00:46 [ENGINE] fire=2026-05-11T15:00:36.208 sent=0.0 λ=-0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.06] wealth=$101262.82 dd=0.3% auto=11 queued=10 submitted=10
