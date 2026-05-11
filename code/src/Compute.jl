@@ -4640,9 +4640,12 @@ Generate a synthetic AML transaction graph for the S4 Optional fraud-detection
 example. Bank accounts are nodes, directed wire transfers are edges. A fraction
 of accounts are planted in laundering rings whose members exchange funds in
 short cyclic patterns; the rest behave like a sparse Erdős–Rényi background.
-Per-node features are deliberately noisy so a flat-features classifier cannot
-fully separate the two classes; the cyclic-ring structure is the dominant
-signal that a 2-layer GNN can exploit through message passing.
+Per-node features (volume / counterparty count / etc.) are computed from the
+Erdős–Rényi background subset of transfers only; the laundering-ring transfers
+are excluded from per-account summaries, matching the AML conceit that ring
+activity is structured below per-account monitoring thresholds. This forces
+the only class signal to be the graph adjacency, which a GNN can exploit
+through message passing but a flat-features classifier cannot.
 
 ### Keyword arguments
 - `n_accounts::Int = 500` — total number of nodes `N`.
@@ -4682,16 +4685,16 @@ function simulate_fraud_graph(;
     N = n_accounts;
     n_fraud_target = round(Int, N * fraud_rate);
 
-    # --- Step 1: plant laundering rings as cyclic + chord communities ---
-    # Each ring is a small community of size r: a guaranteed cycle plus chord
-    # edges between members at probability `p_ring_chord`. Ring members can
-    # also have edges to non-ring accounts (added in Step 2 below) to mimic
-    # real-world laundering rings that transact with legit accounts to obscure
-    # the trail; the structural signature is therefore weaker than a clean
-    # disconnected community.
+    # --- Step 1: plant laundering rings; track ring-internal edges separately ---
+    # Each ring is a small community of size r: a guaranteed directed cycle plus
+    # chord edges between non-adjacent ring members at probability `p_ring_chord`.
+    # Ring edges are stored apart from the Erdős–Rényi background so Step 4 can
+    # restrict per-node feature computation to background transfers only; the
+    # adjacency in Step 3 still unions both edge sets so the GNN sees the full
+    # graph.
     ring_membership = Dict{Int,Int}();
     labels = zeros(Int, N);
-    edges = Tuple{Int,Int}[];
+    ring_edges = Tuple{Int,Int}[];
     next_node = 1;
     ring_id = 0;
     while next_node + first(ring_sizes) - 1 <= n_fraud_target
@@ -4702,15 +4705,15 @@ function simulate_fraud_graph(;
         nodes_in_ring = collect(next_node:(next_node + rsz - 1));
         # guaranteed cycle: i -> i+1, last -> first
         for i in 1:(rsz - 1)
-            push!(edges, (nodes_in_ring[i], nodes_in_ring[i + 1]));
+            push!(ring_edges, (nodes_in_ring[i], nodes_in_ring[i + 1]));
         end
-        push!(edges, (nodes_in_ring[rsz], nodes_in_ring[1]));
+        push!(ring_edges, (nodes_in_ring[rsz], nodes_in_ring[1]));
         # chord edges between every other ordered pair with prob p_ring_chord
         for i in 1:rsz, j in 1:rsz
             i == j && continue;
             (j == i + 1) && continue;
             (i == rsz && j == 1) && continue;
-            rand() < p_ring_chord && push!(edges, (nodes_in_ring[i], nodes_in_ring[j]));
+            rand() < p_ring_chord && push!(ring_edges, (nodes_in_ring[i], nodes_in_ring[j]));
         end
         for v in nodes_in_ring
             ring_membership[v] = ring_id;
@@ -4720,31 +4723,42 @@ function simulate_fraud_graph(;
     end
 
     # --- Step 2: Erdős–Rényi background edges over the full graph ---
-    # All node pairs (legit-legit, legit-ring, ring-legit, ring-ring outside the
-    # planted ring) get an edge with probability `p_legit_edge`. Ring members
-    # therefore acquire random connections to the legit pool, diluting the
-    # community signal that a GNN can exploit; the planted cyclic structure is
-    # still detectable but no longer trivially separable.
+    # All ordered pairs (i, j), i != j, get an edge with probability
+    # `p_legit_edge`. Both ring members and legit accounts participate at the
+    # same rate, so each account has the same expected background degree; the
+    # ring-internal edges from Step 1 add on top of this for ring members only,
+    # but they are kept out of the per-node feature computation in Step 4.
+    bg_edges = Tuple{Int,Int}[];
     for i in 1:N, j in 1:N
         i == j && continue;
-        rand() < p_legit_edge && push!(edges, (i, j));
+        rand() < p_legit_edge && push!(bg_edges, (i, j));
     end
 
-    # --- Step 3: build adjacency matrix ---
+    # --- Step 3: build adjacency matrix from the union of ring + background ---
+    # The GNN reads this full adjacency, so message passing has access to the
+    # planted ring structure even though Step 4 does not.
     A = zeros(Float32, N, N);
-    for (i, j) in edges
+    for (i, j) in ring_edges
+        A[i, j] = 1.0f0;
+    end
+    for (i, j) in bg_edges
         A[i, j] = 1.0f0;
     end
 
-    # --- Step 4: per-node features from simulated transfers ---
+    # --- Step 4: per-node features from BACKGROUND (observable) transfers only ---
+    # AML conceit: laundering rings structure their transfers (smurfing) to keep
+    # individual flows below the per-account monitoring threshold, so the
+    # compliance team's per-account aggregates (in/out volume, distinct
+    # counterparties, average transfer amount) see only the Erdős–Rényi
+    # background. Both classes have the same expected background degree, so
+    # the per-node feature distribution is class-blind and a flat-features
+    # classifier has no signal to learn from. The class signal lives entirely
+    # in the adjacency, where the GNN can find it through message passing.
     in_volume = zeros(Float32, N);
     out_volume = zeros(Float32, N);
     n_in = zeros(Float32, N);
     n_out = zeros(Float32, N);
-    for (i, j) in edges
-        # Same amount distribution for ring and legit transfers — by design,
-        # so per-node volume / amount features overlap and the only signal that
-        # separates the two classes is the local graph structure.
+    for (i, j) in bg_edges
         amt = max(3000.0f0 + 2500.0f0 * randn(Float32), 100.0f0);
         out_volume[i] += amt;
         in_volume[j]  += amt;
@@ -4758,14 +4772,14 @@ function simulate_fraud_graph(;
         avg_amount[v] = tot > 0 ? (in_volume[v] + out_volume[v]) / tot : 0.0f0;
     end
 
-    n_counterparties = zeros(Float32, N);
-    for v in 1:N
-        cp = Set{Int}();
-        for u in 1:N
-            (A[v, u] > 0 || A[u, v] > 0) && push!(cp, u);
-        end
-        n_counterparties[v] = Float32(length(cp));
+    # Counterparty count over background edges only (ring counterparties are
+    # invisible to per-account monitoring, by the same AML conceit).
+    bg_counterparties = [Set{Int}() for _ in 1:N];
+    for (i, j) in bg_edges
+        push!(bg_counterparties[i], j);
+        push!(bg_counterparties[j], i);
     end
+    n_counterparties = Float32[Float32(length(s)) for s in bg_counterparties];
 
     account_age = Float32.(rand(30:1500, N));
     geo_hash    = Float32.(rand(0:9, N));
