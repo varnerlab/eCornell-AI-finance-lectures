@@ -30,6 +30,7 @@ using eCornellAIFinance
 # load session-specific external packages -
 using Alpaca
 using Colors
+using CSV
 using DataFrames
 using Dates
 using Flux

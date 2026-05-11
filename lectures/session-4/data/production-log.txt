@@ -2336,3 +2336,5 @@ in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-le
 2026-05-11 12:30:30 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-11 12:30:39 [ENGINE] Alpaca submit_order failed for CVX: AlpacaError(403, 40310000, "insufficient qty available for order (requested: 22, available: 16)", "{\"available\":\"16\",\"code\":40310000,\"existing_qty\":\"16\",\"held_for_orders\":\"0\",\"message\":\"insufficient qty available for order (requested: 22, available: 16)\",\"symbol\":\"CVX\"}")
 2026-05-11 12:30:43 [ENGINE] fire=2026-05-11T16:30:33.947 sent=0.023 λ=-0.011 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.06] wealth=$100722.27 dd=0.8% auto=3 queued=15 submitted=2
+2026-05-11 12:48:47 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-11 12:48:50 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-11-16.jld2 -- 66 items, 20 tickers flagged
