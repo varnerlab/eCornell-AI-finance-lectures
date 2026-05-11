@@ -55,6 +55,15 @@ const TEST_DATES = [Date(2026, 5, 4), Date(2026, 5, 5), Date(2026, 5, 6),
 const DECISION_DATES = TEST_DATES[2:end-1];     # [May 5, May 6, May 7]
 const EXECUTION_DATES = TEST_DATES[3:end];      # [May 6, May 7, May 8]
 
+"""
+    load_engine_config() -> NamedTuple
+
+Read the production-engine config TOML and extract the four parameters the
+daily-cadence baseline needs to mirror live behavior: `gain` (EMA-crossover
+gain for the λ signal), `sentiment_threshold` and `sentiment_override_lambda`
+(circuit breaker that scales λ when live sentiment falls below threshold),
+and `max_drawdown` (cutover to cash when realized drawdown exceeds the gate).
+"""
 function load_engine_config()
     cfg = TOML.parsefile(CONFIG_PATH);
     return (
@@ -65,6 +74,15 @@ function load_engine_config()
     );
 end
 
+"""
+    load_bars() -> NamedTuple
+
+Load the cached daily OHLC bars written by `pull_daily_bars.jl` and return a
+NamedTuple of `dates::Vector{Date}`, `symbols::Vector{String}` (trading
+universe plus SPY), `tickers::Vector{String}` (just the trading universe),
+`open::Matrix{Float64}` and `close::Matrix{Float64}` (both shaped n_days x
+n_symbols). Errors with a build-hint if the cache file does not exist.
+"""
 function load_bars()
     isfile(BARS_PATH) || error("Bars cache missing. Run scripts/pull_daily_bars.jl first.");
     d = load(BARS_PATH);
@@ -77,6 +95,15 @@ function load_bars()
     );
 end
 
+"""
+    load_s1_priors() -> NamedTuple
+
+Read the Session 1 minimum-variance allocation artifact and return the universe
+tickers, target weights, and per-ticker SIM priors `(α, β, σ_ε)`. The SIM
+priors seed the EWLS recursion in `main`; the weights bootstrap the May 4
+close book in `bootstrap_book`. Asserts that the order of `sim_estimates`
+matches `tickers` so the resulting `sim_priors` dict is keyed correctly.
+"""
 function load_s1_priors()
     s1 = load_results(S1_ALLOCATION_PATH);
     tickers = String.(s1["my_tickers"]);
@@ -95,6 +122,13 @@ function load_s1_priors()
     return (tickers = tickers, weights = weights, sim_priors = sim_priors);
 end
 
+"""
+    date_index(dates, d) -> Int
+
+Return the row index of `d` in `dates`. Errors with the cache's first and
+last date when the lookup misses, so the caller can fix the bars cache range
+rather than chase a silent `nothing`.
+"""
 function date_index(dates::Vector{Date}, d::Date)
     idx = findfirst(==(d), dates);
     idx === nothing && error("Date $(d) not in bars cache. Cache spans $(dates[1]) → $(dates[end]).");
@@ -102,6 +136,17 @@ function date_index(dates::Vector{Date}, d::Date)
 end
 
 # --- Bootstrap: replicate deploy_initial_allocation.jl at May 4 close --------
+"""
+    bootstrap_book(close_row, weights, K) -> (shares, cash, deploy_trade_value)
+
+Replicate the live deploy from `deploy_initial_allocation.jl` against the
+May 4 daily-close prices: target the S1 minvar weights `weights` against a
+deployable budget of `B0 * CASH_BUFFER` (= 95k against the \$100k book),
+floor each per-ticker dollar target to integer shares at the close price,
+debit cash, then apply 5 bps friction on the deployed notional. Returns the
+integer share counts (as `Float64`), residual cash, and the total notional
+traded during the deploy (used only for the deploy-day log line).
+"""
 function bootstrap_book(close_row::Vector{Float64}, weights::Vector{Float64}, K::Int)
     deployable = B0 * CASH_BUFFER;
     shares = zeros(Float64, K);
@@ -122,6 +167,26 @@ function bootstrap_book(close_row::Vector{Float64}, weights::Vector{Float64}, K:
 end
 
 # --- One daily engine step at day t close, execute at day t+1 open ----------
+"""
+    daily_engine_step(ewls_states, tickers, close_history, spy_history,
+                      exec_open, exec_close, shares, cash, peak_wealth, cfg)
+        -> (shares, cash, peak_wealth, info::NamedTuple)
+
+One daily engine fire: update EWLS state with the day-t close-to-close growth,
+recompute sentiment / λ / regime from the daily-close history, mark wealth to
+the day-t close, run the Cobb-Douglas allocator, then size `Δshares` against
+the next-day open and execute with 5 bps friction.
+
+Mirrors the production runner's `run_engine_step` but with daily-cadence
+`Δt = 1/252` and EMA windows `(N_SHORT_DAILY, N_LONG_DAILY) = (5, 21)` trading
+days instead of intraday bars. Triggers the drawdown circuit breaker (de-risk
+to cash) when realized drawdown exceeds `cfg.max_drawdown`; in that branch
+`info.regime == :derisk` and no allocator step runs.
+
+The returned `info` NamedTuple carries the fields the tape consumes:
+`target_weights, λ_eff, sentiment, drawdown, regime, eta, wealth, trade_value,
+friction`.
+"""
 function daily_engine_step(
     ewls_states::Dict{String,eCornellAIFinance.MyEWLSState},
     tickers::Vector{String},
@@ -212,6 +277,19 @@ function daily_engine_step(
 end
 
 # --- Main --------------------------------------------------------------------
+"""
+    main()
+
+Orchestrate the daily-cadence baseline run end-to-end. Load the engine
+config, the cached bars, and the S1 priors; initialize per-ticker EWLS
+states from the SIM priors and warm them up by feeding every daily growth
+observation from row 2 through the day before May 4 (so May 4 itself is
+the bootstrap day, not a decision day); bootstrap the book at the May 4
+close; step the daily engine for May 5 / 6 / 7 close decisions, executed
+at May 6 / 7 / 8 open respectively; and write the five-entry tape to
+`data/daily-baseline-tape.jld2` in the same schema as the live 30-min
+tape so `compare_daily_vs_intraday.jl` can read both.
+"""
 function main()
     cfg = load_engine_config();
     bars = load_bars();

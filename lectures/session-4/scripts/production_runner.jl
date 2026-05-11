@@ -46,6 +46,13 @@ const POLICY_ARTIFACT_PATH = joinpath(SESSION_DIR, "..", "session-3", "data", "p
 # ──────────────────────────────────────────────────────────────────────────────
 # CLI + logging
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    parse_args() -> String
+
+Parse the `--mode=` CLI argument and return the requested fire mode
+("engine", "engine_close", or "execute_signed_ticket"). Unknown or missing
+args default to "engine" (the every-30-min intraday fire). Used by `main`.
+"""
 function parse_args()
     mode = "engine";
     for arg in ARGS
@@ -56,6 +63,14 @@ function parse_args()
     return mode;
 end
 
+"""
+    log_entry(tag, msg)
+
+Append one timestamped line to the shared production log
+(`data/production-log.txt`) and echo it to stdout so the cron's stderr/out
+captures the same record. The line format is `yyyy-mm-dd HH:MM:SS [<TAG>]
+<msg>`; `tag` is upper-cased for readability.
+"""
 function log_entry(tag::String, msg::String)
     ts = Dates.format(now(), "yyyy-mm-dd HH:MM:SS");
     line = "$(ts) [$(uppercase(tag))] $(msg)";
@@ -69,6 +84,18 @@ end
 # ──────────────────────────────────────────────────────────────────────────────
 # Configuration
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    load_config() -> NamedTuple
+
+Read `config/production-config.toml` and return the engine configuration
+as a typed NamedTuple. Resolves four config blocks: `Engine` (bar_minutes,
+EMA windows, half-life, GAIN, B0), `Compliance` (concentration cap,
+trade-size cap, news-severity threshold, flag-severity threshold for
+ticket assembly), `CircuitBreakers` (sentiment-driven λ override, max
+drawdown), and `Schedule` (bar minutes again, redundant for sanity).
+Resolves the ticker universe from either `Tickers.source = "session-1"`
+(loading from the S1 minvar artifact) or the inline universe array.
+"""
 function load_config()
     isfile(CONFIG_PATH) || error("Config not found: $(CONFIG_PATH)");
     cfg = TOML.parsefile(CONFIG_PATH);
@@ -133,6 +160,18 @@ end
 # heuristic; we only swap behind a config flag once the shadow record clears
 # the validation tournament.
 
+"""
+    load_trained_policy() -> Union{MyREINFORCEPolicy, Nothing}
+
+Load the S3 REINFORCE policy artifact if present. The artifact provides
+the trained weights for the shadow-eta calculation: at every fire we
+compute eta_policy alongside the heuristic eta and persist both into the
+engine_snapshot. The live decision still uses the heuristic; we only swap
+the trained policy in behind a config flag once the shadow record clears
+the S3 validation tournament. Returns `nothing` (logged) if the artifact
+is missing or fails to deserialize, in which case `compute_shadow_eta_policy`
+returns `NaN` and the engine continues with the heuristic only.
+"""
 function load_trained_policy()
     isfile(POLICY_ARTIFACT_PATH) || return nothing;
     try
@@ -152,6 +191,18 @@ function load_trained_policy()
 end
 
 # Cross-asset annualized realized vol from the intraday market series.
+"""
+    intraday_realized_vol(intraday_market_prices; window = 21) -> Float64
+
+Annualized realized volatility from the rolling intraday market-price
+series. Computes per-bar log returns, takes the last `window` of them,
+and returns `std(returns) * sqrt(252)`. Used as one of the six policy-state
+features fed into the trained REINFORCE policy in
+`compute_shadow_eta_policy`.
+
+Returns 0.0 when the buffer has fewer than two bars (cold-start) so the
+shadow eta is well-defined on the first fire of the day.
+"""
 function intraday_realized_vol(intraday_market_prices::Vector{Float64};
     window::Int = 21)::Float64
     n = length(intraday_market_prices);
@@ -165,6 +216,16 @@ end
 
 # Compute eta_policy if the policy is available; otherwise NaN (signals
 # missing artifact in production-state).
+"""
+    compute_shadow_eta_policy(policy, λ_short, λ_long, regime, drawdown,
+                              realized_vol, news_flag_count) -> Float64
+
+Evaluate the trained REINFORCE policy on the current engine state and
+return its eta recommendation as a shadow signal (not used for the live
+decision; persisted to the engine snapshot for validation analysis).
+Returns `NaN` when `policy === nothing`, which is how the runner signals
+that the S3 policy artifact is missing or failed to load.
+"""
 function compute_shadow_eta_policy(policy, λ_short::Float64, λ_long::Float64,
     regime::Symbol, drawdown::Float64, realized_vol::Float64,
     news_flag_count::Float64)::Float64
@@ -188,6 +249,16 @@ signed_ticket_path(d::Date) = joinpath(TICKET_DIR, "signed-$(Dates.format(d, "yy
 # ──────────────────────────────────────────────────────────────────────────────
 # News integration
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    latest_news_artifact(fire_time, tickers) -> NamedTuple
+
+Scan `data/news/` for `news-YYYY-MM-DD-HH.jld2` files whose timestamp is
+at or before `fire_time` and return the most recent one's per-ticker
+sentiment and severity dicts, plus the absolute path on disk for the
+audit log. Returns zero-filled dicts and an empty path when the directory
+is missing or no eligible file is found, so the engine always has a
+well-defined snapshot to consult.
+"""
 function latest_news_artifact(fire_time::DateTime, tickers::Vector{String})
     isdir(NEWS_DIR) || return (
         sentiment = Dict{String,Float64}(t => 0.0 for t in tickers),
@@ -221,6 +292,19 @@ end
 # ──────────────────────────────────────────────────────────────────────────────
 # State init / load
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    initialize_state(client, cfg) -> Dict{String,Any}
+
+First-time bootstrap of the persistent engine state. Seeds one
+`MyEWLSState` per ticker from the frozen SIM calibration
+(`code/src/data/sim-calibration.jld2`), with `half_life` and
+`prior_weight` translated from calendar days to bars via
+`intraday_half_life`. Initializes `peak_wealth` to the larger of the
+config's starting balance (`B0`) and Alpaca's reported account equity,
+sets `last_bar_timestamp` to the Unix epoch (so the first bar fetch is
+unbounded on the left), and starts with empty intraday-market-price /
+timestamp buffers. Saves the state to `STATE_PATH` and returns it.
+"""
 function initialize_state(client, cfg)
     tickers = cfg.tickers;
     K = length(tickers);
@@ -264,6 +348,13 @@ function initialize_state(client, cfg)
     return state;
 end
 
+"""
+    load_or_init_state(client, cfg) -> Dict{String,Any}
+
+Return the persisted engine state from `STATE_PATH` if it exists,
+otherwise bootstrap a fresh one via `initialize_state`. Called by `main`
+at the start of every fire so the cron is stateful across runs.
+"""
 function load_or_init_state(client, cfg)
     isfile(STATE_PATH) ? load_results(STATE_PATH) : initialize_state(client, cfg);
 end
@@ -271,11 +362,28 @@ end
 # ──────────────────────────────────────────────────────────────────────────────
 # Bar fetch
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    bar_interval_string(bar_minutes) -> String
+
+Format a bar-interval integer as the string Alpaca's `get_bars` expects.
+60-minute bars get the special form `"1Hour"`; every other interval is
+expressed as `"<n>Min"` (e.g. 30 -> `"30Min"`). Used in `fetch_latest_bars`.
+"""
 function bar_interval_string(bar_minutes::Int)
     bar_minutes == 60 && return "1Hour";
     return "$(bar_minutes)Min";
 end
 
+"""
+    fetch_latest_bars(client, tickers, bar_minutes, last_seen, fire_time)
+
+Call Alpaca's `get_bars` for every ticker (plus SPY for market growth)
+between `last_seen` (or one trading day before `fire_time`, whichever is
+later) and `fire_time`. The one-day floor guarantees we always capture
+today's bars even if `last_seen` is stale. Passes raw `DateTime`s
+through: the Alpaca SDK formats them as RFC3339 internally, while
+pre-formatting without a timezone marker triggers a 400 from the data API.
+"""
 function fetch_latest_bars(client, tickers::Vector{String}, bar_minutes::Int,
         last_seen::DateTime, fire_time::DateTime)
     interval = bar_interval_string(bar_minutes);
@@ -290,6 +398,43 @@ end
 # ──────────────────────────────────────────────────────────────────────────────
 # Engine step (per fire)
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    run_engine_step(client, cfg, state, fire_time; is_close = false) -> state
+
+One full intraday engine fire. The function is long because one fire does
+nine things in order:
+
+  1. Fetch new bars from Alpaca for the trading universe plus SPY.
+  2. For every new bar, append the SPY close to the rolling intraday-market
+     buffer and update each ticker's EWLS state with the per-bar
+     `(g_i, g_mkt)` growth pair.
+  3. Compute live sentiment from the buffer, EMA-crossover `λ_t`, and
+     apply the sentiment-driven `λ` override if the live sentiment is
+     below `cfg.sentiment_threshold`.
+  4. Pull current prices, positions, and cash from Alpaca, then mark
+     wealth and drawdown to market.
+  5. Drawdown circuit breaker: if realized drawdown exceeds
+     `cfg.max_drawdown`, close all positions, persist state with zero
+     shares, and return. No allocation runs today.
+  6. Run the Cobb-Douglas allocator on the EWLS-tracked SIM parameters,
+     sentiment-adjusted `λ_eff`, and the smoothed market growth, to get
+     the per-ticker target weight vector.
+  7. Convert target weights to integer share counts at the latest bar
+     close, compute `Δshares`, and read per-ticker news severity from
+     the latest hourly news artifact.
+  8. Apply the compliance gate (concentration cap, dollar trade-size cap,
+     news severity threshold) to split proposed trades into the
+     auto-execute set `A_t` (submitted to Alpaca paper) and the queue set
+     `Q_t` (appended to today's queue file as `MyComplianceQueueItem`s).
+  9. Append the fire's snapshot to today's tape file with all gate
+     decisions, the shadow eta from the trained policy, sentiment, λ,
+     regime, drawdown, wealth, and the news artifact path for audit.
+
+Persists the updated EWLS states, `last_bar_timestamp`, `peak_wealth`,
+and the intraday buffers to `STATE_PATH` and returns the state dict for
+chaining into `run_engine_close`. The `is_close` flag is passed through to
+audit logging only; ticket assembly happens in `run_engine_close`.
+"""
 function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool = false)
     tickers = state["tickers"]::Vector{String};
     K = length(tickers);
@@ -549,6 +694,20 @@ end
 # ──────────────────────────────────────────────────────────────────────────────
 # Mode: engine_close — run engine step + write tomorrow's ticket
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    run_engine_close(client, cfg, state, fire_time) -> state
+
+The 16:00 ET engine fire. Runs `run_engine_step` with `is_close = true`
+to update state and write today's tape entry, then recomputes the
+sentiment / λ / regime / target weights one more time so the assembled
+`MyTomorrowsTicket` reflects the EOD state. Pulls current prices,
+positions, and cash from Alpaca, applies the news flag set (any ticker
+whose severity meets `cfg.flag_severity_threshold` is flagged in the
+ticket), and calls `build_tomorrows_ticket` to produce the artifact the
+desk PM signs in the evening review. Saves the ticket under tomorrow's
+business-date filename (skipping over weekends) so the next morning's
+`execute_signed_ticket` cron can find it.
+"""
 function run_engine_close(client, cfg, state, fire_time::DateTime)
     state = run_engine_step(client, cfg, state, fire_time; is_close = true);
 
@@ -627,6 +786,17 @@ end
 # ──────────────────────────────────────────────────────────────────────────────
 # Mode: execute_signed_ticket
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    run_execute_signed_ticket(client, _cfg, state, fire_time) -> state
+
+The 9:35 ET next-morning fire. Loads the signed ticket written by the
+desk PM (`data/tickets/signed-YYYY-MM-DD.jld2`) and submits each proposed
+trade to Alpaca paper as a day market order, honoring per-trade
+modifications: a modification with `modified_qty === nothing` rejects the
+trade (skip), otherwise the order is submitted at the modified quantity.
+Logs each rejection and each submission failure. Returns the state
+unchanged (this mode does not touch persisted state).
+"""
 function run_execute_signed_ticket(client, _cfg, state, fire_time::DateTime)
     today = Date(fire_time);
     spath = signed_ticket_path(today);
@@ -675,6 +845,17 @@ end
 # ──────────────────────────────────────────────────────────────────────────────
 # Main
 # ──────────────────────────────────────────────────────────────────────────────
+"""
+    main()
+
+Entry point for the cron. Parses the `--mode` flag, loads credentials and
+config, opens the Alpaca paper client, and applies the market-hours gate
+for `mode == "engine"` only (so an out-of-session 30-min fire skips with
+a log line, while `engine_close` and `execute_signed_ticket` always run
+even when Alpaca reports `is_open == false`). Dispatches on mode to
+`run_engine_step` (intraday fire), `run_engine_close` (16:00 fire), or
+`run_execute_signed_ticket` (9:35 fire). Errors on an unrecognized mode.
+"""
 function main()
     mode = parse_args();
     isfile(CREDS_PATH) || error("Credentials not found: $(CREDS_PATH). See credentials.toml.example.");
