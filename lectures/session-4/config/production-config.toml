@@ -31,8 +31,8 @@ half_life_calendar_days = 63.0
 bar_minutes = 30
 # EWLS prior weight in bars-equivalent of the calendar-day prior.
 prior_weight_calendar_days = 63.0
-# Optional fast tracker for the EveningReview sensitivity tab. Calendar-days
-# value for the alternative half-life shown side-by-side; 0 disables.
+# Optional fast tracker. Calendar-days value for an alternative half-life
+# shown alongside the main one for sensitivity comparison; 0 disables.
 half_life_calendar_days_fast = 14.0
 # EMA windows are in *trading days*; the runner still computes a daily
 # market summary at each fire from the rolling intraday tape.
