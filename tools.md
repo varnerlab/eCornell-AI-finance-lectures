@@ -22,7 +22,7 @@ If a command fails, report the failure and stop. Do not silently swap in a diffe
 
 ## 1. GitHub
 
-What it is: the web service that hosts the course repository at <https://github.com/varnerlab/eCornell-AI-finance-lectures>, plus a desktop app (GitHub Desktop) that does the cloning, pulling, and committing without a terminal. Underneath, both rely on `git`, but participants do not need to learn git on the command line — the desktop app handles it.
+What it is: the web service that hosts the course repository at <https://github.com/varnerlab/eCornell-AI-finance-lectures>, plus a desktop app (GitHub Desktop) that does the cloning, pulling, and committing without a terminal. GitHub Desktop ships with its own embedded git, so there is no need to install git separately on macOS or Windows.
 
 Links:
 
@@ -40,7 +40,7 @@ Links:
 
 - macOS: `brew install --cask github` or download from <https://desktop.github.com/>.
 - Windows: `winget install --id GitHub.GitHubDesktop -e` or download from <https://desktop.github.com/>.
-- Linux: GitHub Desktop is not officially supported on Linux. Use the community fork at <https://github.com/shiftkey/desktop> or fall back to the `git` command line (`sudo apt-get install -y git` on Debian / Ubuntu, `sudo dnf install -y git` on Fedora / RHEL).
+- Linux: GitHub Desktop is not officially supported on Linux. Use the community fork at <https://github.com/shiftkey/desktop>, or install standalone git (`sudo apt-get install -y git` on Debian / Ubuntu, `sudo dnf install -y git` on Fedora / RHEL) and clone with the command line shown below.
 
 After install:
 
@@ -237,7 +237,7 @@ Listed by purpose. All are installed transitively by Section 6; the table is for
 | `StatsBase` | <https://juliastats.org/StatsBase.jl/stable/> | Sample statistics, weighting, sampling. |
 | `HypothesisTests` | <https://juliastats.org/HypothesisTests.jl/stable/> | t-tests and friends for the Session 3 validation gates. |
 | `Flux` | <https://fluxml.ai/Flux.jl/stable/> | Neural networks (Session 3 REINFORCE, DQN; Session 4 GNN). |
-| `GraphNeuralNetworks` | <https://carlolucibello.github.io/GraphNeuralNetworks.jl/stable/> | GNN layers for the Session 4 fraud-detection optional notebook. |
+| `GraphNeuralNetworks` | <https://carlolucibello.github.io/GraphNeuralNetworks.jl/stable/> | GNN layers for the Session 4 money-laundering detection optional notebook. |
 | `Graphs` | <https://juliagraphs.org/Graphs.jl/stable/> | Graph data structures used by the GNN example. |
 
 ### Plotting and tables
@@ -526,7 +526,6 @@ The hosted version is at <https://varnerlab.org/eCornell-AI-finance-lectures/dev
 Run each line and confirm a clean result before declaring the install done.
 
 ```bash
-git --version                                   # 2.30+
 julia --version                                 # 1.10+, ideally 1.12.x
 jupyter --version                               # Python Jupyter present
 jupyter kernelspec list | grep julia-1.12       # IJulia kernel registered

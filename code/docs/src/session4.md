@@ -33,7 +33,7 @@ MySignedDecision
 MyComplianceQueueItem
 ```
 
-### Fraud Detection GNN (Optional)
+### Money-Laundering Detection GNN (Optional)
 
 ```@docs
 MyTransactionGraph
@@ -100,7 +100,7 @@ intraday_dt
 intraday_half_life
 ```
 
-### Fraud Detection GNN (Optional)
+### Money-Laundering Detection GNN (Optional)
 
 ```@docs
 simulate_fraud_graph
