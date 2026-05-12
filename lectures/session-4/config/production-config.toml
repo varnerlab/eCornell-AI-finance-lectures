@@ -52,7 +52,7 @@ max_bandit_churn = 2
 # tightened from the daily-cadence defaults so the queue is non-empty
 # most days at intraday cadence.
 concentration_cap = 0.30
-position_size_limit = 5000.0          # USD; against B0 = 100k -> 5% per single trade (incremental rebalances)
+position_size_limit = 10000.0         # USD; relaxed during S1->engine-target rebalance convergence (matches the turnover_limit treatment); ratchet back to 5000 once delta trades stabilize
 turnover_limit = 2.0                  # per-fire turnover cap (sum |trade$| / portfolio_value); effectively disabled today to absorb the S1->engine-target rebalance (~120% of book), ratchet back to ~0.30 after engine converges
 news_severity_queue_threshold = 0.7   # news severity score above which the trade auto-queues
 
