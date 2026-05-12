@@ -2,15 +2,15 @@
 
 End-of-day workflow run after the 4pm close. The runbook below loads today's tape (what the engine did), today's queue (what got flagged for audit), and tomorrow's ticket (the engine's proposed open allocation), then writes a signed ticket back to disk for the 9:35am cron to consume.
 
-The cron writes three artifacts during the trading day, each keyed by today's date:
+The cron writes three artifacts during the trading day. Tape and queue are keyed by today's date (the writer date); the ticket is keyed by the next trading day (the execution date):
 
-* `data/intraday-tape/tape-YYYY-MM-DD.jld2`: one tape entry per 30-minute fire.
-* `data/queue/queue-YYYY-MM-DD.jld2`: a vector of [`MyComplianceQueueItem`](https://varnerlab.org/eCornell-AI-finance-lectures/dev/session4/#MyComplianceQueueItem), one per intraday trade that failed at least one gate.
-* `data/tickets/ticket-YYYY-MM-DD.jld2`: the [`MyTomorrowsTicket`](https://varnerlab.org/eCornell-AI-finance-lectures/dev/session4/#MyTomorrowsTicket) record written by the 16:00 close fire with tomorrow's proposed open allocation.
+* `data/intraday-tape/tape-YYYY-MM-DD.jld2`: one tape entry per 30-minute fire. `YYYY-MM-DD` is today.
+* `data/queue/queue-YYYY-MM-DD.jld2`: a vector of [`MyComplianceQueueItem`](https://varnerlab.org/eCornell-AI-finance-lectures/dev/session4/#MyComplianceQueueItem), one per intraday trade that failed at least one gate. `YYYY-MM-DD` is today.
+* `data/tickets/ticket-YYYY-MM-DD.jld2`: the [`MyTomorrowsTicket`](https://varnerlab.org/eCornell-AI-finance-lectures/dev/session4/#MyTomorrowsTicket) record written by the 16:00 close fire with the proposed open allocation. `YYYY-MM-DD` is the next trading day (when the trades will execute), not today.
 
 The review writes one artifact at the end:
 
-* `data/tickets/signed-YYYY-MM-DD.jld2`: a [`MySignedTicket`](https://varnerlab.org/eCornell-AI-finance-lectures/dev/session4/#MySignedTicket) wrapping tomorrow's ticket plus any per-ticker modifications. The `production_runner.jl --mode=execute_signed_ticket` cron at 9:35am ET loads this file and submits the trades.
+* `data/tickets/signed-YYYY-MM-DD.jld2`: a [`MySignedTicket`](https://varnerlab.org/eCornell-AI-finance-lectures/dev/session4/#MySignedTicket) wrapping tomorrow's ticket plus any per-ticker modifications. `YYYY-MM-DD` is the execution date, matching the ticket file. The `production_runner.jl --mode=execute_signed_ticket` cron at 9:35am ET on that date loads this file and submits the trades.
 
 We work each section in order. Copy the code blocks into a Julia REPL with the session-4 environment activated.
 
@@ -25,12 +25,20 @@ print("Date to review [yyyy-mm-dd] (default: today): ")
 input = strip(readline())
 review_date = isempty(input) ? today() : Date(input)
 review_str  = Dates.format(review_date, "yyyy-mm-dd")
-println("Reviewing $review_str.")
+
+# Tape and queue use the review (writer) date; ticket and signed use the next
+# trading day (execution date), matching the cron's naming convention.
+execute_date = review_date + Day(1)
+while dayofweek(execute_date) > 5
+    execute_date += Day(1)
+end
+execute_str = Dates.format(execute_date, "yyyy-mm-dd")
+println("Reviewing $review_str; signing ticket for $execute_str.")
 
 TAPE_PATH   = joinpath("data", "intraday-tape", "tape-$(review_str).jld2")
 QUEUE_PATH  = joinpath("data", "queue", "queue-$(review_str).jld2")
-TICKET_PATH = joinpath("data", "tickets", "ticket-$(review_str).jld2")
-SIGNED_PATH = joinpath("data", "tickets", "signed-$(review_str).jld2")
+TICKET_PATH = joinpath("data", "tickets", "ticket-$(execute_str).jld2")
+SIGNED_PATH = joinpath("data", "tickets", "signed-$(execute_str).jld2")
 ```
 
 ---
