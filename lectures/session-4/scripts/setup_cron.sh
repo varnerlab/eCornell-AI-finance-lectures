@@ -13,7 +13,9 @@
 #     09:30 -- open fire (--mode=engine)
 #     10:00, 10:30, 11:00, 11:30, 12:00, 12:30,
 #     13:00, 13:30, 14:00, 14:30, 15:00, 15:30  -- intraday fires (--mode=engine)
-#     16:00 -- close fire (--mode=engine_close); writes EOD tape and tomorrow's ticket
+#     15:55 -- close fire (--mode=engine_close); 5 min before the bell so
+#              market orders fill inside RTH rather than queuing for next
+#              open. Writes EOD tape and tomorrow's ticket.
 #
 #   News scoring fires (hourly during the session):
 #     10:00, 11:00, 12:00, 13:00, 14:00, 15:00, 16:00  (--mode=hourly)
@@ -67,7 +69,7 @@ NEWS_CMD="$PREFIX $JULIA --project=$SESSION_DIR news_scorer.jl --mode=hourly >> 
 # === Engine fires ===
 30 9     * * 1-5 $ENG_CMD    # [AI-FINANCE] engine-open
 0,30 10-15 * * 1-5 $ENG_CMD  # [AI-FINANCE] engine-intraday
-0  16    * * 1-5 $CLOSE_CMD  # [AI-FINANCE] engine-close
+55 15    * * 1-5 $CLOSE_CMD  # [AI-FINANCE] engine-close
 # === News scoring (hourly) ===
 0  10-16 * * 1-5 $NEWS_CMD   # [AI-FINANCE] news-hourly
 # === Next-day execution of class-signed ticket ===

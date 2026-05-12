@@ -6,7 +6,7 @@ machine-specific secrets and must be created by hand on each machine.
 
 ## What this cron does, briefly
 
-- 14 engine fires per weekday (09:30 open, every :00/:30 from 10:00–15:30, 16:00 close) — submits paper Alpaca orders, queues compliance exceptions.
+- 14 engine fires per weekday (09:30 open, every :00/:30 from 10:00–15:30, 15:55 close) — submits paper Alpaca orders, queues compliance exceptions. The close fire fires 5 min before the bell so market orders fill inside RTH rather than queuing for next open.
 - 7 news fires per weekday (10:00–16:00 hourly) — calls Anthropic to fetch + score real headlines.
 - 1 next-day execution fire (09:35) — submits the prior session's class-signed ticket.
 

@@ -2398,3 +2398,109 @@ in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-le
 2026-05-11 16:00:30 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-11 16:00:43 [ENGINE] fire=2026-05-11T20:00:33.766 sent=-0.008 λ=-0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100749.41 dd=0.8% auto=0 queued=13 submitted=0
 2026-05-11 16:00:44 [ENGINE_CLOSE] wrote ticket for 2026-05-12: 13 trades, η=4.94, regime=neutral, news_flags=19
+2026-05-12 09:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 09:30:42 [ENGINE] fire=2026-05-12T13:30:33.846 sent=0.0 λ=0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100477.45 dd=1.1% auto=9 queued=12 submitted=9
+2026-05-12 09:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 09:30:42 [ENGINE] fire=2026-05-12T13:30:33.846 sent=0.0 λ=0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100477.45 dd=1.1% auto=9 queued=12 submitted=9
+2026-05-12 09:35:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 09:35:31 [EXECUTE] loaded signed ticket: 13 trades; 1 modifications signed by Jeffrey D Varner at 2026-05-11T21:41:08.172
+2026-05-12 09:35:33 [EXECUTE] submitted 13 orders from signed ticket.
+2026-05-12 09:35:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 09:35:31 [EXECUTE] loaded signed ticket: 13 trades; 1 modifications signed by Jeffrey D Varner at 2026-05-11T21:41:08.172
+2026-05-12 09:35:33 [EXECUTE] submitted 13 orders from signed ticket.
+2026-05-12 10:00:26 [NEWS-HOURLY] fire at 2026-05-12T14:00:26.419 source=anthropic_web tickers=22
+2026-05-12 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 10:00:40 [ENGINE] fire=2026-05-12T14:00:32.527 sent=0.0 λ=0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.07] wealth=$100819.84 dd=0.7% auto=4 queued=9 submitted=4
+2026-05-12 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 10:00:40 [ENGINE] fire=2026-05-12T14:00:32.527 sent=0.0 λ=0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.07] wealth=$100819.84 dd=0.7% auto=4 queued=9 submitted=4
+2026-05-12 10:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 10:30:37 [ENGINE] fire=2026-05-12T14:30:29.838 sent=-0.046 λ=0.008 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.07] wealth=$100862.81 dd=0.7% auto=0 queued=9 submitted=0
+2026-05-12 10:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 10:30:37 [ENGINE] fire=2026-05-12T14:30:29.838 sent=-0.046 λ=0.008 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.07] wealth=$100862.81 dd=0.7% auto=0 queued=9 submitted=0
+2026-05-12 10:48:47 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-12 10:48:49 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-14.jld2 -- 66 items, 18 tickers flagged
+2026-05-12 10:00:26 [NEWS-HOURLY] fire at 2026-05-12T14:00:26.419 source=anthropic_web tickers=22
+2026-05-12 10:48:47 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-12 10:48:49 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-14.jld2 -- 66 items, 18 tickers flagged
+2026-05-12 11:00:26 [NEWS-HOURLY] fire at 2026-05-12T15:00:25.907 source=anthropic_web tickers=22
+2026-05-12 11:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 11:00:41 [ENGINE] fire=2026-05-12T15:00:32.381 sent=-0.029 λ=0.01 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.07] wealth=$100801.4 dd=0.7% auto=5 queued=4 submitted=5
+2026-05-12 11:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 11:00:41 [ENGINE] fire=2026-05-12T15:00:32.381 sent=-0.029 λ=0.01 regime=neutral η=4.95 [shadow η_h=4.95 η_p=2.07] wealth=$100801.4 dd=0.7% auto=5 queued=4 submitted=5
+2026-05-12 11:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 11:30:38 [ENGINE] fire=2026-05-12T15:30:30.181 sent=-0.068 λ=0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.07] wealth=$100781.91 dd=0.8% auto=0 queued=5 submitted=0
+2026-05-12 11:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 11:30:38 [ENGINE] fire=2026-05-12T15:30:30.181 sent=-0.068 λ=0.014 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.07] wealth=$100781.91 dd=0.8% auto=0 queued=5 submitted=0
+2026-05-12 11:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-12 11:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-15.jld2 -- 66 items, 17 tickers flagged
+2026-05-12 11:00:26 [NEWS-HOURLY] fire at 2026-05-12T15:00:25.907 source=anthropic_web tickers=22
+2026-05-12 11:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-12 11:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-15.jld2 -- 66 items, 17 tickers flagged
+2026-05-12 12:00:27 [NEWS-HOURLY] fire at 2026-05-12T16:00:27.532 source=anthropic_web tickers=22
+2026-05-12 12:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 12:00:41 [ENGINE] fire=2026-05-12T16:00:33.839 sent=-0.059 λ=0.017 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.07] wealth=$100870.19 dd=0.7% auto=0 queued=5 submitted=0
+2026-05-12 12:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 12:00:41 [ENGINE] fire=2026-05-12T16:00:33.839 sent=-0.059 λ=0.017 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.07] wealth=$100870.19 dd=0.7% auto=0 queued=5 submitted=0
+2026-05-12 12:30:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 12:30:30 [ENGINE] fire=2026-05-12T16:30:23.612 sent=-0.032 λ=0.019 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.07] wealth=$100882.37 dd=0.7% auto=0 queued=5 submitted=0
+2026-05-12 12:30:20 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 12:30:30 [ENGINE] fire=2026-05-12T16:30:23.612 sent=-0.032 λ=0.019 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.07] wealth=$100882.37 dd=0.7% auto=0 queued=5 submitted=0
+2026-05-12 12:48:50 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-12 12:48:53 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-16.jld2 -- 66 items, 16 tickers flagged
+2026-05-12 12:00:27 [NEWS-HOURLY] fire at 2026-05-12T16:00:27.532 source=anthropic_web tickers=22
+2026-05-12 12:48:50 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-12 12:48:53 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-16.jld2 -- 66 items, 16 tickers flagged
+2026-05-12 13:00:26 [NEWS-HOURLY] fire at 2026-05-12T17:00:26.566 source=anthropic_web tickers=22
+2026-05-12 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 13:00:41 [ENGINE] fire=2026-05-12T17:00:33.252 sent=-0.038 λ=0.022 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.08] wealth=$100899.18 dd=0.6% auto=0 queued=5 submitted=0
+2026-05-12 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 13:00:41 [ENGINE] fire=2026-05-12T17:00:33.252 sent=-0.038 λ=0.022 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.08] wealth=$100899.18 dd=0.6% auto=0 queued=5 submitted=0
+2026-05-12 13:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 13:30:29 [ENGINE] fire=2026-05-12T17:30:22.994 sent=0.007 λ=0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.07] wealth=$100942.26 dd=0.6% auto=0 queued=6 submitted=0
+2026-05-12 13:30:19 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 13:30:29 [ENGINE] fire=2026-05-12T17:30:22.994 sent=0.007 λ=0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.07] wealth=$100942.26 dd=0.6% auto=0 queued=6 submitted=0
+2026-05-12 13:48:39 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-12 13:48:42 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-17.jld2 -- 66 items, 17 tickers flagged
+2026-05-12 13:00:26 [NEWS-HOURLY] fire at 2026-05-12T17:00:26.566 source=anthropic_web tickers=22
+2026-05-12 13:48:39 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-12 13:48:42 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-17.jld2 -- 66 items, 17 tickers flagged
+2026-05-12 14:00:31 [NEWS-HOURLY] fire at 2026-05-12T18:00:31.093 source=anthropic_web tickers=22
+2026-05-12 14:00:34 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 14:00:47 [ENGINE] fire=2026-05-12T18:00:38.223 sent=0.038 λ=0.022 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.07] wealth=$100937.78 dd=0.6% auto=2 queued=6 submitted=2
+2026-05-12 14:00:34 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 14:00:47 [ENGINE] fire=2026-05-12T18:00:38.223 sent=0.038 λ=0.022 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.07] wealth=$100937.78 dd=0.6% auto=2 queued=6 submitted=2
+2026-05-12 14:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 14:30:40 [ENGINE] fire=2026-05-12T18:30:30.451 sent=0.05 λ=0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.07] wealth=$100986.02 dd=0.6% auto=17 queued=5 submitted=17
+2026-05-12 14:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 14:30:40 [ENGINE] fire=2026-05-12T18:30:30.451 sent=0.05 λ=0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.07] wealth=$100986.02 dd=0.6% auto=17 queued=5 submitted=17
+2026-05-12 14:49:09 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 110/100).
+2026-05-12 14:49:11 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-18.jld2 -- 66 items, 16 tickers flagged
+2026-05-12 14:00:31 [NEWS-HOURLY] fire at 2026-05-12T18:00:31.093 source=anthropic_web tickers=22
+2026-05-12 14:49:09 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 110/100).
+2026-05-12 14:49:11 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-12-18.jld2 -- 66 items, 16 tickers flagged
+2026-05-12 15:00:26 [NEWS-HOURLY] fire at 2026-05-12T19:00:26.741 source=anthropic_web tickers=22
+2026-05-12 15:00:28 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-12 15:00:28 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-12 15:00:26 [NEWS-HOURLY] fire at 2026-05-12T19:00:26.741 source=anthropic_web tickers=22
+2026-05-12 15:00:28 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-12 15:00:28 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-12 15:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 15:00:43 [ENGINE] fire=2026-05-12T19:00:33.516 sent=0.044 λ=0.019 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.07] wealth=$100946.55 dd=0.6% auto=11 queued=7 submitted=11
+2026-05-12 15:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 15:00:43 [ENGINE] fire=2026-05-12T19:00:33.516 sent=0.044 λ=0.019 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.07] wealth=$100946.55 dd=0.6% auto=11 queued=7 submitted=11
+2026-05-12 15:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 15:30:40 [ENGINE] fire=2026-05-12T19:30:31.012 sent=0.068 λ=0.017 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.07] wealth=$101094.6 dd=0.5% auto=13 queued=7 submitted=13
+2026-05-12 15:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 15:30:40 [ENGINE] fire=2026-05-12T19:30:31.012 sent=0.068 λ=0.017 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.07] wealth=$101094.6 dd=0.5% auto=13 queued=7 submitted=13
+2026-05-12 16:00:25 [NEWS-HOURLY] fire at 2026-05-12T20:00:25.524 source=anthropic_web tickers=22
+2026-05-12 16:00:27 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-12 16:00:27 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-12 16:00:25 [NEWS-HOURLY] fire at 2026-05-12T20:00:25.524 source=anthropic_web tickers=22
+2026-05-12 16:00:27 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-12 16:00:27 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-12 16:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 16:00:41 [ENGINE] fire=2026-05-12T20:00:31.639 sent=0.053 λ=0.015 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$101133.84 dd=0.4% auto=9 queued=7 submitted=9
+2026-05-12 16:00:42 [ENGINE_CLOSE] wrote ticket for 2026-05-13: 16 trades, η=4.93, regime=neutral, news_flags=16
+2026-05-12 16:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-12 16:00:41 [ENGINE] fire=2026-05-12T20:00:31.639 sent=0.053 λ=0.015 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$101133.84 dd=0.4% auto=9 queued=7 submitted=9
+2026-05-12 16:00:42 [ENGINE_CLOSE] wrote ticket for 2026-05-13: 16 trades, η=4.93, regime=neutral, news_flags=16
