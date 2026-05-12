@@ -567,12 +567,19 @@ function run_engine_step(client, cfg, state, fire_time::DateTime; is_close::Bool
     gm_smoothed = compute_ema(gm_raw; window = cfg.N_growth);
     gm_t = isempty(gm_smoothed) ? 0.0 : gm_smoothed[end];
     γ = compute_preference_weights(sim_params_current, tickers, gm_t, λ_eff);
-    γ_sum = sum(γ);
-    γ_sum > 0 || (γ = ones(K) ./ K);
-    target_weights = γ ./ sum(γ);
 
-    target_dollar = target_weights .* current_wealth;
-    target_shares = target_dollar ./ max.(current_prices, 1e-8);
+    # Cobb-Douglas allocator: γ_i > 0 receive proportional shares of the
+    # remaining budget; γ_i ≤ 0 receive the minimum-position floor ε. Per
+    # the canonical Cobb-Douglas formulation in the Session 2 lecture.
+    cd_problem = build(MyCobbDouglasChoiceProblem, (
+        gamma = γ,
+        prices = current_prices,
+        B = max(current_wealth, 0.0),
+        epsilon = cfg.epsilon,
+    ));
+    target_shares, _ = allocate_cobb_douglas(cd_problem);
+    target_dollar = target_shares .* current_prices;
+    target_weights = target_dollar ./ max(current_wealth, 1e-8);
     delta_shares = round.(Int, target_shares .- current_shares);
 
     # 8) News severity per ticker.
@@ -736,9 +743,6 @@ function run_engine_close(client, cfg, state, fire_time::DateTime)
     gm_smoothed = compute_ema(gm_raw; window = cfg.N_growth);
     gm_t = isempty(gm_smoothed) ? 0.0 : gm_smoothed[end];
     γ = compute_preference_weights(sim_params_current, tickers, gm_t, λ_eff);
-    γ_sum = sum(γ);
-    γ_sum > 0 || (γ = ones(K) ./ K);
-    target_weights = γ ./ sum(γ);
 
     # Pull final prices + positions for the ticket.
     bars = fetch_latest_bars(client, tickers, state["bar_minutes"]::Int,
@@ -756,6 +760,19 @@ function run_engine_close(client, cfg, state, fire_time::DateTime)
         end
     end
     current_cash = Float64(Alpaca.get_account(client).cash);
+
+    # Cobb-Douglas allocator: γ_i > 0 receive proportional shares of the
+    # remaining budget; γ_i ≤ 0 receive the minimum-position floor ε. Per
+    # the canonical Cobb-Douglas formulation in the Session 2 lecture.
+    portfolio_value = sum(current_shares .* current_prices) + current_cash;
+    cd_problem = build(MyCobbDouglasChoiceProblem, (
+        gamma = γ,
+        prices = current_prices,
+        B = max(portfolio_value, 0.0),
+        epsilon = cfg.epsilon,
+    ));
+    target_shares_alloc, _ = allocate_cobb_douglas(cd_problem);
+    target_weights = (target_shares_alloc .* current_prices) ./ max(portfolio_value, 1e-8);
 
     sentiment_signal = build(MySentimentSignal, (
         score = sentiment, source = "intraday-rolling",
