@@ -2504,3 +2504,2647 @@ in expression starting at /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-le
 2026-05-12 16:00:28 [CONFIG] tickers source=session-1 -> 22 names
 2026-05-12 16:00:41 [ENGINE] fire=2026-05-12T20:00:31.639 sent=0.053 λ=0.015 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$101133.84 dd=0.4% auto=9 queued=7 submitted=9
 2026-05-12 16:00:42 [ENGINE_CLOSE] wrote ticket for 2026-05-13: 16 trades, η=4.93, regime=neutral, news_flags=16
+2026-05-13 09:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 09:30:41 [ENGINE] fire=2026-05-13T13:30:31.916 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101107.88 dd=0.4% auto=13 queued=7 submitted=13
+2026-05-13 09:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 09:30:41 [ENGINE] fire=2026-05-13T13:30:31.916 sent=0.0 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$101107.88 dd=0.4% auto=13 queued=7 submitted=13
+2026-05-13 09:35:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 09:35:30 [EXECUTE] loaded signed ticket: 16 trades; 0 modifications signed by Jeffrey D Varner at 2026-05-12T17:26:54.523
+2026-05-13 09:35:32 [EXECUTE] submitted 16 orders from signed ticket.
+2026-05-13 09:35:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 09:35:30 [EXECUTE] loaded signed ticket: 16 trades; 0 modifications signed by Jeffrey D Varner at 2026-05-12T17:26:54.523
+2026-05-13 09:35:32 [EXECUTE] submitted 16 orders from signed ticket.
+2026-05-13 10:00:26 [NEWS-HOURLY] fire at 2026-05-13T14:00:26.474 source=anthropic_web tickers=22
+2026-05-13 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 10:00:42 [ENGINE] fire=2026-05-13T14:00:33.025 sent=0.0 λ=-0.001 regime=neutral η=5.0 [shadow η_h=5.0 η_p=2.06] wealth=$100492.16 dd=1.0% auto=13 queued=4 submitted=13
+2026-05-13 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 10:00:42 [ENGINE] fire=2026-05-13T14:00:33.025 sent=0.0 λ=-0.001 regime=neutral η=5.0 [shadow η_h=5.0 η_p=2.06] wealth=$100492.16 dd=1.0% auto=13 queued=4 submitted=13
+2026-05-13 10:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 10:30:38 [ENGINE] fire=2026-05-13T14:30:29.364 sent=0.01 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100487.93 dd=1.1% auto=11 queued=4 submitted=11
+2026-05-13 10:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 10:30:38 [ENGINE] fire=2026-05-13T14:30:29.364 sent=0.01 λ=-0.001 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100487.93 dd=1.1% auto=11 queued=4 submitted=11
+2026-05-13 10:49:10 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-13 10:49:13 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-14.jld2 -- 66 items, 19 tickers flagged
+2026-05-13 10:00:26 [NEWS-HOURLY] fire at 2026-05-13T14:00:26.474 source=anthropic_web tickers=22
+2026-05-13 10:49:10 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-13 10:49:13 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-14.jld2 -- 66 items, 19 tickers flagged
+2026-05-13 11:00:25 [NEWS-HOURLY] fire at 2026-05-13T15:00:25.464 source=anthropic_web tickers=22
+2026-05-13 11:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 11:00:41 [ENGINE] fire=2026-05-13T15:00:32.114 sent=0.0 λ=-0.002 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100386.14 dd=1.2% auto=7 queued=3 submitted=7
+2026-05-13 11:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 11:00:41 [ENGINE] fire=2026-05-13T15:00:32.114 sent=0.0 λ=-0.002 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100386.14 dd=1.2% auto=7 queued=3 submitted=7
+2026-05-13 11:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 11:30:38 [ENGINE] fire=2026-05-13T15:30:29.716 sent=0.023 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100363.35 dd=1.2% auto=6 queued=3 submitted=6
+2026-05-13 11:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 11:30:38 [ENGINE] fire=2026-05-13T15:30:29.716 sent=0.023 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100363.35 dd=1.2% auto=6 queued=3 submitted=6
+2026-05-13 11:48:41 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-13 11:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-15.jld2 -- 66 items, 18 tickers flagged
+2026-05-13 11:00:25 [NEWS-HOURLY] fire at 2026-05-13T15:00:25.464 source=anthropic_web tickers=22
+2026-05-13 11:48:41 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-13 11:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-15.jld2 -- 66 items, 18 tickers flagged
+2026-05-13 12:00:26 [NEWS-HOURLY] fire at 2026-05-13T16:00:26.072 source=anthropic_web tickers=22
+2026-05-13 12:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 12:00:41 [ENGINE] fire=2026-05-13T16:00:32.689 sent=0.02 λ=-0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.06] wealth=$100382.02 dd=1.2% auto=4 queued=4 submitted=4
+2026-05-13 12:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 12:00:41 [ENGINE] fire=2026-05-13T16:00:32.689 sent=0.02 λ=-0.005 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.06] wealth=$100382.02 dd=1.2% auto=4 queued=4 submitted=4
+2026-05-13 12:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 12:30:39 [ENGINE] fire=2026-05-13T16:30:30.431 sent=0.065 λ=-0.007 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.06] wealth=$100641.23 dd=0.9% auto=13 queued=6 submitted=13
+2026-05-13 12:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 12:30:39 [ENGINE] fire=2026-05-13T16:30:30.431 sent=0.065 λ=-0.007 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.06] wealth=$100641.23 dd=0.9% auto=13 queued=6 submitted=13
+2026-05-13 12:49:12 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-13 12:49:14 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-16.jld2 -- 66 items, 15 tickers flagged
+2026-05-13 12:00:26 [NEWS-HOURLY] fire at 2026-05-13T16:00:26.072 source=anthropic_web tickers=22
+2026-05-13 12:49:12 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-13 12:49:14 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-16.jld2 -- 66 items, 15 tickers flagged
+2026-05-13 13:00:26 [NEWS-HOURLY] fire at 2026-05-13T17:00:26.635 source=anthropic_web tickers=22
+2026-05-13 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 13:00:43 [ENGINE] fire=2026-05-13T17:00:33.696 sent=0.05 λ=-0.01 regime=neutral η=4.96 [shadow η_h=4.96 η_p=2.06] wealth=$100655.54 dd=0.9% auto=6 queued=5 submitted=6
+2026-05-13 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 13:00:43 [ENGINE] fire=2026-05-13T17:00:33.696 sent=0.05 λ=-0.01 regime=neutral η=4.96 [shadow η_h=4.96 η_p=2.06] wealth=$100655.54 dd=0.9% auto=6 queued=5 submitted=6
+2026-05-13 13:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 13:30:41 [ENGINE] fire=2026-05-13T17:30:32.248 sent=0.051 λ=-0.013 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100724.65 dd=0.8% auto=4 queued=5 submitted=4
+2026-05-13 13:30:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 13:30:41 [ENGINE] fire=2026-05-13T17:30:32.248 sent=0.051 λ=-0.013 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$100724.65 dd=0.8% auto=4 queued=5 submitted=4
+2026-05-13 13:48:29 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-13 13:48:32 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-17.jld2 -- 66 items, 14 tickers flagged
+2026-05-13 13:00:26 [NEWS-HOURLY] fire at 2026-05-13T17:00:26.635 source=anthropic_web tickers=22
+2026-05-13 13:48:29 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-13 13:48:32 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-17.jld2 -- 66 items, 14 tickers flagged
+2026-05-13 14:00:30 [NEWS-HOURLY] fire at 2026-05-13T18:00:30.609 source=anthropic_web tickers=22
+2026-05-13 14:00:33 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 14:00:47 [ENGINE] fire=2026-05-13T18:00:36.588 sent=0.038 λ=-0.015 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$100786.76 dd=0.8% auto=12 queued=5 submitted=12
+2026-05-13 14:00:33 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 14:00:47 [ENGINE] fire=2026-05-13T18:00:36.588 sent=0.038 λ=-0.015 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$100786.76 dd=0.8% auto=12 queued=5 submitted=12
+2026-05-13 14:21:47 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(500, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 500 Internal Server Error
+Date: Wed, 13 May 2026 18:21:46 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb12mYm3BQwBdeMYmZZWU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-78e5f60d0d9e91501dd6b6508279b63a-54782c7ed4a72906-01
+Server: cloudflare
+x-envoy-upstream-service-time: 60858
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fb3add30fde1512-EWR
+
+{"type":"error","error":{"type":"api_error","message":"Internal server error"},"request_id":"req_011Cb12mYm3BQwBdeMYmZZWU"}"""); skipping ticker.
+2026-05-13 14:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 14:30:39 [ENGINE] fire=2026-05-13T18:30:30.246 sent=0.051 λ=-0.018 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.06] wealth=$100870.69 dd=0.7% auto=12 queued=4 submitted=12
+2026-05-13 14:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 14:30:39 [ENGINE] fire=2026-05-13T18:30:30.246 sent=0.051 λ=-0.018 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.06] wealth=$100870.69 dd=0.7% auto=12 queued=4 submitted=12
+2026-05-13 14:48:44 [NEWS-ANTHROPIC_WEB] 63 items, 63 scored, 21 searches (today 109/100).
+2026-05-13 14:48:46 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-18.jld2 -- 63 items, 16 tickers flagged
+2026-05-13 14:00:30 [NEWS-HOURLY] fire at 2026-05-13T18:00:30.609 source=anthropic_web tickers=22
+2026-05-13 14:21:47 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(500, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 500 Internal Server Error
+Date: Wed, 13 May 2026 18:21:46 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb12mYm3BQwBdeMYmZZWU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-78e5f60d0d9e91501dd6b6508279b63a-54782c7ed4a72906-01
+Server: cloudflare
+x-envoy-upstream-service-time: 60858
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fb3add30fde1512-EWR
+
+{"type":"error","error":{"type":"api_error","message":"Internal server error"},"request_id":"req_011Cb12mYm3BQwBdeMYmZZWU"}"""); skipping ticker.
+2026-05-13 14:48:44 [NEWS-ANTHROPIC_WEB] 63 items, 63 scored, 21 searches (today 109/100).
+2026-05-13 14:48:46 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-13-18.jld2 -- 63 items, 16 tickers flagged
+2026-05-13 15:00:25 [NEWS-HOURLY] fire at 2026-05-13T19:00:25.586 source=anthropic_web tickers=22
+2026-05-13 15:00:27 [NEWS-ANTHROPIC_WEB] daily search cap reached (109/100); falling back to synthetic.
+2026-05-13 15:00:27 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-13 15:00:25 [NEWS-HOURLY] fire at 2026-05-13T19:00:25.586 source=anthropic_web tickers=22
+2026-05-13 15:00:27 [NEWS-ANTHROPIC_WEB] daily search cap reached (109/100); falling back to synthetic.
+2026-05-13 15:00:27 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-13 15:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 15:00:41 [ENGINE] fire=2026-05-13T19:00:32.106 sent=0.012 λ=-0.019 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.06] wealth=$100869.67 dd=0.7% auto=13 queued=5 submitted=13
+2026-05-13 15:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 15:00:41 [ENGINE] fire=2026-05-13T19:00:32.106 sent=0.012 λ=-0.019 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.06] wealth=$100869.67 dd=0.7% auto=13 queued=5 submitted=13
+2026-05-13 15:30:32 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 15:30:44 [ENGINE] fire=2026-05-13T19:30:35.652 sent=0.019 λ=-0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.05] wealth=$100901.18 dd=0.6% auto=11 queued=5 submitted=11
+2026-05-13 15:30:32 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 15:30:44 [ENGINE] fire=2026-05-13T19:30:35.652 sent=0.019 λ=-0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.05] wealth=$100901.18 dd=0.6% auto=11 queued=5 submitted=11
+2026-05-13 15:55:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 15:55:39 [ENGINE] fire=2026-05-13T19:55:30.038 sent=-0.002 λ=-0.023 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$100790.12 dd=0.8% auto=14 queued=5 submitted=14
+2026-05-13 15:55:40 [ENGINE_CLOSE] wrote ticket for 2026-05-14: 5 trades, η=4.9, regime=neutral, news_flags=16
+2026-05-13 15:55:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-13 15:55:39 [ENGINE] fire=2026-05-13T19:55:30.038 sent=-0.002 λ=-0.023 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$100790.12 dd=0.8% auto=14 queued=5 submitted=14
+2026-05-13 15:55:40 [ENGINE_CLOSE] wrote ticket for 2026-05-14: 5 trades, η=4.9, regime=neutral, news_flags=16
+2026-05-13 16:00:23 [NEWS-HOURLY] fire at 2026-05-13T20:00:23.867 source=anthropic_web tickers=22
+2026-05-13 16:00:25 [NEWS-ANTHROPIC_WEB] daily search cap reached (109/100); falling back to synthetic.
+2026-05-13 16:00:25 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-13 16:00:23 [NEWS-HOURLY] fire at 2026-05-13T20:00:23.867 source=anthropic_web tickers=22
+2026-05-13 16:00:25 [NEWS-ANTHROPIC_WEB] daily search cap reached (109/100); falling back to synthetic.
+2026-05-13 16:00:25 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-14 09:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 09:30:42 [ENGINE] fire=2026-05-14T13:30:33.464 sent=0.0 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100979.6 dd=0.6% auto=15 queued=5 submitted=15
+2026-05-14 09:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 09:30:42 [ENGINE] fire=2026-05-14T13:30:33.464 sent=0.0 λ=-0.003 regime=neutral η=4.99 [shadow η_h=4.99 η_p=2.06] wealth=$100979.6 dd=0.6% auto=15 queued=5 submitted=15
+2026-05-14 09:35:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 09:35:31 [EXECUTE] loaded signed ticket: 5 trades; 3 modifications signed by Jeffrey D Varner at 2026-05-13T19:10:34.071
+2026-05-14 09:35:32 [EXECUTE] skipping UNH (rejected at sign-off).
+2026-05-14 09:35:32 [EXECUTE] skipping ABBV (rejected at sign-off).
+2026-05-14 09:35:32 [EXECUTE] skipping AVGO (rejected at sign-off).
+2026-05-14 09:35:32 [EXECUTE] submitted 2 orders from signed ticket.
+2026-05-14 09:35:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 09:35:31 [EXECUTE] loaded signed ticket: 5 trades; 3 modifications signed by Jeffrey D Varner at 2026-05-13T19:10:34.071
+2026-05-14 09:35:32 [EXECUTE] skipping UNH (rejected at sign-off).
+2026-05-14 09:35:32 [EXECUTE] skipping ABBV (rejected at sign-off).
+2026-05-14 09:35:32 [EXECUTE] skipping AVGO (rejected at sign-off).
+2026-05-14 09:35:32 [EXECUTE] submitted 2 orders from signed ticket.
+2026-05-14 10:00:26 [NEWS-HOURLY] fire at 2026-05-14T14:00:26.008 source=anthropic_web tickers=22
+2026-05-14 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 10:00:41 [ENGINE] fire=2026-05-14T14:00:32.691 sent=0.0 λ=-0.004 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.06] wealth=$101116.1 dd=0.4% auto=6 queued=5 submitted=6
+2026-05-14 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 10:00:41 [ENGINE] fire=2026-05-14T14:00:32.691 sent=0.0 λ=-0.004 regime=neutral η=4.98 [shadow η_h=4.98 η_p=2.06] wealth=$101116.1 dd=0.4% auto=6 queued=5 submitted=6
+2026-05-14 10:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 10:30:38 [ENGINE] fire=2026-05-14T14:30:30.075 sent=0.0 λ=-0.006 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.06] wealth=$101296.8 dd=0.3% auto=8 queued=5 submitted=8
+2026-05-14 10:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 10:30:38 [ENGINE] fire=2026-05-14T14:30:30.075 sent=0.0 λ=-0.006 regime=neutral η=4.97 [shadow η_h=4.97 η_p=2.06] wealth=$101296.8 dd=0.3% auto=8 queued=5 submitted=8
+2026-05-14 10:48:55 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-14 10:48:57 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-14.jld2 -- 66 items, 17 tickers flagged
+2026-05-14 10:00:26 [NEWS-HOURLY] fire at 2026-05-14T14:00:26.008 source=anthropic_web tickers=22
+2026-05-14 10:48:55 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-14 10:48:57 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-14.jld2 -- 66 items, 17 tickers flagged
+2026-05-14 11:00:30 [NEWS-HOURLY] fire at 2026-05-14T15:00:29.962 source=anthropic_web tickers=22
+2026-05-14 11:00:33 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 11:00:45 [ENGINE] fire=2026-05-14T15:00:36.591 sent=0.059 λ=-0.009 regime=neutral η=4.96 [shadow η_h=4.96 η_p=2.06] wealth=$101472.26 dd=0.1% auto=6 queued=4 submitted=6
+2026-05-14 11:00:33 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 11:00:45 [ENGINE] fire=2026-05-14T15:00:36.591 sent=0.059 λ=-0.009 regime=neutral η=4.96 [shadow η_h=4.96 η_p=2.06] wealth=$101472.26 dd=0.1% auto=6 queued=4 submitted=6
+2026-05-14 11:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 11:30:38 [ENGINE] fire=2026-05-14T15:30:29.891 sent=0.045 λ=-0.012 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$101573.46 dd=0.0% auto=6 queued=4 submitted=6
+2026-05-14 11:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 11:30:38 [ENGINE] fire=2026-05-14T15:30:29.891 sent=0.045 λ=-0.012 regime=neutral η=4.94 [shadow η_h=4.94 η_p=2.06] wealth=$101573.46 dd=0.0% auto=6 queued=4 submitted=6
+2026-05-14 11:44:08 [NEWS-ANTHROPIC_WEB] score failed for CRM item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Thu, 14 May 2026 15:44:07 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Cb2idX9F4wg4jc4sjowv9
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-c7a4901ec34cfd36f706b52ad57b453d-2f91e33c3ab4b555-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2191
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fbb05b29b5343ad-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Cb2idX9F4wg4jc4sjowv9"}"""); leaving NaN.
+2026-05-14 11:49:10 [NEWS-ANTHROPIC_WEB] 66 items, 65 scored, 22 searches (today 44/100).
+2026-05-14 11:49:13 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-15.jld2 -- 66 items, 16 tickers flagged
+2026-05-14 11:00:30 [NEWS-HOURLY] fire at 2026-05-14T15:00:29.962 source=anthropic_web tickers=22
+2026-05-14 11:44:08 [NEWS-ANTHROPIC_WEB] score failed for CRM item 1: HTTP.Exceptions.StatusError(529, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 529 Unknown Code
+Date: Thu, 14 May 2026 15:44:07 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: true
+request-id: req_011Cb2idX9F4wg4jc4sjowv9
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-c7a4901ec34cfd36f706b52ad57b453d-2f91e33c3ab4b555-01
+Server: cloudflare
+x-envoy-upstream-service-time: 2191
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fbb05b29b5343ad-EWR
+
+{"type":"error","error":{"type":"overloaded_error","message":"Overloaded"},"request_id":"req_011Cb2idX9F4wg4jc4sjowv9"}"""); leaving NaN.
+2026-05-14 11:49:10 [NEWS-ANTHROPIC_WEB] 66 items, 65 scored, 22 searches (today 44/100).
+2026-05-14 11:49:13 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-15.jld2 -- 66 items, 16 tickers flagged
+2026-05-14 12:00:28 [NEWS-HOURLY] fire at 2026-05-14T16:00:28.674 source=anthropic_web tickers=22
+2026-05-14 12:00:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 12:00:45 [ENGINE] fire=2026-05-14T16:00:35.916 sent=0.064 λ=-0.016 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$101631.51 dd=0.0% auto=3 queued=3 submitted=3
+2026-05-14 12:00:31 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 12:00:45 [ENGINE] fire=2026-05-14T16:00:35.916 sent=0.064 λ=-0.016 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$101631.51 dd=0.0% auto=3 queued=3 submitted=3
+2026-05-14 12:30:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 12:30:43 [ENGINE] fire=2026-05-14T16:30:33.138 sent=0.048 λ=-0.018 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.05] wealth=$101397.95 dd=0.2% auto=15 queued=4 submitted=15
+2026-05-14 12:30:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 12:30:43 [ENGINE] fire=2026-05-14T16:30:33.138 sent=0.048 λ=-0.018 regime=neutral η=4.92 [shadow η_h=4.92 η_p=2.05] wealth=$101397.95 dd=0.2% auto=15 queued=4 submitted=15
+2026-05-14 12:48:44 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-14 12:48:47 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-16.jld2 -- 66 items, 17 tickers flagged
+2026-05-14 12:00:28 [NEWS-HOURLY] fire at 2026-05-14T16:00:28.674 source=anthropic_web tickers=22
+2026-05-14 12:48:44 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 66/100).
+2026-05-14 12:48:47 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-16.jld2 -- 66 items, 17 tickers flagged
+2026-05-14 13:00:26 [NEWS-HOURLY] fire at 2026-05-14T17:00:26.436 source=anthropic_web tickers=22
+2026-05-14 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 13:00:42 [ENGINE] fire=2026-05-14T17:00:33.138 sent=0.025 λ=-0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.05] wealth=$101342.72 dd=0.3% auto=11 queued=4 submitted=11
+2026-05-14 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 13:00:42 [ENGINE] fire=2026-05-14T17:00:33.138 sent=0.025 λ=-0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.05] wealth=$101342.72 dd=0.3% auto=11 queued=4 submitted=11
+2026-05-14 13:30:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 13:30:43 [ENGINE] fire=2026-05-14T17:30:33.342 sent=-0.004 λ=-0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.06] wealth=$101361.4 dd=0.3% auto=15 queued=5 submitted=15
+2026-05-14 13:30:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 13:30:43 [ENGINE] fire=2026-05-14T17:30:33.342 sent=-0.004 λ=-0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.06] wealth=$101361.4 dd=0.3% auto=15 queued=5 submitted=15
+2026-05-14 13:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-14 13:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-17.jld2 -- 66 items, 15 tickers flagged
+2026-05-14 13:00:26 [NEWS-HOURLY] fire at 2026-05-14T17:00:26.436 source=anthropic_web tickers=22
+2026-05-14 13:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 88/100).
+2026-05-14 13:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-17.jld2 -- 66 items, 15 tickers flagged
+2026-05-14 14:00:27 [NEWS-HOURLY] fire at 2026-05-14T18:00:27.449 source=anthropic_web tickers=22
+2026-05-14 14:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 14:00:45 [ENGINE] fire=2026-05-14T18:00:34.660 sent=-0.011 λ=-0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$101381.86 dd=0.2% auto=13 queued=2 submitted=13
+2026-05-14 14:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 14:00:45 [ENGINE] fire=2026-05-14T18:00:34.660 sent=-0.011 λ=-0.022 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$101381.86 dd=0.2% auto=13 queued=2 submitted=13
+2026-05-14 14:30:23 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 14:30:39 [ENGINE] fire=2026-05-14T18:30:28.699 sent=-0.023 λ=-0.023 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$101465.97 dd=0.2% auto=15 queued=3 submitted=15
+2026-05-14 14:30:23 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 14:30:39 [ENGINE] fire=2026-05-14T18:30:28.699 sent=-0.023 λ=-0.023 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$101465.97 dd=0.2% auto=15 queued=3 submitted=15
+2026-05-14 14:48:50 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 110/100).
+2026-05-14 14:48:52 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-18.jld2 -- 66 items, 18 tickers flagged
+2026-05-14 14:00:27 [NEWS-HOURLY] fire at 2026-05-14T18:00:27.449 source=anthropic_web tickers=22
+2026-05-14 14:48:50 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 110/100).
+2026-05-14 14:48:52 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-14-18.jld2 -- 66 items, 18 tickers flagged
+2026-05-14 15:00:28 [NEWS-HOURLY] fire at 2026-05-14T19:00:28.824 source=anthropic_web tickers=22
+2026-05-14 15:00:30 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-14 15:00:30 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-14 15:00:28 [NEWS-HOURLY] fire at 2026-05-14T19:00:28.824 source=anthropic_web tickers=22
+2026-05-14 15:00:30 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-14 15:00:30 [NEWS-SYNTHETIC] Out-of-session fire at hour=19; skipping.
+2026-05-14 15:00:32 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 15:00:45 [ENGINE] fire=2026-05-14T19:00:35.584 sent=0.004 λ=-0.024 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$101547.26 dd=0.1% auto=11 queued=6 submitted=11
+2026-05-14 15:00:32 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 15:00:45 [ENGINE] fire=2026-05-14T19:00:35.584 sent=0.004 λ=-0.024 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$101547.26 dd=0.1% auto=11 queued=6 submitted=11
+2026-05-14 15:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 15:30:44 [ENGINE] fire=2026-05-14T19:30:34.001 sent=0.004 λ=-0.025 regime=neutral η=4.89 [shadow η_h=4.89 η_p=2.06] wealth=$101561.44 dd=0.1% auto=12 queued=6 submitted=12
+2026-05-14 15:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 15:30:44 [ENGINE] fire=2026-05-14T19:30:34.001 sent=0.004 λ=-0.025 regime=neutral η=4.89 [shadow η_h=4.89 η_p=2.06] wealth=$101561.44 dd=0.1% auto=12 queued=6 submitted=12
+2026-05-14 15:55:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 15:55:39 [ENGINE] fire=2026-05-14T19:55:29.800 sent=0.016 λ=-0.026 regime=neutral η=4.89 [shadow η_h=4.89 η_p=2.06] wealth=$101548.76 dd=0.1% auto=12 queued=5 submitted=12
+2026-05-14 15:55:40 [ENGINE_CLOSE] wrote ticket for 2026-05-15: 17 trades, η=4.89, regime=neutral, news_flags=18
+2026-05-14 15:55:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-14 15:55:39 [ENGINE] fire=2026-05-14T19:55:29.800 sent=0.016 λ=-0.026 regime=neutral η=4.89 [shadow η_h=4.89 η_p=2.06] wealth=$101548.76 dd=0.1% auto=12 queued=5 submitted=12
+2026-05-14 15:55:40 [ENGINE_CLOSE] wrote ticket for 2026-05-15: 17 trades, η=4.89, regime=neutral, news_flags=18
+2026-05-14 16:00:29 [NEWS-HOURLY] fire at 2026-05-14T20:00:29.256 source=anthropic_web tickers=22
+2026-05-14 16:00:31 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-14 16:00:31 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-14 16:00:29 [NEWS-HOURLY] fire at 2026-05-14T20:00:29.256 source=anthropic_web tickers=22
+2026-05-14 16:00:31 [NEWS-ANTHROPIC_WEB] daily search cap reached (110/100); falling back to synthetic.
+2026-05-14 16:00:31 [NEWS-SYNTHETIC] Out-of-session fire at hour=20; skipping.
+2026-05-15 09:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 09:30:43 [ENGINE] fire=2026-05-15T13:30:34.212 sent=0.0 λ=0.016 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$100948.74 dd=0.7% auto=14 queued=6 submitted=14
+2026-05-15 09:30:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 09:30:43 [ENGINE] fire=2026-05-15T13:30:34.212 sent=0.0 λ=0.016 regime=neutral η=4.93 [shadow η_h=4.93 η_p=2.06] wealth=$100948.74 dd=0.7% auto=14 queued=6 submitted=14
+2026-05-15 09:35:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 09:35:31 [EXECUTE] loaded signed ticket: 17 trades; 0 modifications signed by Jeffrey Varner at 2026-05-14T16:41:13.928
+2026-05-15 09:35:33 [EXECUTE] submitted 17 orders from signed ticket.
+2026-05-15 09:35:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 09:35:31 [EXECUTE] loaded signed ticket: 17 trades; 0 modifications signed by Jeffrey Varner at 2026-05-14T16:41:13.928
+2026-05-15 09:35:33 [EXECUTE] submitted 17 orders from signed ticket.
+2026-05-15 10:00:26 [NEWS-HOURLY] fire at 2026-05-15T14:00:25.875 source=anthropic_web tickers=22
+2026-05-15 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 10:00:41 [ENGINE] fire=2026-05-15T14:00:32.403 sent=-0.111 λ=0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.06] wealth=$100444.0 dd=1.2% auto=13 queued=7 submitted=13
+2026-05-15 10:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 10:00:41 [ENGINE] fire=2026-05-15T14:00:32.403 sent=-0.111 λ=0.02 regime=neutral η=4.91 [shadow η_h=4.91 η_p=2.06] wealth=$100444.0 dd=1.2% auto=13 queued=7 submitted=13
+2026-05-15 10:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 10:30:40 [ENGINE] fire=2026-05-15T14:30:31.491 sent=-0.091 λ=0.023 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$100365.4 dd=1.2% auto=2 queued=7 submitted=2
+2026-05-15 10:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 10:30:40 [ENGINE] fire=2026-05-15T14:30:31.491 sent=-0.091 λ=0.023 regime=neutral η=4.9 [shadow η_h=4.9 η_p=2.06] wealth=$100365.4 dd=1.2% auto=2 queued=7 submitted=2
+2026-05-15 10:48:33 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-15 10:48:35 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-14.jld2 -- 66 items, 18 tickers flagged
+2026-05-15 10:00:26 [NEWS-HOURLY] fire at 2026-05-15T14:00:25.875 source=anthropic_web tickers=22
+2026-05-15 10:48:33 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 22/100).
+2026-05-15 10:48:35 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-14.jld2 -- 66 items, 18 tickers flagged
+2026-05-15 11:00:27 [NEWS-HOURLY] fire at 2026-05-15T15:00:27.298 source=anthropic_web tickers=22
+2026-05-15 11:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 11:00:44 [ENGINE] fire=2026-05-15T15:00:34.639 sent=0.014 λ=0.025 regime=neutral η=4.89 [shadow η_h=4.89 η_p=2.07] wealth=$100294.67 dd=1.3% auto=6 queued=3 submitted=6
+2026-05-15 11:00:30 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 11:00:44 [ENGINE] fire=2026-05-15T15:00:34.639 sent=0.014 λ=0.025 regime=neutral η=4.89 [shadow η_h=4.89 η_p=2.07] wealth=$100294.67 dd=1.3% auto=6 queued=3 submitted=6
+2026-05-15 11:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 11:30:39 [ENGINE] fire=2026-05-15T15:30:30.692 sent=0.021 λ=0.027 regime=neutral η=4.88 [shadow η_h=4.88 η_p=2.07] wealth=$100217.09 dd=1.4% auto=2 queued=3 submitted=2
+2026-05-15 11:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 11:30:39 [ENGINE] fire=2026-05-15T15:30:30.692 sent=0.021 λ=0.027 regime=neutral η=4.88 [shadow η_h=4.88 η_p=2.07] wealth=$100217.09 dd=1.4% auto=2 queued=3 submitted=2
+2026-05-15 11:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-15 11:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-15.jld2 -- 66 items, 17 tickers flagged
+2026-05-15 11:00:27 [NEWS-HOURLY] fire at 2026-05-15T15:00:27.298 source=anthropic_web tickers=22
+2026-05-15 11:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 44/100).
+2026-05-15 11:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-15.jld2 -- 66 items, 17 tickers flagged
+2026-05-15 12:00:26 [NEWS-HOURLY] fire at 2026-05-15T16:00:25.935 source=anthropic_web tickers=22
+2026-05-15 12:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 12:00:40 [ENGINE] fire=2026-05-15T16:00:32.533 sent=-0.0 λ=0.029 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100196.06 dd=1.4% auto=3 queued=2 submitted=3
+2026-05-15 12:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 12:00:40 [ENGINE] fire=2026-05-15T16:00:32.533 sent=-0.0 λ=0.029 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100196.06 dd=1.4% auto=3 queued=2 submitted=3
+2026-05-15 12:23:56 [NEWS-ANTHROPIC_WEB] score failed for UNH item 3: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:23:55 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fUd37DEX4vTFGt4JkB
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-73f9c36d3634a03bc4c97bddca8c2157-4dc8f16637013324-01
+Server: cloudflare
+x-envoy-upstream-service-time: 97
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc37d6cdf481a5c-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fUd37DEX4vTFGt4JkB"}"""); leaving NaN.
+2026-05-15 12:24:59 [NEWS-ANTHROPIC_WEB] fetch failed for LLY: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:24:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fZJYGAytjpdpBnZZFJ
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-2bdcda8fe9997bd602f22025a972e767-a0aae352d48702c4-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3144
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc37ee71e7e28c9-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fZJYGAytjpdpBnZZFJ"}"""); skipping ticker.
+2026-05-15 12:25:59 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:25:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fdkRcbnaRcqszszKht
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d1e61e715e19702efdea753643ecc74a-60f61577d81aaea4-01
+Server: cloudflare
+x-envoy-upstream-service-time: 68
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc38072b946438a-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fdkRcbnaRcqszszKht"}"""); skipping ticker.
+2026-05-15 12:26:59 [NEWS-ANTHROPIC_WEB] fetch failed for HON: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:26:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fiBuQe6enpJSBjCqQj
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-3f31ecdb22ed45d80c96c0237ce8bd83-12f4c5b2c4571592-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc381eb2b2fc425-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fiBuQe6enpJSBjCqQj"}"""); skipping ticker.
+2026-05-15 12:27:59 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:27:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fnd3rXS84Cp9um7hfe
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1ac02c9e317a135f2f6cd44309df0ed6-30c97bf1959c8e6a-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc383631a8f0f90-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fnd3rXS84Cp9um7hfe"}"""); skipping ticker.
+2026-05-15 12:29:00 [NEWS-ANTHROPIC_WEB] fetch failed for AAPL: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:29:00 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fs4VAdXZ21Gw1RCjVo
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-f98b7364b886db9e0d2709b52ae65461-bd4a21427f17a165-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc384db3a861526-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fs4VAdXZ21Gw1RCjVo"}"""); skipping ticker.
+2026-05-15 12:30:02 [NEWS-ANTHROPIC_WEB] fetch failed for MSFT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:30:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fwddagbVyJES1UwTBm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-99df66d81bee5980c37a2ecef33392a5-9f88d3aa029dbd13-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1929
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc386539b890f69-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fwddagbVyJES1UwTBm"}"""); skipping ticker.
+2026-05-15 12:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 12:30:38 [ENGINE] fire=2026-05-15T16:30:30.230 sent=0.029 λ=0.03 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100209.98 dd=1.4% auto=1 queued=6 submitted=1
+2026-05-15 12:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 12:30:38 [ENGINE] fire=2026-05-15T16:30:30.230 sent=0.029 λ=0.03 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100209.98 dd=1.4% auto=1 queued=6 submitted=1
+2026-05-15 12:31:02 [NEWS-ANTHROPIC_WEB] fetch failed for NVDA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:31:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4g25G4B62QASJPpKSBB
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-442c96fd0a68559b9ee5458379c522c2-3546db686e8b6a06-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc387d79ae542b3-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4g25G4B62QASJPpKSBB"}"""); skipping ticker.
+2026-05-15 12:32:02 [NEWS-ANTHROPIC_WEB] fetch failed for AVGO: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:32:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4g6Wbuw8MjkxRrnHPp7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-174706b3f8c095dd8a83d78caec31f58-bff1a5c76b9111b4-01
+Server: cloudflare
+x-envoy-upstream-service-time: 40
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc3894fcad63e9d-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4g6Wbuw8MjkxRrnHPp7"}"""); skipping ticker.
+2026-05-15 12:33:02 [NEWS-ANTHROPIC_WEB] fetch failed for CRM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:33:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4gAwuYAhGvSFDwk2Ur1
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-312388330d7010ae9da9e4dfc258a546-6668386a9c73634b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc38ac7ffe0ee23-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4gAwuYAhGvSFDwk2Ur1"}"""); skipping ticker.
+2026-05-15 12:34:02 [NEWS-ANTHROPIC_WEB] fetch failed for SHW: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:34:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4gFPCAthECrmFJeZPHq
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-18c1aa47787a52cf514bd3fee0dc1d83-33de1781029dc868-01
+Server: cloudflare
+x-envoy-upstream-service-time: 35
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc38c400feb0c23-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4gFPCAthECrmFJeZPHq"}"""); skipping ticker.
+2026-05-15 12:35:03 [NEWS-ANTHROPIC_WEB] fetch failed for AMT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:35:03 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4gKpZGiWLhp1FiYzBmM
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d0b567185d4ed3d0a14b9410f0c78547-1ae07d4914ce7c13-01
+Server: cloudflare
+x-envoy-upstream-service-time: 47
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc38db84b979e16-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4gKpZGiWLhp1FiYzBmM"}"""); skipping ticker.
+2026-05-15 12:35:03 [NEWS-ANTHROPIC_WEB] 33 items, 32 scored, 11 searches (today 55/100).
+2026-05-15 12:35:06 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-16.jld2 -- 33 items, 6 tickers flagged
+2026-05-15 12:00:26 [NEWS-HOURLY] fire at 2026-05-15T16:00:25.935 source=anthropic_web tickers=22
+2026-05-15 12:23:56 [NEWS-ANTHROPIC_WEB] score failed for UNH item 3: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:23:55 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fUd37DEX4vTFGt4JkB
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-73f9c36d3634a03bc4c97bddca8c2157-4dc8f16637013324-01
+Server: cloudflare
+x-envoy-upstream-service-time: 97
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc37d6cdf481a5c-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fUd37DEX4vTFGt4JkB"}"""); leaving NaN.
+2026-05-15 12:24:59 [NEWS-ANTHROPIC_WEB] fetch failed for LLY: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:24:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fZJYGAytjpdpBnZZFJ
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-2bdcda8fe9997bd602f22025a972e767-a0aae352d48702c4-01
+Server: cloudflare
+x-envoy-upstream-service-time: 3144
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc37ee71e7e28c9-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fZJYGAytjpdpBnZZFJ"}"""); skipping ticker.
+2026-05-15 12:25:59 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:25:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fdkRcbnaRcqszszKht
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d1e61e715e19702efdea753643ecc74a-60f61577d81aaea4-01
+Server: cloudflare
+x-envoy-upstream-service-time: 68
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc38072b946438a-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fdkRcbnaRcqszszKht"}"""); skipping ticker.
+2026-05-15 12:26:59 [NEWS-ANTHROPIC_WEB] fetch failed for HON: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:26:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fiBuQe6enpJSBjCqQj
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-3f31ecdb22ed45d80c96c0237ce8bd83-12f4c5b2c4571592-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc381eb2b2fc425-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fiBuQe6enpJSBjCqQj"}"""); skipping ticker.
+2026-05-15 12:27:59 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:27:59 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fnd3rXS84Cp9um7hfe
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1ac02c9e317a135f2f6cd44309df0ed6-30c97bf1959c8e6a-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc383631a8f0f90-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fnd3rXS84Cp9um7hfe"}"""); skipping ticker.
+2026-05-15 12:29:00 [NEWS-ANTHROPIC_WEB] fetch failed for AAPL: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:29:00 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fs4VAdXZ21Gw1RCjVo
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-f98b7364b886db9e0d2709b52ae65461-bd4a21427f17a165-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc384db3a861526-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fs4VAdXZ21Gw1RCjVo"}"""); skipping ticker.
+2026-05-15 12:30:02 [NEWS-ANTHROPIC_WEB] fetch failed for MSFT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:30:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4fwddagbVyJES1UwTBm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-99df66d81bee5980c37a2ecef33392a5-9f88d3aa029dbd13-01
+Server: cloudflare
+x-envoy-upstream-service-time: 1929
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc386539b890f69-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4fwddagbVyJES1UwTBm"}"""); skipping ticker.
+2026-05-15 12:31:02 [NEWS-ANTHROPIC_WEB] fetch failed for NVDA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:31:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4g25G4B62QASJPpKSBB
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-442c96fd0a68559b9ee5458379c522c2-3546db686e8b6a06-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc387d79ae542b3-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4g25G4B62QASJPpKSBB"}"""); skipping ticker.
+2026-05-15 12:32:02 [NEWS-ANTHROPIC_WEB] fetch failed for AVGO: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:32:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4g6Wbuw8MjkxRrnHPp7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-174706b3f8c095dd8a83d78caec31f58-bff1a5c76b9111b4-01
+Server: cloudflare
+x-envoy-upstream-service-time: 40
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc3894fcad63e9d-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4g6Wbuw8MjkxRrnHPp7"}"""); skipping ticker.
+2026-05-15 12:33:02 [NEWS-ANTHROPIC_WEB] fetch failed for CRM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:33:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4gAwuYAhGvSFDwk2Ur1
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-312388330d7010ae9da9e4dfc258a546-6668386a9c73634b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc38ac7ffe0ee23-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4gAwuYAhGvSFDwk2Ur1"}"""); skipping ticker.
+2026-05-15 12:34:02 [NEWS-ANTHROPIC_WEB] fetch failed for SHW: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:34:02 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4gFPCAthECrmFJeZPHq
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-18c1aa47787a52cf514bd3fee0dc1d83-33de1781029dc868-01
+Server: cloudflare
+x-envoy-upstream-service-time: 35
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc38c400feb0c23-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4gFPCAthECrmFJeZPHq"}"""); skipping ticker.
+2026-05-15 12:35:03 [NEWS-ANTHROPIC_WEB] fetch failed for AMT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 16:35:03 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4gKpZGiWLhp1FiYzBmM
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d0b567185d4ed3d0a14b9410f0c78547-1ae07d4914ce7c13-01
+Server: cloudflare
+x-envoy-upstream-service-time: 47
+Content-Encoding: gzip
+vary: Accept-Encoding
+X-Robots-Tag: none
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+cf-cache-status: DYNAMIC
+CF-RAY: 9fc38db84b979e16-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4gKpZGiWLhp1FiYzBmM"}"""); skipping ticker.
+2026-05-15 12:35:03 [NEWS-ANTHROPIC_WEB] 33 items, 32 scored, 11 searches (today 55/100).
+2026-05-15 12:35:06 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-16.jld2 -- 33 items, 6 tickers flagged
+2026-05-15 13:00:26 [NEWS-HOURLY] fire at 2026-05-15T17:00:26.288 source=anthropic_web tickers=22
+2026-05-15 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 13:00:31 [NEWS-ANTHROPIC_WEB] fetch failed for DIS: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:00:30 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iGSWcFcq4tzFhrH6is
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-b9aa6666049f888b5130d8e94f261061-c36dc3fe414905b2-01
+Server: cloudflare
+x-envoy-upstream-service-time: 35
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3b304aee343af-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iGSWcFcq4tzFhrH6is"}"""); skipping ticker.
+2026-05-15 13:00:40 [ENGINE] fire=2026-05-15T17:00:32.861 sent=-0.0 λ=0.031 regime=neutral η=4.86 [shadow η_h=4.86 η_p=2.07] wealth=$100256.33 dd=1.4% auto=0 queued=3 submitted=0
+2026-05-15 13:00:29 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 13:00:40 [ENGINE] fire=2026-05-15T17:00:32.861 sent=-0.0 λ=0.031 regime=neutral η=4.86 [shadow η_h=4.86 η_p=2.07] wealth=$100256.33 dd=1.4% auto=0 queued=3 submitted=0
+2026-05-15 13:01:31 [NEWS-ANTHROPIC_WEB] fetch failed for NFLX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:01:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iLuUwq75ahpzCgP6W7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-895a6550768f2dc36df9e5da464f0666-f451eb2223da3c98-01
+Server: cloudflare
+x-envoy-upstream-service-time: 34
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3b47f8af2a3fe-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iLuUwq75ahpzCgP6W7"}"""); skipping ticker.
+2026-05-15 13:02:31 [NEWS-ANTHROPIC_WEB] fetch failed for AMZN: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:02:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iRLo4xeNBENk2dxFQU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-645ef88250568e6c819552e052c18f29-e8e56d2c1adca7c2-01
+Server: cloudflare
+x-envoy-upstream-service-time: 33
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3b5f7be2f0f4f-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iRLo4xeNBENk2dxFQU"}"""); skipping ticker.
+2026-05-15 13:03:31 [NEWS-ANTHROPIC_WEB] fetch failed for HD: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:03:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iVn9Ri3eNU3qPkQv2F
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-e21f00ecef78434b66ab3e3c051e910d-a443f82917f80b0c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3b76feb2af5f4-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iVn9Ri3eNU3qPkQv2F"}"""); skipping ticker.
+2026-05-15 13:04:32 [NEWS-ANTHROPIC_WEB] fetch failed for TJX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:04:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iaDU3Q3eTtyJJeRdig
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-0ff3f0b655aee6192798d285e0227c1c-48d3f2f6b6f99b32-01
+Server: cloudflare
+x-envoy-upstream-service-time: 32
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3b8e809c3cc62-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iaDU3Q3eTtyJJeRdig"}"""); skipping ticker.
+2026-05-15 13:05:32 [NEWS-ANTHROPIC_WEB] fetch failed for COST: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:05:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ieenf3yY1YF2DL9qgX
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d93c974a8b455f392522fb4f6ede5b64-c1fe91a4dc743818-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3ba603c35ae4c-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ieenf3yY1YF2DL9qgX"}"""); skipping ticker.
+2026-05-15 13:06:32 [NEWS-ANTHROPIC_WEB] fetch failed for CVX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:06:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ij5xr8XCb81D8PUryU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-28b82d752e6268a9a84ccfd85e764e16-a1914ae159464020-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3bbd82a35432b-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ij5xr8XCb81D8PUryU"}"""); skipping ticker.
+2026-05-15 13:07:32 [NEWS-ANTHROPIC_WEB] fetch failed for JPM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:07:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ioXGUN3szcbNSk7JaP
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-fa8ea8ddfdc3c69a03859a507d0294a0-e7d70c7ccb046536-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3bd504a2af3e6-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ioXGUN3szcbNSk7JaP"}"""); skipping ticker.
+2026-05-15 13:08:32 [NEWS-ANTHROPIC_WEB] fetch failed for V: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:08:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4isxcKyVFaxTNSwvuyu
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-320a5dbef1c135113c437f7b26757258-93bbb382c8353ab6-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3bec88a8b93b7-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4isxcKyVFaxTNSwvuyu"}"""); skipping ticker.
+2026-05-15 13:09:33 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:09:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ixQE4VdA75rQ683Fd3
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-3be78a829d3b79d458f92c8db9cf354c-3d542f0ab341fa1e-01
+Server: cloudflare
+x-envoy-upstream-service-time: 99
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c040baa6f5f7-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ixQE4VdA75rQ683Fd3"}"""); skipping ticker.
+2026-05-15 13:10:33 [NEWS-ANTHROPIC_WEB] fetch failed for UNH: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:10:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4j2qaQj5xaWyBbzLpGp
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-cc4690d65519508a352298efe9ec2c96-f50091b2eea2f266-01
+Server: cloudflare
+x-envoy-upstream-service-time: 62
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c1b94a4afd86-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4j2qaQj5xaWyBbzLpGp"}"""); skipping ticker.
+2026-05-15 13:11:33 [NEWS-ANTHROPIC_WEB] fetch failed for LLY: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:11:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4j7H2xtL4XGrFG3Jd81
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-a794b7645b5a7d221d794e60feebf85e-01cadc06a3569576-01
+Server: cloudflare
+x-envoy-upstream-service-time: 32
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c331af2a42b2-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4j7H2xtL4XGrFG3Jd81"}"""); skipping ticker.
+2026-05-15 13:12:33 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:12:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jBiM635Um8Jehah1VG
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-03a5158b72182176939c7b52c5199355-3e40d694433bd790-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3c4a9d9b2b35a-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jBiM635Um8Jehah1VG"}"""); skipping ticker.
+2026-05-15 13:13:33 [NEWS-ANTHROPIC_WEB] fetch failed for HON: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:13:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jG9iBVJchu7oiMW9Bq
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-e1ff5e3cc13036455a204e5d8c77d473-5f518509f2219a47-01
+Server: cloudflare
+x-envoy-upstream-service-time: 77
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c621fbd94ada-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jG9iBVJchu7oiMW9Bq"}"""); skipping ticker.
+2026-05-15 13:14:34 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:14:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jLbBj6n5kodW5TVGrF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-734f6294dddeed9e20c23c8098dee17f-c1cf0813d5ab0ffa-01
+Server: cloudflare
+x-envoy-upstream-service-time: 28
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c79a6b50d9fb-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jLbBj6n5kodW5TVGrF"}"""); skipping ticker.
+2026-05-15 13:15:34 [NEWS-ANTHROPIC_WEB] fetch failed for AAPL: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:15:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jR2YpxJDKKhdPZcGdg
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-4f5ae68305925adcdd939f4a3b8210a8-1c07ac83beee6397-01
+Server: cloudflare
+x-envoy-upstream-service-time: 118
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3c9129b8d8df5-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jR2YpxJDKKhdPZcGdg"}"""); skipping ticker.
+2026-05-15 13:16:34 [NEWS-ANTHROPIC_WEB] fetch failed for MSFT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:16:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jVUNhzYHjKpfZyhYYi
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-273708dc19784a9528e4b45afee92346-fe9bc74981de4ffa-01
+Server: cloudflare
+x-envoy-upstream-service-time: 35
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3ca8b8d52a0fb-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jVUNhzYHjKpfZyhYYi"}"""); skipping ticker.
+2026-05-15 13:17:34 [NEWS-ANTHROPIC_WEB] fetch failed for NVDA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:17:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jZuiosuAWUVmWPghYF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-8556e3d09789499b77f25cca0f132737-e045b37bb0d57255-01
+Server: cloudflare
+x-envoy-upstream-service-time: 87
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3cc03b97cccf1-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jZuiosuAWUVmWPghYF"}"""); skipping ticker.
+2026-05-15 13:18:34 [NEWS-ANTHROPIC_WEB] fetch failed for AVGO: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:18:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jeM6uHtXiHHhJRWBpR
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-7e38529b6630c29214d40e35fb166e3a-9c0e20816c094183-01
+Server: cloudflare
+x-envoy-upstream-service-time: 28
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3cd7bffb343c4-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jeM6uHtXiHHhJRWBpR"}"""); skipping ticker.
+2026-05-15 13:19:35 [NEWS-ANTHROPIC_WEB] fetch failed for CRM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:19:35 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jinQH2hcrCNEdYuTM7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-2f9e99bd7a66ffd05776562093df54c3-07321e009d9cb324-01
+Server: cloudflare
+x-envoy-upstream-service-time: 33
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3cef42b2323ce-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jinQH2hcrCNEdYuTM7"}"""); skipping ticker.
+2026-05-15 13:20:35 [NEWS-ANTHROPIC_WEB] fetch failed for SHW: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:20:35 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4joDiuJ4eHvvRvXX7Cx
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-32ecc3f7edec54a2eda3331ab76f307c-599149ab71735779-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3d06c4b699798-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4joDiuJ4eHvvRvXX7Cx"}"""); skipping ticker.
+2026-05-15 13:21:35 [NEWS-ANTHROPIC_WEB] fetch failed for AMT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:21:35 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jserMca9wmVkDjJREB
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-de3e47a388883d1b2e7850af80fbee6b-695b2b0d7f52653d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3d1e42eb76a5f-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jserMca9wmVkDjJREB"}"""); skipping ticker.
+2026-05-15 13:21:35 [NEWS-ANTHROPIC_WEB] 0 items, 0 scored, 0 searches (today 55/100).
+2026-05-15 13:21:35 [NEWS-ANTHROPIC_WEB] no live items returned; falling back to synthetic.
+2026-05-15 13:21:36 [NEWS-SYNTHETIC] Out-of-session fire at hour=17; skipping.
+2026-05-15 13:00:26 [NEWS-HOURLY] fire at 2026-05-15T17:00:26.288 source=anthropic_web tickers=22
+2026-05-15 13:00:31 [NEWS-ANTHROPIC_WEB] fetch failed for DIS: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:00:30 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iGSWcFcq4tzFhrH6is
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-b9aa6666049f888b5130d8e94f261061-c36dc3fe414905b2-01
+Server: cloudflare
+x-envoy-upstream-service-time: 35
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3b304aee343af-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iGSWcFcq4tzFhrH6is"}"""); skipping ticker.
+2026-05-15 13:01:31 [NEWS-ANTHROPIC_WEB] fetch failed for NFLX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:01:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iLuUwq75ahpzCgP6W7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-895a6550768f2dc36df9e5da464f0666-f451eb2223da3c98-01
+Server: cloudflare
+x-envoy-upstream-service-time: 34
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3b47f8af2a3fe-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iLuUwq75ahpzCgP6W7"}"""); skipping ticker.
+2026-05-15 13:02:31 [NEWS-ANTHROPIC_WEB] fetch failed for AMZN: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:02:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iRLo4xeNBENk2dxFQU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-645ef88250568e6c819552e052c18f29-e8e56d2c1adca7c2-01
+Server: cloudflare
+x-envoy-upstream-service-time: 33
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3b5f7be2f0f4f-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iRLo4xeNBENk2dxFQU"}"""); skipping ticker.
+2026-05-15 13:03:31 [NEWS-ANTHROPIC_WEB] fetch failed for HD: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:03:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iVn9Ri3eNU3qPkQv2F
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-e21f00ecef78434b66ab3e3c051e910d-a443f82917f80b0c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3b76feb2af5f4-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iVn9Ri3eNU3qPkQv2F"}"""); skipping ticker.
+2026-05-15 13:04:32 [NEWS-ANTHROPIC_WEB] fetch failed for TJX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:04:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4iaDU3Q3eTtyJJeRdig
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-0ff3f0b655aee6192798d285e0227c1c-48d3f2f6b6f99b32-01
+Server: cloudflare
+x-envoy-upstream-service-time: 32
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3b8e809c3cc62-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4iaDU3Q3eTtyJJeRdig"}"""); skipping ticker.
+2026-05-15 13:05:32 [NEWS-ANTHROPIC_WEB] fetch failed for COST: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:05:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ieenf3yY1YF2DL9qgX
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-d93c974a8b455f392522fb4f6ede5b64-c1fe91a4dc743818-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3ba603c35ae4c-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ieenf3yY1YF2DL9qgX"}"""); skipping ticker.
+2026-05-15 13:06:32 [NEWS-ANTHROPIC_WEB] fetch failed for CVX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:06:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ij5xr8XCb81D8PUryU
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-28b82d752e6268a9a84ccfd85e764e16-a1914ae159464020-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3bbd82a35432b-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ij5xr8XCb81D8PUryU"}"""); skipping ticker.
+2026-05-15 13:07:32 [NEWS-ANTHROPIC_WEB] fetch failed for JPM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:07:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ioXGUN3szcbNSk7JaP
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-fa8ea8ddfdc3c69a03859a507d0294a0-e7d70c7ccb046536-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3bd504a2af3e6-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ioXGUN3szcbNSk7JaP"}"""); skipping ticker.
+2026-05-15 13:08:32 [NEWS-ANTHROPIC_WEB] fetch failed for V: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:08:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4isxcKyVFaxTNSwvuyu
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-320a5dbef1c135113c437f7b26757258-93bbb382c8353ab6-01
+Server: cloudflare
+x-envoy-upstream-service-time: 30
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3bec88a8b93b7-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4isxcKyVFaxTNSwvuyu"}"""); skipping ticker.
+2026-05-15 13:09:33 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:09:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ixQE4VdA75rQ683Fd3
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-3be78a829d3b79d458f92c8db9cf354c-3d542f0ab341fa1e-01
+Server: cloudflare
+x-envoy-upstream-service-time: 99
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c040baa6f5f7-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ixQE4VdA75rQ683Fd3"}"""); skipping ticker.
+2026-05-15 13:10:33 [NEWS-ANTHROPIC_WEB] fetch failed for UNH: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:10:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4j2qaQj5xaWyBbzLpGp
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-cc4690d65519508a352298efe9ec2c96-f50091b2eea2f266-01
+Server: cloudflare
+x-envoy-upstream-service-time: 62
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c1b94a4afd86-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4j2qaQj5xaWyBbzLpGp"}"""); skipping ticker.
+2026-05-15 13:11:33 [NEWS-ANTHROPIC_WEB] fetch failed for LLY: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:11:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4j7H2xtL4XGrFG3Jd81
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-a794b7645b5a7d221d794e60feebf85e-01cadc06a3569576-01
+Server: cloudflare
+x-envoy-upstream-service-time: 32
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c331af2a42b2-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4j7H2xtL4XGrFG3Jd81"}"""); skipping ticker.
+2026-05-15 13:12:33 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:12:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jBiM635Um8Jehah1VG
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-03a5158b72182176939c7b52c5199355-3e40d694433bd790-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3c4a9d9b2b35a-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jBiM635Um8Jehah1VG"}"""); skipping ticker.
+2026-05-15 13:13:33 [NEWS-ANTHROPIC_WEB] fetch failed for HON: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:13:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jG9iBVJchu7oiMW9Bq
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-e1ff5e3cc13036455a204e5d8c77d473-5f518509f2219a47-01
+Server: cloudflare
+x-envoy-upstream-service-time: 77
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c621fbd94ada-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jG9iBVJchu7oiMW9Bq"}"""); skipping ticker.
+2026-05-15 13:14:34 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:14:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jLbBj6n5kodW5TVGrF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-734f6294dddeed9e20c23c8098dee17f-c1cf0813d5ab0ffa-01
+Server: cloudflare
+x-envoy-upstream-service-time: 28
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3c79a6b50d9fb-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jLbBj6n5kodW5TVGrF"}"""); skipping ticker.
+2026-05-15 13:15:34 [NEWS-ANTHROPIC_WEB] fetch failed for AAPL: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:15:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jR2YpxJDKKhdPZcGdg
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-4f5ae68305925adcdd939f4a3b8210a8-1c07ac83beee6397-01
+Server: cloudflare
+x-envoy-upstream-service-time: 118
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3c9129b8d8df5-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jR2YpxJDKKhdPZcGdg"}"""); skipping ticker.
+2026-05-15 13:16:34 [NEWS-ANTHROPIC_WEB] fetch failed for MSFT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:16:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jVUNhzYHjKpfZyhYYi
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-273708dc19784a9528e4b45afee92346-fe9bc74981de4ffa-01
+Server: cloudflare
+x-envoy-upstream-service-time: 35
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3ca8b8d52a0fb-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jVUNhzYHjKpfZyhYYi"}"""); skipping ticker.
+2026-05-15 13:17:34 [NEWS-ANTHROPIC_WEB] fetch failed for NVDA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:17:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jZuiosuAWUVmWPghYF
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-8556e3d09789499b77f25cca0f132737-e045b37bb0d57255-01
+Server: cloudflare
+x-envoy-upstream-service-time: 87
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3cc03b97cccf1-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jZuiosuAWUVmWPghYF"}"""); skipping ticker.
+2026-05-15 13:18:34 [NEWS-ANTHROPIC_WEB] fetch failed for AVGO: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:18:34 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jeM6uHtXiHHhJRWBpR
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-7e38529b6630c29214d40e35fb166e3a-9c0e20816c094183-01
+Server: cloudflare
+x-envoy-upstream-service-time: 28
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc3cd7bffb343c4-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jeM6uHtXiHHhJRWBpR"}"""); skipping ticker.
+2026-05-15 13:19:35 [NEWS-ANTHROPIC_WEB] fetch failed for CRM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:19:35 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jinQH2hcrCNEdYuTM7
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-2f9e99bd7a66ffd05776562093df54c3-07321e009d9cb324-01
+Server: cloudflare
+x-envoy-upstream-service-time: 33
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3cef42b2323ce-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jinQH2hcrCNEdYuTM7"}"""); skipping ticker.
+2026-05-15 13:20:35 [NEWS-ANTHROPIC_WEB] fetch failed for SHW: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:20:35 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4joDiuJ4eHvvRvXX7Cx
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-32ecc3f7edec54a2eda3331ab76f307c-599149ab71735779-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3d06c4b699798-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4joDiuJ4eHvvRvXX7Cx"}"""); skipping ticker.
+2026-05-15 13:21:35 [NEWS-ANTHROPIC_WEB] fetch failed for AMT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 17:21:35 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4jserMca9wmVkDjJREB
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-de3e47a388883d1b2e7850af80fbee6b-695b2b0d7f52653d-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc3d1e42eb76a5f-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4jserMca9wmVkDjJREB"}"""); skipping ticker.
+2026-05-15 13:21:35 [NEWS-ANTHROPIC_WEB] 0 items, 0 scored, 0 searches (today 55/100).
+2026-05-15 13:21:35 [NEWS-ANTHROPIC_WEB] no live items returned; falling back to synthetic.
+2026-05-15 13:21:36 [NEWS-SYNTHETIC] Out-of-session fire at hour=17; skipping.
+2026-05-15 13:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 13:30:38 [ENGINE] fire=2026-05-15T17:30:29.644 sent=0.021 λ=0.031 regime=neutral η=4.86 [shadow η_h=4.86 η_p=2.07] wealth=$100258.81 dd=1.4% auto=12 queued=7 submitted=12
+2026-05-15 13:30:26 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 13:30:38 [ENGINE] fire=2026-05-15T17:30:29.644 sent=0.021 λ=0.031 regime=neutral η=4.86 [shadow η_h=4.86 η_p=2.07] wealth=$100258.81 dd=1.4% auto=12 queued=7 submitted=12
+2026-05-15 14:00:25 [NEWS-HOURLY] fire at 2026-05-15T18:00:25.628 source=anthropic_web tickers=22
+2026-05-15 14:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 14:00:30 [NEWS-ANTHROPIC_WEB] fetch failed for DIS: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:00:30 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4nqmSHJExg1KcGMGjP8
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-9295162eb4a6e0deea687875dd205374-368b67c91d7ff225-01
+Server: cloudflare
+x-envoy-upstream-service-time: 73
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc40ae4dd58d911-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4nqmSHJExg1KcGMGjP8"}"""); skipping ticker.
+2026-05-15 14:00:41 [ENGINE] fire=2026-05-15T18:00:32.258 sent=0.023 λ=0.03 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100257.51 dd=1.4% auto=12 queued=5 submitted=12
+2026-05-15 14:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 14:00:41 [ENGINE] fire=2026-05-15T18:00:32.258 sent=0.023 λ=0.03 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100257.51 dd=1.4% auto=12 queued=5 submitted=12
+2026-05-15 14:01:30 [NEWS-ANTHROPIC_WEB] fetch failed for NFLX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:01:30 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4nvEQcimWcQtyx4JvsD
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-05f4cf00b76f3c792598ee710e040791-592c1b5a349e09c8-01
+Server: cloudflare
+x-envoy-upstream-service-time: 37
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc40c5fbbdd0f70-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4nvEQcimWcQtyx4JvsD"}"""); skipping ticker.
+2026-05-15 14:02:31 [NEWS-ANTHROPIC_WEB] fetch failed for AMZN: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:02:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4nzfmULweebtXXwhcTv
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-dabe47c4ba772be8e16d95c3d0622a30-e6767f7b2765f401-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc40dd7eb9e8c8a-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4nzfmULweebtXXwhcTv"}"""); skipping ticker.
+2026-05-15 14:03:31 [NEWS-ANTHROPIC_WEB] fetch failed for HD: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:03:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4o576LM85qRio4796K2
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-c0c23650cd099114deaade09186137b8-41199d0015f78e30-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc40f501aa98574-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4o576LM85qRio4796K2"}"""); skipping ticker.
+2026-05-15 14:04:31 [NEWS-ANTHROPIC_WEB] fetch failed for TJX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:04:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4o9YUg8wZ649pLqyHo9
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-4543e4bf725098cd934158f0a684dcad-0d992bbfd1ec5f7c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 36
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc410c858bc7b0e-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4o9YUg8wZ649pLqyHo9"}"""); skipping ticker.
+2026-05-15 14:05:31 [NEWS-ANTHROPIC_WEB] fetch failed for COST: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:05:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oDywy7esq4CABHAHBN
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-cb12d9c182f2fd078b901fea96b86b70-1022f6e6b56a0c59-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41240b9768c2d-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oDywy7esq4CABHAHBN"}"""); skipping ticker.
+2026-05-15 14:06:31 [NEWS-ANTHROPIC_WEB] fetch failed for CVX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:06:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oJRHacNL4e3aeE5G8Z
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1edf52368b6cf5cc2711762103fdbccc-027f8898986a9d6b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 39
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc413b8ece142dd-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oJRHacNL4e3aeE5G8Z"}"""); skipping ticker.
+2026-05-15 14:07:32 [NEWS-ANTHROPIC_WEB] fetch failed for JPM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:07:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oNrfvHi7gBvjUBDcEm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-df334605f286b4ba49d965ca06aa8453-9096ccdf135c525b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc415312b67f7ee-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oNrfvHi7gBvjUBDcEm"}"""); skipping ticker.
+2026-05-15 14:08:32 [NEWS-ANTHROPIC_WEB] fetch failed for V: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:08:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oTHxoCPWZfh9BVmoBm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-c8d0f22a75d456bde36319d71965be39-5fe3c4487d8d6025-01
+Server: cloudflare
+x-envoy-upstream-service-time: 36
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc416a94a18a0f4-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oTHxoCPWZfh9BVmoBm"}"""); skipping ticker.
+2026-05-15 14:09:32 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:09:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oXjJfAxMi35sNvePEc
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-a4bc967b0873abdcf609569c0b31dc1d-220bdc1ca2aab7a5-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41821791d26df-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oXjJfAxMi35sNvePEc"}"""); skipping ticker.
+2026-05-15 14:10:32 [NEWS-ANTHROPIC_WEB] fetch failed for UNH: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:10:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ocB9HP8rzpsKFZiybJ
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-25e133064ae92ec7b712100fa5d0296f-30e24469c401cce1-01
+Server: cloudflare
+x-envoy-upstream-service-time: 186
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc41999bd7ec647-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ocB9HP8rzpsKFZiybJ"}"""); skipping ticker.
+2026-05-15 14:11:32 [NEWS-ANTHROPIC_WEB] fetch failed for LLY: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:11:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ogcUPuaGfKuYatp9hy
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-94a82ac582d0a7b94e06792602ad983f-53a1f589479715dd-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41b128b0f431c-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ogcUPuaGfKuYatp9hy"}"""); skipping ticker.
+2026-05-15 14:12:33 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:12:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4om3oGAGFMvfHTkohvN
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-fbc30b469a946bc2c31a1a7bbe358733-efa3440518283ae3-01
+Server: cloudflare
+x-envoy-upstream-service-time: 32
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc41c8acec4f9a9-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4om3oGAGFMvfHTkohvN"}"""); skipping ticker.
+2026-05-15 14:13:33 [NEWS-ANTHROPIC_WEB] fetch failed for HON: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:13:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oqV887STUULTTZNJ4H
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-61d365ce6388c4613e85826550c88ed3-79e6e5cd024128bf-01
+Server: cloudflare
+x-envoy-upstream-service-time: 28
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc41e02e95a25d8-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oqV887STUULTTZNJ4H"}"""); skipping ticker.
+2026-05-15 14:14:33 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:14:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ouvSkJAv6AjuhtbMau
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1b1fe416bce95bf3e6e10d2745413e3a-3e4d1af361922496-01
+Server: cloudflare
+x-envoy-upstream-service-time: 80
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41f7b08372caf-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ouvSkJAv6AjuhtbMau"}"""); skipping ticker.
+2026-05-15 14:30:10 [NEWS-ANTHROPIC_WEB] 21 items, 21 scored, 7 searches (today 62/100).
+2026-05-15 14:30:13 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-18.jld2 -- 21 items, 7 tickers flagged
+2026-05-15 14:00:25 [NEWS-HOURLY] fire at 2026-05-15T18:00:25.628 source=anthropic_web tickers=22
+2026-05-15 14:00:30 [NEWS-ANTHROPIC_WEB] fetch failed for DIS: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:00:30 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4nqmSHJExg1KcGMGjP8
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-9295162eb4a6e0deea687875dd205374-368b67c91d7ff225-01
+Server: cloudflare
+x-envoy-upstream-service-time: 73
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc40ae4dd58d911-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4nqmSHJExg1KcGMGjP8"}"""); skipping ticker.
+2026-05-15 14:01:30 [NEWS-ANTHROPIC_WEB] fetch failed for NFLX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:01:30 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4nvEQcimWcQtyx4JvsD
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-05f4cf00b76f3c792598ee710e040791-592c1b5a349e09c8-01
+Server: cloudflare
+x-envoy-upstream-service-time: 37
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc40c5fbbdd0f70-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4nvEQcimWcQtyx4JvsD"}"""); skipping ticker.
+2026-05-15 14:02:31 [NEWS-ANTHROPIC_WEB] fetch failed for AMZN: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:02:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4nzfmULweebtXXwhcTv
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-dabe47c4ba772be8e16d95c3d0622a30-e6767f7b2765f401-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc40dd7eb9e8c8a-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4nzfmULweebtXXwhcTv"}"""); skipping ticker.
+2026-05-15 14:03:31 [NEWS-ANTHROPIC_WEB] fetch failed for HD: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:03:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4o576LM85qRio4796K2
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-c0c23650cd099114deaade09186137b8-41199d0015f78e30-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc40f501aa98574-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4o576LM85qRio4796K2"}"""); skipping ticker.
+2026-05-15 14:04:31 [NEWS-ANTHROPIC_WEB] fetch failed for TJX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:04:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4o9YUg8wZ649pLqyHo9
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-4543e4bf725098cd934158f0a684dcad-0d992bbfd1ec5f7c-01
+Server: cloudflare
+x-envoy-upstream-service-time: 36
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc410c858bc7b0e-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4o9YUg8wZ649pLqyHo9"}"""); skipping ticker.
+2026-05-15 14:05:31 [NEWS-ANTHROPIC_WEB] fetch failed for COST: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:05:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oDywy7esq4CABHAHBN
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-cb12d9c182f2fd078b901fea96b86b70-1022f6e6b56a0c59-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41240b9768c2d-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oDywy7esq4CABHAHBN"}"""); skipping ticker.
+2026-05-15 14:06:31 [NEWS-ANTHROPIC_WEB] fetch failed for CVX: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:06:31 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oJRHacNL4e3aeE5G8Z
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1edf52368b6cf5cc2711762103fdbccc-027f8898986a9d6b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 39
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc413b8ece142dd-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oJRHacNL4e3aeE5G8Z"}"""); skipping ticker.
+2026-05-15 14:07:32 [NEWS-ANTHROPIC_WEB] fetch failed for JPM: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:07:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oNrfvHi7gBvjUBDcEm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-df334605f286b4ba49d965ca06aa8453-9096ccdf135c525b-01
+Server: cloudflare
+x-envoy-upstream-service-time: 29
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc415312b67f7ee-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oNrfvHi7gBvjUBDcEm"}"""); skipping ticker.
+2026-05-15 14:08:32 [NEWS-ANTHROPIC_WEB] fetch failed for V: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:08:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oTHxoCPWZfh9BVmoBm
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-c8d0f22a75d456bde36319d71965be39-5fe3c4487d8d6025-01
+Server: cloudflare
+x-envoy-upstream-service-time: 36
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc416a94a18a0f4-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oTHxoCPWZfh9BVmoBm"}"""); skipping ticker.
+2026-05-15 14:09:32 [NEWS-ANTHROPIC_WEB] fetch failed for MA: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:09:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oXjJfAxMi35sNvePEc
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-a4bc967b0873abdcf609569c0b31dc1d-220bdc1ca2aab7a5-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41821791d26df-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oXjJfAxMi35sNvePEc"}"""); skipping ticker.
+2026-05-15 14:10:32 [NEWS-ANTHROPIC_WEB] fetch failed for UNH: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:10:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ocB9HP8rzpsKFZiybJ
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-25e133064ae92ec7b712100fa5d0296f-30e24469c401cce1-01
+Server: cloudflare
+x-envoy-upstream-service-time: 186
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc41999bd7ec647-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ocB9HP8rzpsKFZiybJ"}"""); skipping ticker.
+2026-05-15 14:11:32 [NEWS-ANTHROPIC_WEB] fetch failed for LLY: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:11:32 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ogcUPuaGfKuYatp9hy
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-94a82ac582d0a7b94e06792602ad983f-53a1f589479715dd-01
+Server: cloudflare
+x-envoy-upstream-service-time: 31
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41b128b0f431c-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ogcUPuaGfKuYatp9hy"}"""); skipping ticker.
+2026-05-15 14:12:33 [NEWS-ANTHROPIC_WEB] fetch failed for ABBV: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:12:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4om3oGAGFMvfHTkohvN
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-fbc30b469a946bc2c31a1a7bbe358733-efa3440518283ae3-01
+Server: cloudflare
+x-envoy-upstream-service-time: 32
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc41c8acec4f9a9-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4om3oGAGFMvfHTkohvN"}"""); skipping ticker.
+2026-05-15 14:13:33 [NEWS-ANTHROPIC_WEB] fetch failed for HON: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:13:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4oqV887STUULTTZNJ4H
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-61d365ce6388c4613e85826550c88ed3-79e6e5cd024128bf-01
+Server: cloudflare
+x-envoy-upstream-service-time: 28
+Content-Encoding: gzip
+vary: Accept-Encoding
+cf-cache-status: DYNAMIC
+set-cookie: ******
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+X-Robots-Tag: none
+CF-RAY: 9fc41e02e95a25d8-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4oqV887STUULTTZNJ4H"}"""); skipping ticker.
+2026-05-15 14:14:33 [NEWS-ANTHROPIC_WEB] fetch failed for CAT: HTTP.Exceptions.StatusError(400, "POST", "/v1/messages", HTTP.Messages.Response:
+"""
+HTTP/1.1 400 Bad Request
+Date: Fri, 15 May 2026 18:14:33 GMT
+Content-Type: application/json
+Transfer-Encoding: chunked
+Connection: keep-alive
+x-should-retry: false
+request-id: req_011Cb4ouvSkJAv6AjuhtbMau
+strict-transport-security: max-age=31536000; includeSubDomains; preload
+anthropic-organization-id: 980ee1de-4e7e-4a75-9d30-90c655ec7620
+traceresponse: 00-1b1fe416bce95bf3e6e10d2745413e3a-3e4d1af361922496-01
+Server: cloudflare
+x-envoy-upstream-service-time: 80
+Content-Encoding: gzip
+vary: Accept-Encoding
+set-cookie: ******
+X-Robots-Tag: none
+cf-cache-status: DYNAMIC
+Content-Security-Policy: default-src 'none'; frame-ancestors 'none'
+CF-RAY: 9fc41f7b08372caf-EWR
+
+{"type":"error","error":{"type":"invalid_request_error","message":"Your credit balance is too low to access the Anthropic API. Please go to Plans & Billing to upgrade or purchase credits."},"request_id":"req_011Cb4ouvSkJAv6AjuhtbMau"}"""); skipping ticker.
+2026-05-15 14:30:10 [NEWS-ANTHROPIC_WEB] 21 items, 21 scored, 7 searches (today 62/100).
+2026-05-15 14:30:13 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-18.jld2 -- 21 items, 7 tickers flagged
+2026-05-15 14:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 14:30:40 [ENGINE] fire=2026-05-15T18:30:30.996 sent=0.019 λ=0.03 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100152.09 dd=1.5% auto=14 queued=6 submitted=14
+2026-05-15 14:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 14:30:40 [ENGINE] fire=2026-05-15T18:30:30.996 sent=0.019 λ=0.03 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100152.09 dd=1.5% auto=14 queued=6 submitted=14
+2026-05-15 15:00:25 [NEWS-HOURLY] fire at 2026-05-15T19:00:25.348 source=anthropic_web tickers=22
+2026-05-15 15:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 15:00:40 [ENGINE] fire=2026-05-15T19:00:31.862 sent=0.005 λ=0.031 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100124.12 dd=1.5% auto=3 queued=5 submitted=3
+2026-05-15 15:00:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 15:00:40 [ENGINE] fire=2026-05-15T19:00:31.862 sent=0.005 λ=0.031 regime=neutral η=4.87 [shadow η_h=4.87 η_p=2.07] wealth=$100124.12 dd=1.5% auto=3 queued=5 submitted=3
+2026-05-15 15:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 15:30:40 [ENGINE] fire=2026-05-15T19:30:31.521 sent=-0.011 λ=0.032 regime=neutral η=4.86 [shadow η_h=4.86 η_p=2.07] wealth=$100009.05 dd=1.6% auto=3 queued=5 submitted=3
+2026-05-15 15:30:27 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 15:30:40 [ENGINE] fire=2026-05-15T19:30:31.521 sent=-0.011 λ=0.032 regime=neutral η=4.86 [shadow η_h=4.86 η_p=2.07] wealth=$100009.05 dd=1.6% auto=3 queued=5 submitted=3
+2026-05-15 15:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 84/100).
+2026-05-15 15:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-19.jld2 -- 66 items, 19 tickers flagged
+2026-05-15 15:00:25 [NEWS-HOURLY] fire at 2026-05-15T19:00:25.348 source=anthropic_web tickers=22
+2026-05-15 15:48:42 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 84/100).
+2026-05-15 15:48:44 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-19.jld2 -- 66 items, 19 tickers flagged
+2026-05-15 15:55:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 15:55:41 [ENGINE] fire=2026-05-15T19:55:32.027 sent=-0.049 λ=0.034 regime=neutral η=4.85 [shadow η_h=4.85 η_p=2.07] wealth=$99925.85 dd=1.7% auto=3 queued=4 submitted=3
+2026-05-15 15:55:42 [ENGINE_CLOSE] wrote ticket for 2026-05-18: 4 trades, η=4.85, regime=neutral, news_flags=19
+2026-05-15 15:55:28 [CONFIG] tickers source=session-1 -> 22 names
+2026-05-15 15:55:41 [ENGINE] fire=2026-05-15T19:55:32.027 sent=-0.049 λ=0.034 regime=neutral η=4.85 [shadow η_h=4.85 η_p=2.07] wealth=$99925.85 dd=1.7% auto=3 queued=4 submitted=3
+2026-05-15 15:55:42 [ENGINE_CLOSE] wrote ticket for 2026-05-18: 4 trades, η=4.85, regime=neutral, news_flags=19
+2026-05-15 16:00:24 [NEWS-HOURLY] fire at 2026-05-15T20:00:24.586 source=anthropic_web tickers=22
+2026-05-15 16:48:30 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 106/100).
+2026-05-15 16:48:33 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-20.jld2 -- 66 items, 19 tickers flagged
+2026-05-15 16:00:24 [NEWS-HOURLY] fire at 2026-05-15T20:00:24.586 source=anthropic_web tickers=22
+2026-05-15 16:48:30 [NEWS-ANTHROPIC_WEB] 66 items, 66 scored, 22 searches (today 106/100).
+2026-05-15 16:48:33 [NEWS-WRITE] wrote /Users/jdv27/Desktop/julia_work/eCornell-AI-finance-lectures/lectures/session-4/data/news/news-2026-05-15-20.jld2 -- 66 items, 19 tickers flagged
